@@ -187,6 +187,8 @@ class GeneratorAdapterTest {
   void testPush_type() {
     assertEquals("ACONST_NULL", new Generator().push((Type) null));
     assertEquals(
+        "GETSTATIC java/lang/Void.TYPE : Ljava/lang/Class;", new Generator().push(Type.VOID_TYPE));
+    assertEquals(
         "GETSTATIC java/lang/Boolean.TYPE : Ljava/lang/Class;",
         new Generator().push(Type.BOOLEAN_TYPE));
     assertEquals(
