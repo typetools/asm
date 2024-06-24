@@ -50,9 +50,11 @@ public class SimpleRemapper extends Remapper {
    *           name.
    *       <li>for invokedynamic method names, the key is the name and descriptor of the method (in
    *           the form .&lt;name&gt;&lt;descriptor&gt;), and the value is the new method name.
-   *       <li>for field and attribute names, the key is the owner and name of the field or
-   *           attribute (in the form &lt;owner&gt;.&lt;name&gt;), and the value is the new field
-   *           name.
+   *       <li>for field names, the key is the owner and name of the field or attribute (in the form
+   *           &lt;owner&gt;.&lt;name&gt;), and the value is the new field name.
+   *       <li>for attribute names, the key is the annotation descriptor and the name of the
+   *           attribute (in the form &lt;descriptor&gt;.&lt;name&gt;), and the value is the new
+   *           attribute name.
    *       <li>for internal names, the key is the old internal name, and the value is the new
    *           internal name (see {@link org.objectweb.asm.Type#getInternalName()}).
    *     </ul>
