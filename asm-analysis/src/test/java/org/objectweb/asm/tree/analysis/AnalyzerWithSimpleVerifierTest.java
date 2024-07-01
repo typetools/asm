@@ -82,6 +82,61 @@ class AnalyzerWithSimpleVerifierTest extends AsmTest {
   }
 
   @Test
+  void testAnalyze_arrayOfCurrentClass() {
+    Label label0 = new Label();
+    Label label1 = new Label();
+    Label label2 = new Label();
+    Label label3 = new Label();
+    MethodNode methodNode =
+        new MethodNodeBuilder()
+            .iconst_0()
+            .typeInsn(Opcodes.ANEWARRAY, CLASS_NAME)
+            .astore(1)
+            .iconst_0()
+            .istore(2)
+            .label(label0)
+            .iload(2)
+            .ifne(label1)
+            .aload(1)
+            .iload(2)
+            .insn(Opcodes.AALOAD)
+            .pop()
+            .go(label0)
+            .label(label1)
+            .label(label2)
+            .iload(2)
+            .ifne(label3)
+            .aload(1)
+            .iload(2)
+            .insn(Opcodes.AALOAD)
+            .pop()
+            .go(label2)
+            .label(label3)
+            .vreturn()
+            .build();
+
+    Executable analyze = () -> newAnalyzer().analyze(CLASS_NAME, methodNode);
+
+    assertDoesNotThrow(analyze);
+    assertDoesNotThrow(() -> MethodNodeBuilder.buildClassWithMethod(methodNode).newInstance());
+  }
+
+  @Test
+  void testAnalyze_primitiveArrayReturnType() {
+    MethodNode methodNode =
+        new MethodNodeBuilder("()[I", 1, 1)
+            .iconst_0()
+            .typeInsn(Opcodes.ANEWARRAY, CLASS_NAME)
+            .areturn()
+            .build();
+
+    Executable analyze = () -> newAnalyzer().analyze(CLASS_NAME, methodNode);
+
+    String message = assertThrows(AnalyzerException.class, analyze).getMessage();
+    assertTrue(message.contains("Incompatible return type: expected [I, but found [LC;"));
+  }
+
+  @Test
   void testAnalyze_invalidInvokevirtual() {
     MethodNode methodNode =
         new MethodNodeBuilder()
