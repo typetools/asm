@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -384,11 +385,7 @@ public class Textifier extends Printer {
     stringBuilder.append(' ').append(name);
     if (value != null) {
       stringBuilder.append(" = ");
-      if (value instanceof String) {
-        stringBuilder.append('\"').append(value).append('\"');
-      } else {
-        stringBuilder.append(value);
-      }
+      appendConstant(value);
     }
 
     stringBuilder.append('\n');
@@ -948,33 +945,9 @@ public class Textifier extends Printer {
     stringBuilder.append(" [");
     stringBuilder.append('\n');
     stringBuilder.append(tab3);
-    appendHandle(bootstrapMethodHandle);
-    stringBuilder.append('\n');
-    stringBuilder.append(tab3).append("// arguments:");
-    if (bootstrapMethodArguments.length == 0) {
-      stringBuilder.append(" none");
-    } else {
-      stringBuilder.append('\n');
-      for (Object value : bootstrapMethodArguments) {
-        stringBuilder.append(tab3);
-        if (value instanceof String) {
-          Printer.appendString(stringBuilder, (String) value);
-        } else if (value instanceof Type) {
-          Type type = (Type) value;
-          if (type.getSort() == Type.METHOD) {
-            appendDescriptor(METHOD_DESCRIPTOR, type.getDescriptor());
-          } else {
-            visitType(type);
-          }
-        } else if (value instanceof Handle) {
-          appendHandle((Handle) value);
-        } else {
-          stringBuilder.append(value);
-        }
-        stringBuilder.append(", \n");
-      }
-      stringBuilder.setLength(stringBuilder.length() - 3);
-    }
+    appendHandle(bootstrapMethodHandle, tab3);
+    stringBuilder.append('\n').append(tab3);
+    appendBoostrapMethodArgs(bootstrapMethodArguments, tab3);
     stringBuilder.append('\n');
     stringBuilder.append(tab2).append("]\n");
     text.add(stringBuilder.toString());
@@ -1001,13 +974,15 @@ public class Textifier extends Printer {
   @Override
   public void visitLdcInsn(final Object value) {
     stringBuilder.setLength(0);
-    stringBuilder.append(tab2).append("LDC ");
-    if (value instanceof String) {
-      Printer.appendString(stringBuilder, (String) value);
-    } else if (value instanceof Type) {
-      stringBuilder.append(((Type) value).getDescriptor()).append(CLASS_SUFFIX);
+    if (value instanceof ConstantDynamic) {
+      stringBuilder.append(tab2).append("LDC ");
+      appendConstantDynamic((ConstantDynamic) value, tab2);
+    } else if (value instanceof Handle) {
+      stringBuilder.append(tab2);
+      appendHandle((Handle) value, tab2 + "LDC ");
     } else {
-      stringBuilder.append(value);
+      stringBuilder.append(tab2).append("LDC ");
+      appendConstant(value);
     }
     stringBuilder.append('\n');
     text.add(stringBuilder.toString());
@@ -1308,6 +1283,96 @@ public class Textifier extends Printer {
   }
 
   /**
+   * Appends a constant value. This method can be used for {@link Integer}, {@link Float}, {@link
+   * Long}, {@link Double}, {@link Boolean}, {@link String}, and {@link Type}. Attempting to use any
+   * other type will result in its {@link Object#toString()} representation.
+   *
+   * @param constant the constant to be appended.
+   */
+  private void appendConstant(final Object constant) {
+    if (constant instanceof Number) {
+      if (constant instanceof Double) {
+        stringBuilder.append(constant).append('D');
+      } else if (constant instanceof Float) {
+        stringBuilder.append(constant).append('F');
+      } else if (constant instanceof Long) {
+        stringBuilder.append(constant).append('L');
+      } else {
+        // Integer (or other "unsupported" Number subclass)
+        stringBuilder.append(constant);
+      }
+    } else {
+      if (constant instanceof Type) {
+        stringBuilder.append(((Type) constant).getDescriptor()).append(CLASS_SUFFIX);
+      } else if (constant instanceof String) {
+        Printer.appendString(stringBuilder, constant.toString());
+      } else {
+        // Boolean or other "unsupported" constant
+        stringBuilder.append(constant);
+      }
+    }
+  }
+
+  /**
+   * Append the contents of a {@link ConstantDynamic}.
+   *
+   * @param condy the constant dynamic to append
+   * @param condyIndent the indent to use for newlines.
+   */
+  private void appendConstantDynamic(final ConstantDynamic condy, final String condyIndent) {
+    stringBuilder
+        .append(condy.getName())
+        .append(" : ")
+        .append(condy.getDescriptor())
+        .append(" [\n");
+    stringBuilder.append(condyIndent).append(tab);
+    appendHandle(condy.getBootstrapMethod(), condyIndent + tab);
+    stringBuilder.append('\n').append(condyIndent).append(tab);
+    Object[] bsmArgs = new Object[condy.getBootstrapMethodArgumentCount()];
+    for (int i = 0; i < bsmArgs.length; i++) {
+      bsmArgs[i] = condy.getBootstrapMethodArgument(i);
+    }
+    appendBoostrapMethodArgs(bsmArgs, condyIndent + tab);
+    stringBuilder.append('\n').append(condyIndent).append(']');
+  }
+
+  /**
+   * Appends bootstrap method args for {@link ConstantDynamic} and {@link #visitInvokeDynamicInsn}.
+   *
+   * @param bsmArgs the bootstrap method arguments.
+   * @param argIndent the indent to use for newlines.
+   */
+  private void appendBoostrapMethodArgs(final Object[] bsmArgs, final String argIndent) {
+    stringBuilder.append("// arguments:");
+    if (bsmArgs.length == 0) {
+      stringBuilder.append(" none");
+    } else {
+      for (int i = 0; i < bsmArgs.length; i++) {
+        Object arg = bsmArgs[i];
+        if (i != 0) {
+          stringBuilder.append(", ");
+        }
+        stringBuilder.append('\n').append(argIndent);
+        if (arg instanceof Type) {
+          Type type = (Type) arg;
+          if (type.getSort() == Type.METHOD) {
+            appendDescriptor(METHOD_DESCRIPTOR, type.getDescriptor());
+          } else {
+            visitType(type);
+          }
+        } else if (arg instanceof Handle) {
+          appendHandle((Handle) arg, argIndent);
+        } else if (arg instanceof ConstantDynamic) {
+          stringBuilder.append("// constant dynamic: ").append('\n').append(argIndent);
+          appendConstantDynamic((ConstantDynamic) arg, argIndent);
+        } else {
+          appendConstant(arg);
+        }
+      }
+    }
+  }
+
+  /**
    * Appends the hexadecimal value of the given access flags to {@link #stringBuilder}.
    *
    * @param accessFlags some access flags.
@@ -1378,12 +1443,18 @@ public class Textifier extends Printer {
     stringBuilder.append(name);
   }
 
+  @Deprecated
+  protected void appendHandle(final Handle handle) {
+    appendHandle(handle, tab3);
+  }
+
   /**
    * Appends a string representation of the given handle to {@link #stringBuilder}.
    *
    * @param handle a handle.
+   * @param afterComment this is the prefix of the line after the handle kind.
    */
-  protected void appendHandle(final Handle handle) {
+  protected void appendHandle(final Handle handle, final String afterComment) {
     int tag = handle.getTag();
     stringBuilder.append("// handle kind 0x").append(Integer.toHexString(tag)).append(" : ");
     boolean isMethodHandle = false;
@@ -1424,7 +1495,7 @@ public class Textifier extends Printer {
         throw new IllegalArgumentException();
     }
     stringBuilder.append('\n');
-    stringBuilder.append(tab3);
+    stringBuilder.append(afterComment);
     appendDescriptor(INTERNAL_NAME, handle.getOwner());
     stringBuilder.append('.');
     stringBuilder.append(handle.getName());
