@@ -50,6 +50,26 @@ public class jdk11/AllInstructions {
     MAXSTACK = 2
     MAXLOCALS = 3
 
+  // access flags 0xA
+  private static anotherBsm(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/Class;)J
+    BIPUSH 42
+    I2L
+    LRETURN
+    MAXSTACK = 2
+    MAXLOCALS = 3
+
+  // access flags 0x9
+  public static gnarlyCondyPop()V
+    LDC test : J [
+      // handle kind 0x6 : INVOKESTATIC
+      jdk11/AllInstructions.anotherBsm(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/Class;)J
+      // arguments: none
+    ]
+    POP2
+    RETURN
+    MAXSTACK = 2
+    MAXLOCALS = 0
+
   // access flags 0x9
   public static main([Ljava/lang/String;)V
     LDC run : Ljava/lang/Runnable; [
