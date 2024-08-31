@@ -126,9 +126,40 @@ public class Attribute {
       final int codeAttributeOffset,
       final Label[] labels) {
     Attribute attribute = new Attribute(type);
-    attribute.content = new byte[length];
-    System.arraycopy(classReader.classFileBuffer, offset, attribute.content, 0, length);
+    attribute.content = classReader.readBytes(offset, length);
     return attribute;
+  }
+
+  /**
+   * Reads an attribute with the same {@link #type} as the given attribute. This method returns a
+   * new {@link Attribute} object, corresponding to the 'length' bytes starting at 'offset', in the
+   * given ClassReader.
+   *
+   * @param attribute The attribute prototype that is used for reading.
+   * @param classReader the class that contains the attribute to be read.
+   * @param offset index of the first byte of the attribute's content in {@link ClassReader}. The 6
+   *     attribute header bytes (attribute_name_index and attribute_length) are not taken into
+   *     account here.
+   * @param length the length of the attribute's content (excluding the 6 attribute header bytes).
+   * @param charBuffer the buffer to be used to call the ClassReader methods requiring a
+   *     'charBuffer' parameter.
+   * @param codeAttributeOffset index of the first byte of content of the enclosing Code attribute
+   *     in {@link ClassReader}, or -1 if the attribute to be read is not a Code attribute. The 6
+   *     attribute header bytes (attribute_name_index and attribute_length) are not taken into
+   *     account here.
+   * @param labels the labels of the method's code, or {@literal null} if the attribute to be read
+   *     is not a Code attribute.
+   * @return a new {@link Attribute} object corresponding to the specified bytes.
+   */
+  public static Attribute read(
+      final Attribute attribute,
+      final ClassReader classReader,
+      final int offset,
+      final int length,
+      final char[] charBuffer,
+      final int codeAttributeOffset,
+      final Label[] labels) {
+    return attribute.read(classReader, offset, length, charBuffer, codeAttributeOffset, labels);
   }
 
   /**
@@ -157,6 +188,38 @@ public class Attribute {
       final int maxStack,
       final int maxLocals) {
     return new ByteVector(content);
+  }
+
+  /**
+   * Returns the byte array form of the content of the given attribute. The 6 header bytes
+   * (attribute_name_index and attribute_length) are <i>not</i> added in the returned byte array.
+   *
+   * @param attribute The attribute that should be written.
+   * @param classWriter the class to which this attribute must be added. This parameter can be used
+   *     to add the items that corresponds to this attribute to the constant pool of this class.
+   * @param code the bytecode of the method corresponding to this Code attribute, or {@literal null}
+   *     if this attribute is not a Code attribute. Corresponds to the 'code' field of the Code
+   *     attribute.
+   * @param codeLength the length of the bytecode of the method corresponding to this code
+   *     attribute, or 0 if this attribute is not a Code attribute. Corresponds to the 'code_length'
+   *     field of the Code attribute.
+   * @param maxStack the maximum stack size of the method corresponding to this Code attribute, or
+   *     -1 if this attribute is not a Code attribute.
+   * @param maxLocals the maximum number of local variables of the method corresponding to this code
+   *     attribute, or -1 if this attribute is not a Code attribute.
+   * @return the byte array form of this attribute.
+   */
+  public static byte[] write(
+      final Attribute attribute,
+      final ClassWriter classWriter,
+      final byte[] code,
+      final int codeLength,
+      final int maxStack,
+      final int maxLocals) {
+    ByteVector content = attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
+    byte[] result = new byte[content.length];
+    System.arraycopy(content.data, 0, result, 0, content.length);
+    return result;
   }
 
   /**
