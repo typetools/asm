@@ -50,6 +50,9 @@ public class Attribute {
    */
   private byte[] content;
 
+  /** A cached version of the resulting ByteVector to avoid repeated computations. */
+  private ByteVector cachedContent;
+
   /**
    * The next attribute in this attribute list (Attribute instances can be linked via this field to
    * store a list of class, field, method or Code attributes). May be {@literal null}.
@@ -93,7 +96,9 @@ public class Attribute {
    *
    * @return the labels corresponding to this attribute, or {@literal null} if this attribute is not
    *     a Code attribute that contains labels.
+   * @deprecated no longer used by ASM.
    */
+  @Deprecated
   protected Label[] getLabels() {
     return new Label[0];
   }
@@ -166,6 +171,9 @@ public class Attribute {
    * Returns the byte array form of the content of this attribute. The 6 header bytes
    * (attribute_name_index and attribute_length) must <i>not</i> be added in the returned
    * ByteVector.
+   *
+   * <p>This method is only invoked once to compute the binary form of this attribute. Subsequent
+   * changes to the attribute after it was written for the first time will not be considered.
    *
    * @param classWriter the class to which this attribute must be added. This parameter can be used
    *     to add the items that corresponds to this attribute to the constant pool of this class.
@@ -284,7 +292,11 @@ public class Attribute {
     Attribute attribute = this;
     while (attribute != null) {
       symbolTable.addConstantUtf8(attribute.type);
-      size += 6 + attribute.write(classWriter, code, codeLength, maxStack, maxLocals).length;
+      if (attribute.cachedContent == null) {
+        attribute.cachedContent =
+            attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
+      }
+      size += 6 + attribute.cachedContent.length;
       attribute = attribute.nextAttribute;
     }
     return size;
@@ -370,8 +382,11 @@ public class Attribute {
     final ClassWriter classWriter = symbolTable.classWriter;
     Attribute attribute = this;
     while (attribute != null) {
-      ByteVector attributeContent =
-          attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
+      if (attribute.cachedContent == null) {
+        attribute.cachedContent =
+            attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
+      }
+      ByteVector attributeContent = attribute.cachedContent;
       // Put attribute_name_index and attribute_length.
       output.putShort(symbolTable.addConstantUtf8(attribute.type)).putInt(attributeContent.length);
       output.putByteArray(attributeContent.data, 0, attributeContent.length);
