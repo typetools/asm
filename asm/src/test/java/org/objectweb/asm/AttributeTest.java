@@ -28,6 +28,7 @@
 package org.objectweb.asm;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -47,5 +48,41 @@ class AttributeTest {
   @Test
   void testGetLabels() {
     assertArrayEquals(new Label[0], new Attribute("Comment").getLabels());
+  }
+
+  @Test
+  void testCachedContent() {
+    SymbolTable table = new SymbolTable(new ClassWriter(0));
+    ByteAttribute attributes = new ByteAttribute((byte) 42);
+    attributes.nextAttribute = new ByteAttribute((byte) 123);
+    int size = attributes.computeAttributesSize(table, null, -1, -1, -1);
+    ByteVector result = new ByteVector();
+    attributes.putAttributes(table, result);
+
+    assertEquals(14, size);
+    assertEquals(42, result.data[6]);
+    assertEquals(123, result.data[13]);
+  }
+
+  static class ByteAttribute extends Attribute {
+
+    private byte value;
+
+    ByteAttribute(final byte value) {
+      super("Byte");
+      this.value = value;
+    }
+
+    @Override
+    protected ByteVector write(
+        final ClassWriter classWriter,
+        final byte[] code,
+        final int codeLength,
+        final int maxStack,
+        final int maxLocals) {
+      ByteVector result = new ByteVector();
+      result.putByte(value++);
+      return result;
+    }
   }
 }
