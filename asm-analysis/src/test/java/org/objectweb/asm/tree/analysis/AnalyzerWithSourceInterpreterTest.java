@@ -28,13 +28,18 @@
 package org.objectweb.asm.tree.analysis;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.test.AsmTest;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -67,5 +72,57 @@ class AnalyzerWithSourceInterpreterTest extends AsmTest {
     for (MethodNode methodNode : classNode.methods) {
       assertDoesNotThrow(() -> analyzer.analyze(classNode.name, methodNode));
     }
+  }
+
+  /** Checks if DUP_X2 producers are correct. */
+  @Test
+  void testAnalyze_dupx2Producers() throws AnalyzerException {
+    Label label0 = new Label();
+    Label label1 = new Label();
+    MethodNode methodNode =
+        new MethodNodeBuilder(4, 1)
+            .push()
+            .push()
+            .iconst_0()
+            .ifne(label0)
+            // First case
+            .insn(Opcodes.ICONST_M1)
+            .go(label1)
+            // Second case
+            .label(label0)
+            .iconst_0()
+            // DUP_X2 value
+            .label(label1)
+            .insn(Opcodes.DUP_X2)
+            .pop() // Point where the frame is checked
+            .pop()
+            .pop()
+            .pop()
+            .vreturn()
+            .build();
+
+    Analyzer<SourceValue> analyzer = new Analyzer<>(new SourceInterpreter());
+    analyzer.analyze("C", methodNode);
+
+    AbstractInsnNode firstPop =
+        Arrays.stream(methodNode.instructions.toArray())
+            .filter(insn -> insn.getOpcode() == Opcodes.POP)
+            .findFirst()
+            .get();
+    AbstractInsnNode dupx2 =
+        Arrays.stream(methodNode.instructions.toArray())
+            .filter(insn -> insn.getOpcode() == Opcodes.DUP_X2)
+            .findFirst()
+            .get();
+    Frame<SourceValue> frame = analyzer.getFrames()[methodNode.instructions.indexOf(firstPop)];
+    // Check if all source values have the DUP_X2 as a producer
+    SourceValue sourceValue1 = frame.getStack(frame.getStackSize() - 4);
+    SourceValue sourceValue2 = frame.getStack(frame.getStackSize() - 3);
+    SourceValue sourceValue3 = frame.getStack(frame.getStackSize() - 2);
+    SourceValue sourceValue4 = frame.getStack(frame.getStackSize() - 1);
+    assertEquals(sourceValue1.insns.iterator().next(), dupx2);
+    assertEquals(sourceValue2.insns.iterator().next(), dupx2);
+    assertEquals(sourceValue3.insns.iterator().next(), dupx2);
+    assertEquals(sourceValue4.insns.iterator().next(), dupx2);
   }
 }
