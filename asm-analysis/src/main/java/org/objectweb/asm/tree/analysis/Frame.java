@@ -416,9 +416,9 @@ public class Frame<V extends Value> {
             if (value3.getSize() == 1) {
               push(interpreter.copyOperation(insn, value2));
               push(interpreter.copyOperation(insn, value1));
-              push(value3);
-              push(value2);
-              push(value1);
+              push(interpreter.copyOperation(insn, value3));
+              push(interpreter.copyOperation(insn, value2));
+              push(interpreter.copyOperation(insn, value1));
               break;
             }
           }
@@ -426,8 +426,8 @@ public class Frame<V extends Value> {
           value2 = pop();
           if (value2.getSize() == 1) {
             push(interpreter.copyOperation(insn, value1));
-            push(value2);
-            push(value1);
+            push(interpreter.copyOperation(insn, value2));
+            push(interpreter.copyOperation(insn, value1));
             break;
           }
         }
@@ -443,18 +443,18 @@ public class Frame<V extends Value> {
               if (value4.getSize() == 1) {
                 push(interpreter.copyOperation(insn, value2));
                 push(interpreter.copyOperation(insn, value1));
-                push(value4);
-                push(value3);
-                push(value2);
-                push(value1);
+                push(interpreter.copyOperation(insn, value4));
+                push(interpreter.copyOperation(insn, value3));
+                push(interpreter.copyOperation(insn, value2));
+                push(interpreter.copyOperation(insn, value1));
                 break;
               }
             } else {
               push(interpreter.copyOperation(insn, value2));
               push(interpreter.copyOperation(insn, value1));
-              push(value3);
-              push(value2);
-              push(value1);
+              push(interpreter.copyOperation(insn, value3));
+              push(interpreter.copyOperation(insn, value2));
+              push(interpreter.copyOperation(insn, value1));
               break;
             }
           }
