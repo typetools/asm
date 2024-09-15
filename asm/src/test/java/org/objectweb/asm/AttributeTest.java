@@ -51,6 +51,17 @@ class AttributeTest {
   }
 
   @Test
+  void testStaticWrite() {
+    ClassWriter classWriter = new ClassWriter(0);
+    ByteAttribute attribute = new ByteAttribute((byte) 42);
+    byte[] content0 = Attribute.write(attribute, classWriter, null, -1, -1, -1);
+    byte[] content1 = Attribute.write(attribute, classWriter, null, -1, -1, -1);
+
+    assertEquals(42, content0[0]);
+    assertEquals(42, content1[0]);
+  }
+
+  @Test
   void testCachedContent() {
     SymbolTable table = new SymbolTable(new ClassWriter(0));
     ByteAttribute attributes = new ByteAttribute((byte) 42);

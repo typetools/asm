@@ -44,13 +44,10 @@ public class Attribute {
   public final String type;
 
   /**
-   * The raw content of this attribute, only used for unknown attributes (see {@link #isUnknown()}).
-   * The 6 header bytes of the attribute (attribute_name_index and attribute_length) are <i>not</i>
-   * included.
+   * The raw content of this attribute, as returned by {@link
+   * #write(ClassWriter,byte[],int,int,int)}. The 6 header bytes of the attribute
+   * (attribute_name_index and attribute_length) are <i>not</i> included.
    */
-  private byte[] content;
-
-  /** A cached version of the resulting ByteVector to avoid repeated computations. */
   private ByteVector cachedContent;
 
   /**
@@ -133,7 +130,7 @@ public class Attribute {
       final int codeAttributeOffset,
       final Label[] labels) {
     Attribute attribute = new Attribute(type);
-    attribute.content = classReader.readBytes(offset, length);
+    attribute.cachedContent = new ByteVector(classReader.readBytes(offset, length));
     return attribute;
   }
 
@@ -189,6 +186,36 @@ public class Attribute {
   }
 
   /**
+   * Calls {@link #write(ClassWriter,byte[],int,int,int)} if it has not already been called and
+   * returns its result or its (cached) previous result.
+   *
+   * @param classWriter the class to which this attribute must be added. This parameter can be used
+   *     to add the items that corresponds to this attribute to the constant pool of this class.
+   * @param code the bytecode of the method corresponding to this Code attribute, or {@literal null}
+   *     if this attribute is not a Code attribute. Corresponds to the 'code' field of the Code
+   *     attribute.
+   * @param codeLength the length of the bytecode of the method corresponding to this code
+   *     attribute, or 0 if this attribute is not a Code attribute. Corresponds to the 'code_length'
+   *     field of the Code attribute.
+   * @param maxStack the maximum stack size of the method corresponding to this Code attribute, or
+   *     -1 if this attribute is not a Code attribute.
+   * @param maxLocals the maximum number of local variables of the method corresponding to this code
+   *     attribute, or -1 if this attribute is not a Code attribute.
+   * @return the byte array form of this attribute.
+   */
+  private ByteVector maybeWrite(
+      final ClassWriter classWriter,
+      final byte[] code,
+      final int codeLength,
+      final int maxStack,
+      final int maxLocals) {
+    if (cachedContent == null) {
+      cachedContent = write(classWriter, code, codeLength, maxStack, maxLocals);
+    }
+    return cachedContent;
+  }
+
+  /**
    * Returns the byte array form of the content of this attribute. The 6 header bytes
    * (attribute_name_index and attribute_length) must <i>not</i> be added in the returned
    * ByteVector.
@@ -216,7 +243,7 @@ public class Attribute {
       final int codeLength,
       final int maxStack,
       final int maxLocals) {
-    return new ByteVector(content);
+    return cachedContent;
   }
 
   /**
@@ -245,7 +272,7 @@ public class Attribute {
       final int codeLength,
       final int maxStack,
       final int maxLocals) {
-    ByteVector content = attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
+    ByteVector content = attribute.maybeWrite(classWriter, code, codeLength, maxStack, maxLocals);
     byte[] result = new byte[content.length];
     System.arraycopy(content.data, 0, result, 0, content.length);
     return result;
@@ -313,11 +340,7 @@ public class Attribute {
     Attribute attribute = this;
     while (attribute != null) {
       symbolTable.addConstantUtf8(attribute.type);
-      if (attribute.cachedContent == null) {
-        attribute.cachedContent =
-            attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
-      }
-      size += 6 + attribute.cachedContent.length;
+      size += 6 + attribute.maybeWrite(classWriter, code, codeLength, maxStack, maxLocals).length;
       attribute = attribute.nextAttribute;
     }
     return size;
@@ -403,11 +426,8 @@ public class Attribute {
     final ClassWriter classWriter = symbolTable.classWriter;
     Attribute attribute = this;
     while (attribute != null) {
-      if (attribute.cachedContent == null) {
-        attribute.cachedContent =
-            attribute.write(classWriter, code, codeLength, maxStack, maxLocals);
-      }
-      ByteVector attributeContent = attribute.cachedContent;
+      ByteVector attributeContent =
+          attribute.maybeWrite(classWriter, code, codeLength, maxStack, maxLocals);
       // Put attribute_name_index and attribute_length.
       output.putShort(symbolTable.addConstantUtf8(attribute.type)).putInt(attributeContent.length);
       output.putByteArray(attributeContent.data, 0, attributeContent.length);
