@@ -31,6 +31,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -243,6 +244,16 @@ class ClassWriterTest extends AsmTest {
     assertTrue(
         getConstantPoolDump(classWriter)
             .contains("constant_pool: ConstantMethodHandleInfo 1.ConstantFieldRefInfo A.hI"));
+  }
+
+  @Test
+  void testNewHandleIsInterface() {
+    ClassWriter classWriter = newEmptyClassWriter();
+
+    int index1 = classWriter.newHandle(Opcodes.H_INVOKEVIRTUAL, "A", "m", "()V", false);
+    int index2 = classWriter.newHandle(Opcodes.H_INVOKEVIRTUAL, "A", "m", "()V", true);
+
+    assertNotEquals(index1, index2);
   }
 
   @Test
