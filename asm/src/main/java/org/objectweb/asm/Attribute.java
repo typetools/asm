@@ -120,7 +120,9 @@ public class Attribute {
    *     attribute header bytes (attribute_name_index and attribute_length) are not taken into
    *     account here.
    * @param labels the labels of the method's code, or {@literal null} if the attribute to be read
-   *     is not a Code attribute.
+   *     is not a Code attribute. Labels defined in the attribute must be created and added to this
+   *     array, if not already present, by calling the {@link #readLabel} method (do not create
+   *     {@link Label} instances directly).
    * @return a <i>new</i> {@link Attribute} object corresponding to the specified bytes.
    */
   protected Attribute read(
@@ -153,7 +155,8 @@ public class Attribute {
    *     attribute header bytes (attribute_name_index and attribute_length) are not taken into
    *     account here.
    * @param labels the labels of the method's code, or {@literal null} if the attribute to be read
-   *     is not a Code attribute.
+   *     is not a Code attribute. Labels defined in the attribute are added to this array, if not
+   *     already present.
    * @return a new {@link Attribute} object corresponding to the specified bytes.
    */
   public static Attribute read(
@@ -165,6 +168,24 @@ public class Attribute {
       final int codeAttributeOffset,
       final Label[] labels) {
     return attribute.read(classReader, offset, length, charBuffer, codeAttributeOffset, labels);
+  }
+
+  /**
+   * Returns the label corresponding to the given bytecode offset by calling {@link
+   * ClassReader#readLabel}. This creates and adds the label to the given array if it is not already
+   * present. Note that this created label may be a {@link Label} subclass instance, if the given
+   * ClassReader overrides {@link ClassReader#readLabel}. Hence {@link #read(ClassReader, int, int,
+   * char[], int, Label[])} must not manually create {@link Label} instances.
+   *
+   * @param bytecodeOffset a bytecode offset in a method.
+   * @param labels the already created labels, indexed by their offset. If a label already exists
+   *     for bytecodeOffset this method does not create a new one. Otherwise it stores the new label
+   *     in this array.
+   * @return a label for the given bytecode offset.
+   */
+  public static Label readLabel(
+      final ClassReader classReader, final int bytecodeOffset, final Label[] labels) {
+    return classReader.readLabel(bytecodeOffset, labels);
   }
 
   /**
