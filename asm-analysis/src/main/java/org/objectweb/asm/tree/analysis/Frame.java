@@ -371,7 +371,7 @@ public class Frame<V extends Value> {
         if (value1.getSize() != 1) {
           throw new AnalyzerException(insn, "Illegal use of DUP");
         }
-        push(value1);
+        push(interpreter.copyOperation(insn, value1));
         push(interpreter.copyOperation(insn, value1));
         break;
       case Opcodes.DUP_X1:
@@ -395,8 +395,8 @@ public class Frame<V extends Value> {
         if (value1.getSize() == 1) {
           value2 = pop();
           if (value2.getSize() == 1) {
-            push(value2);
-            push(value1);
+            push(interpreter.copyOperation(insn, value2));
+            push(interpreter.copyOperation(insn, value1));
             push(interpreter.copyOperation(insn, value2));
             push(interpreter.copyOperation(insn, value1));
             break;
