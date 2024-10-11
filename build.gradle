@@ -34,6 +34,7 @@ buildscript {
 plugins { id 'com.diffplug.spotless' version "6.23.3" apply false }
 plugins { id 'me.champeau.jmh' version '0.7.2' apply false }
 plugins { id 'org.sonarqube' version '4.3.1.3277' apply false }
+plugins { id 'org.checkerframework' version '0.6.45' apply false }
 
 description = 'ASM, a very small and fast Java bytecode manipulation framework'
 
@@ -207,6 +208,28 @@ subprojects {
   pmd.consoleOutput = true
   pmdMain.dependsOn ':asm:jar'
   pmdTest.dependsOn ':asm:jar'
+
+  apply plugin: 'org.checkerframework'
+  checkerFramework {
+    checkers = [
+      'org.checkerframework.checker.signature.SignatureChecker',
+    ]
+    extraJavacArgs = [
+      '-AsuppressWarnings=signature:cast.unsafe,signature:assignment'
+    ]
+  }
+  // To use a locally-built Checker Framework, run gradle with "-PcfLocal".
+  if (project.hasProperty("cfLocal")) {
+    def cfHome = String.valueOf(System.getenv("CHECKERFRAMEWORK"))
+    dependencies {
+      compileOnly files(cfHome + "/checker/dist/checker-qual.jar")
+      testCompileOnly files(cfHome + "/checker/dist/checker-qual.jar")
+      checkerFramework files(cfHome + "/checker/dist/checker.jar")
+    }
+  }
+  dependencies {
+    implementation 'org.plumelib:reflection-util:1.1.4'
+  }
 
   dependencies {
     requires.each { projectName -> api project(projectName) }

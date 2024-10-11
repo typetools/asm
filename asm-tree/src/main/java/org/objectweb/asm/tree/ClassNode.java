@@ -59,7 +59,7 @@ public class ClassNode extends ClassVisitor {
   public int access;
 
   /** The internal name of this class (see {@link org.objectweb.asm.Type#getInternalName()}). */
-  public String name;
+  public @InternalForm String name;
 
   /** The signature of this class. May be {@literal null}. */
   public String signature;
@@ -69,13 +69,13 @@ public class ClassNode extends ClassVisitor {
    * For interfaces, the super class is {@link Object}. May be {@literal null}, but only for the
    * {@link Object} class.
    */
-  public String superName;
+  public @InternalForm String superName;
 
   /**
    * The internal names of the interfaces directly implemented by this class (see {@link
    * org.objectweb.asm.Type#getInternalName()}).
    */
-  public List<String> interfaces;
+  public List<@InternalForm String> interfaces;
 
   /** The name of the source file from which this class was compiled. May be {@literal null}. */
   public String sourceFile;
@@ -93,7 +93,7 @@ public class ClassNode extends ClassVisitor {
    * org.objectweb.asm.Type#getInternalName()}). Must be {@literal null} if this class is not a
    * local or anonymous class.
    */
-  public String outerClass;
+  public @InternalForm String outerClass;
 
   /**
    * The name of the method that contains the class, or {@literal null} if the class has no
@@ -133,19 +133,19 @@ public class ClassNode extends ClassVisitor {
    * The internal name of the nest host class of this class (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public String nestHostClass;
+  public @InternalForm String nestHostClass;
 
   /**
    * The internal names of the nest members of this class (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public List<String> nestMembers;
+  public List<@InternalForm String> nestMembers;
 
   /**
    * The internal names of the permitted subclasses of this class (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public List<String> permittedSubclasses;
+  public List<@InternalForm String> permittedSubclasses;
 
   /** The record components of this class. May be {@literal null}. */
   public List<RecordComponentNode> recordComponents;
@@ -191,10 +191,10 @@ public class ClassNode extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     this.version = version;
     this.access = access;
     this.name = name;
@@ -216,12 +216,12 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     this.nestHostClass = nestHost;
   }
 
   @Override
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
     outerClass = owner;
     outerMethod = name;
     outerMethodDesc = descriptor;
@@ -256,18 +256,18 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     nestMembers = Util.add(nestMembers, nestMember);
   }
 
   @Override
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     permittedSubclasses = Util.add(permittedSubclasses, permittedSubclass);
   }
 
   @Override
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     InnerClassNode innerClass = new InnerClassNode(name, outerName, innerName, access);
     innerClasses.add(innerClass);
   }
@@ -283,8 +283,8 @@ public class ClassNode extends ClassVisitor {
   @Override
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     FieldNode field = new FieldNode(access, name, descriptor, signature, value);

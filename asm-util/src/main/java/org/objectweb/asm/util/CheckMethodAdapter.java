@@ -700,7 +700,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkOpcodeMethod(opcode, Method.VISIT_TYPE_INSN);
@@ -714,7 +714,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkOpcodeMethod(opcode, Method.VISIT_FIELD_INSN);
@@ -728,8 +728,8 @@ public class CheckMethodAdapter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
@@ -859,7 +859,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkDescriptor(version, descriptor, false);
@@ -905,7 +905,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkLabel(start, /* checkVisited= */ false, START_LABEL);
@@ -1305,7 +1305,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    * @param name the string to be checked.
    * @param message the message to use in case of error.
    */
-  static void checkInternalName(final int version, final String name, final String message) {
+  static void checkInternalName(final int version, final @InternalForm String name, final String message) {
     if (name == null || name.length() == 0) {
       throw new IllegalArgumentException(INVALID + message + MUST_NOT_BE_NULL_OR_EMPTY);
     }
@@ -1324,7 +1324,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    * @param message the message to use in case of error.
    */
   private static void checkInternalClassName(
-      final int version, final String name, final String message) {
+      final int version, final @InternalForm String name, final String message) {
     try {
       int startIndex = 0;
       int slashIndex;

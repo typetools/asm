@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A visitor to visit a Java class. The methods of this class must be called in the following order:
  * {@code visit} [ {@code visitSource} ] [ {@code visitModule} ][ {@code visitNestHost} ][ {@code
@@ -112,10 +118,10 @@ public abstract class ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     if (api < Opcodes.ASM8 && (access & Opcodes.ACC_RECORD) != 0) {
       throw new UnsupportedOperationException("Records requires ASM8");
     }
@@ -148,7 +154,7 @@ public abstract class ClassVisitor {
    * @return a visitor to visit the module values, or {@literal null} if this visitor is not
    *     interested in visiting this module.
    */
-  public ModuleVisitor visitModule(final String name, final int access, final String version) {
+  public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     if (api < Opcodes.ASM6) {
       throw new UnsupportedOperationException("Module requires ASM6");
     }
@@ -169,7 +175,7 @@ public abstract class ClassVisitor {
    * @param nestHost the internal name of the host class of the nest (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     if (api < Opcodes.ASM7) {
       throw new UnsupportedOperationException("NestHost requires ASM7");
     }
@@ -193,7 +199,7 @@ public abstract class ClassVisitor {
    *     enclosed in an instance initializer, static initializer, instance variable initializer, or
    *     class variable initializer).
    */
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
     if (cv != null) {
       cv.visitOuterClass(owner, name, descriptor);
     }
@@ -260,7 +266,7 @@ public abstract class ClassVisitor {
    *
    * @param nestMember the internal name of a nest member (see {@link Type#getInternalName()}).
    */
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     if (api < Opcodes.ASM7) {
       throw new UnsupportedOperationException("NestMember requires ASM7");
     }
@@ -276,7 +282,7 @@ public abstract class ClassVisitor {
    * @param permittedSubclass the internal name of a permitted subclass (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     if (api < Opcodes.ASM9) {
       throw new UnsupportedOperationException("PermittedSubclasses requires ASM9");
     }
@@ -301,7 +307,7 @@ public abstract class ClassVisitor {
    *     class was compiled.
    */
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     if (cv != null) {
       cv.visitInnerClass(name, outerName, innerName, access);
     }
@@ -348,8 +354,8 @@ public abstract class ClassVisitor {
    */
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     if (cv != null) {
@@ -379,7 +385,7 @@ public abstract class ClassVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     if (cv != null) {
       return cv.visitMethod(access, name, descriptor, signature, exceptions);
     }

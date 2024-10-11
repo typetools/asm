@@ -300,10 +300,10 @@ class PrinterTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       // Do nothing.
     }
 
@@ -313,7 +313,7 @@ class PrinterTest {
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
       // Do nothing.
     }
 
@@ -329,7 +329,7 @@ class PrinterTest {
 
     @Override
     public void visitInnerClass(
-        final String name, final String outerName, final String innerName, final int access) {
+        final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
       // Do nothing.
     }
 
@@ -349,7 +349,7 @@ class PrinterTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return null;
     }
 
@@ -451,13 +451,13 @@ class PrinterTest {
     }
 
     @Override
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode, final @InternalForm String type) {
       // Do nothing.
     }
 
     @Override
     public void visitFieldInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       // Do nothing.
     }
 
@@ -502,13 +502,13 @@ class PrinterTest {
     }
 
     @Override
-    public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+    public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
       // Do nothing.
     }
 
     @Override
     public void visitTryCatchBlock(
-        final Label start, final Label end, final Label handler, final String type) {
+        final Label start, final Label end, final Label handler, final @InternalForm String type) {
       // Do nothing.
     }
 

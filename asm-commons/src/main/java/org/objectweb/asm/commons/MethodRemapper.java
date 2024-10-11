@@ -141,7 +141,7 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     super.visitFieldInsn(
         opcode,
         remapper.mapType(owner),
@@ -152,8 +152,8 @@ public class MethodRemapper extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
@@ -187,7 +187,7 @@ public class MethodRemapper extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     super.visitTypeInsn(opcode, remapper.mapType(type));
   }
 
@@ -197,7 +197,7 @@ public class MethodRemapper extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     super.visitMultiANewArrayInsn(remapper.mapDesc(descriptor), numDimensions);
   }
 
@@ -213,7 +213,7 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     super.visitTryCatchBlock(start, end, handler, type == null ? null : remapper.mapType(type));
   }
 

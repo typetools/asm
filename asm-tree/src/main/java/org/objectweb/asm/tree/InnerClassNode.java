@@ -41,19 +41,19 @@ import org.objectweb.asm.ClassVisitor;
 public class InnerClassNode {
 
   /** The internal name of an inner class (see {@link org.objectweb.asm.Type#getInternalName()}). */
-  public String name;
+  public @InternalForm String name;
 
   /**
    * The internal name of the class to which the inner class belongs (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public String outerName;
+  public @InternalForm String outerName;
 
   /**
    * The (simple) name of the inner class inside its enclosing class. Must be {@literal null} if the
    * inner class is not the member of a class or interface (e.g. for local or anonymous classes).
    */
-  public String innerName;
+  public @Identifier String innerName;
 
   /**
    * The access flags of the inner class as originally declared in the source code from which the
@@ -73,7 +73,7 @@ public class InnerClassNode {
    *     class was compiled.
    */
   public InnerClassNode(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     this.name = name;
     this.outerName = outerName;
     this.innerName = innerName;

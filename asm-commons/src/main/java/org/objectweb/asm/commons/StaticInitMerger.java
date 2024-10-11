@@ -41,7 +41,7 @@ import org.objectweb.asm.Opcodes;
 public class StaticInitMerger extends ClassVisitor {
 
   /** The internal name of the visited class. */
-  private String owner;
+  private @InternalForm String owner;
 
   /** The prefix to use to rename the existing &lt;clinit&gt; methods. */
   private final String renamedClinitMethodPrefix;
@@ -82,10 +82,10 @@ public class StaticInitMerger extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
     this.owner = name;
   }
@@ -96,7 +96,7 @@ public class StaticInitMerger extends ClassVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     MethodVisitor methodVisitor;
     if ("<clinit>".equals(name)) {
       int newAccess = Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC;

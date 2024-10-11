@@ -98,7 +98,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     this(
         /* latest api = */ Opcodes.ASM9,
         methodVisitor,
@@ -134,7 +134,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     super(api, access, name, descriptor, signature, exceptions);
     this.mv = methodVisitor;
   }

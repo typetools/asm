@@ -64,7 +64,7 @@ public class ClassRemapper extends ClassVisitor {
   protected final Remapper remapper;
 
   /** The internal name of the visited class. */
-  protected String className;
+  protected @InternalForm String className;
 
   /**
    * Constructs a new {@link ClassRemapper}. <i>Subclasses must not use this constructor</i>.
@@ -94,10 +94,10 @@ public class ClassRemapper extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     this.className = name;
     super.visit(
         version,
@@ -161,8 +161,8 @@ public class ClassRemapper extends ClassVisitor {
   @Override
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     FieldVisitor fieldVisitor =
@@ -181,7 +181,7 @@ public class ClassRemapper extends ClassVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     String remappedDescriptor = remapper.mapMethodDesc(descriptor);
     MethodVisitor methodVisitor =
         super.visitMethod(
@@ -195,7 +195,7 @@ public class ClassRemapper extends ClassVisitor {
 
   @Override
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     super.visitInnerClass(
         remapper.mapType(name),
         outerName == null ? null : remapper.mapType(outerName),
@@ -204,7 +204,7 @@ public class ClassRemapper extends ClassVisitor {
   }
 
   @Override
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
     super.visitOuterClass(
         remapper.mapType(owner),
         name == null ? null : remapper.mapMethodName(owner, name, descriptor),
@@ -212,17 +212,17 @@ public class ClassRemapper extends ClassVisitor {
   }
 
   @Override
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     super.visitNestHost(remapper.mapType(nestHost));
   }
 
   @Override
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     super.visitNestMember(remapper.mapType(nestMember));
   }
 
   @Override
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     super.visitPermittedSubclass(remapper.mapType(permittedSubclass));
   }
 

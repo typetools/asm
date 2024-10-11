@@ -188,7 +188,7 @@ public abstract class AsmTest {
      *
      * @return the fully qualified name of this class.
      */
-    public String getName() {
+    public @FullyQualifiedName String getName() {
       return name;
     }
 
@@ -197,7 +197,7 @@ public abstract class AsmTest {
      *
      * @return the internal name of this class.
      */
-    public String getInternalName() {
+    public @InternalForm String getInternalName() {
       return name.endsWith(ClassFile.MODULE_INFO) ? ClassFile.MODULE_INFO : name.replace('.', '/');
     }
 
@@ -280,7 +280,7 @@ public abstract class AsmTest {
      *
      * @return the fully qualified name of this class.
      */
-    public String getName() {
+    public @FullyQualifiedName String getName() {
       return name;
     }
 

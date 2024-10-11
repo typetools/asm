@@ -132,7 +132,7 @@ class TypeTest implements Opcodes {
 
   @ParameterizedTest
   @ValueSource(strings = {"I", "V", "java/lang/Object", "[I", "[LI;", "[[Ljava/lang/Object;"})
-  void testGetObjectType(final String internalName) {
+  void testGetObjectType(final @InternalForm String internalName) {
     Type type = Type.getObjectType(internalName);
 
     assertEquals(internalName, type.getInternalName());

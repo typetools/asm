@@ -76,7 +76,7 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapMethodName(final String owner, final String name, final String descriptor) {
+  public String mapMethodName(final @InternalForm String owner, final String name, final String descriptor) {
     String remappedName = map(owner + '.' + name + descriptor);
     return remappedName == null ? name : remappedName;
   }
@@ -94,7 +94,7 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapFieldName(final String owner, final String name, final String descriptor) {
+  public String mapFieldName(final @InternalForm String owner, final String name, final String descriptor) {
     String remappedName = map(owner + '.' + name);
     return remappedName == null ? name : remappedName;
   }

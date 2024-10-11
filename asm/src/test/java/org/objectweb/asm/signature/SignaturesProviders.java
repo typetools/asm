@@ -47,10 +47,10 @@ public final class SignaturesProviders {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             if (signature != null) {
               CLASS_SIGNATURES.add(signature);
             }
@@ -59,8 +59,8 @@ public final class SignaturesProviders {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             if (signature != null) {
@@ -75,7 +75,7 @@ public final class SignaturesProviders {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             if (signature != null) {
               METHOD_SIGNATURES.add(signature);
             }

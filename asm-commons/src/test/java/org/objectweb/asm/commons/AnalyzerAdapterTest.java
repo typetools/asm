@@ -129,7 +129,7 @@ class AnalyzerAdapterTest extends AsmTest {
    */
   static class ClassAnalyzerAdapter extends ClassVisitor {
 
-    private String owner;
+    private @InternalForm String owner;
 
     ClassAnalyzerAdapter(final int api, final ClassVisitor classVisitor) {
       super(api, classVisitor);
@@ -139,10 +139,10 @@ class AnalyzerAdapterTest extends AsmTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       owner = name;
       super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -153,7 +153,7 @@ class AnalyzerAdapterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
       AnalyzedFramesInserter inserter = new AnalyzedFramesInserter(methodVisitor);
@@ -249,14 +249,14 @@ class AnalyzerAdapterTest extends AsmTest {
     }
 
     @Override
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode, final @InternalForm String type) {
       maybeInsertFrame();
       super.visitTypeInsn(opcode, type);
     }
 
     @Override
     public void visitFieldInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       maybeInsertFrame();
       super.visitFieldInsn(opcode, owner, name, descriptor);
     }
@@ -264,8 +264,8 @@ class AnalyzerAdapterTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcode,
-        final String owner,
-        final String name,
+        final @InternalForm String owner,
+        final @Identifier String name,
         final String descriptor,
         final boolean isInterface) {
       maybeInsertFrame();
@@ -315,7 +315,7 @@ class AnalyzerAdapterTest extends AsmTest {
     }
 
     @Override
-    public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+    public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
       maybeInsertFrame();
       super.visitMultiANewArrayInsn(descriptor, numDimensions);
     }

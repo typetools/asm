@@ -350,10 +350,10 @@ public abstract class Printer {
   public abstract void visit(
       int version,
       int access,
-      String name,
+      @InternalForm String name,
       String signature,
-      String superName,
-      String[] interfaces);
+      @InternalForm String superName,
+      @InternalForm String @Nullable [] interfaces);
 
   /**
    * Class source. See {@link org.objectweb.asm.ClassVisitor#visitSource}.
@@ -374,7 +374,7 @@ public abstract class Printer {
    * @param version the module version, or {@literal null}.
    * @return the printer.
    */
-  public Printer visitModule(final String name, final int access, final String version) {
+  public Printer visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -389,7 +389,7 @@ public abstract class Printer {
    * @param nestHost the internal name of the host class of the nest (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -403,7 +403,7 @@ public abstract class Printer {
    * @param descriptor the descriptor of the method that contains the class, or {@literal null} if
    *     the class is not enclosed in a method of its enclosing class.
    */
-  public abstract void visitOuterClass(String owner, String name, String descriptor);
+  public abstract void visitOuterClass(@InternalForm String owner, @Nullable @Identifier String name, String descriptor);
 
   /**
    * Class annotation. See {@link org.objectweb.asm.ClassVisitor#visitAnnotation}.
@@ -449,7 +449,7 @@ public abstract class Printer {
    *
    * @param nestMember the internal name of a nest member (see {@link Type#getInternalName()}).
    */
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -460,7 +460,7 @@ public abstract class Printer {
    * @param permittedSubclass the internal name of a permitted subclass (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -475,7 +475,7 @@ public abstract class Printer {
    * @param access the access flags of the inner class as originally declared in the enclosing
    *     class.
    */
-  public abstract void visitInnerClass(String name, String outerName, String innerName, int access);
+  public abstract void visitInnerClass(final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access);
 
   /**
    * Visits a record component of the class. See {@link
@@ -511,7 +511,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public abstract Printer visitField(
-      int access, String name, String descriptor, String signature, Object value);
+      int access, @Identifier String name, @FieldDescriptor String descriptor, String signature, Object value);
 
   /**
    * Class method. See {@link org.objectweb.asm.ClassVisitor#visitMethod}.
@@ -527,7 +527,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public abstract Printer visitMethod(
-      int access, String name, String descriptor, String signature, String[] exceptions);
+      int access, String name, String descriptor, String signature, @InternalForm String @Nullable [] exceptions);
 
   /** Class end. See {@link org.objectweb.asm.ClassVisitor#visitEnd}. */
   public abstract void visitClassEnd();
@@ -542,7 +542,7 @@ public abstract class Printer {
    * @param mainClass the internal name of the main class of the current module (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -551,7 +551,7 @@ public abstract class Printer {
    *
    * @param packaze the internal name of a package (see {@link Type#getInternalName()}).
    */
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -563,7 +563,7 @@ public abstract class Printer {
    *     ACC_STATIC_PHASE}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param version the module version at compile time, or {@literal null}.
    */
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -576,7 +576,7 @@ public abstract class Printer {
    * @param modules the fully qualified names (using dots) of the modules that can access the public
    *     classes of the exported package, or {@literal null}.
    */
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -589,7 +589,7 @@ public abstract class Printer {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -598,7 +598,7 @@ public abstract class Printer {
    *
    * @param service the internal name of the service (see {@link Type#getInternalName()}).
    */
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -609,7 +609,7 @@ public abstract class Printer {
    * @param providers the internal names of the implementations of the service (there is at least
    *     one provider).
    */
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -929,7 +929,7 @@ public abstract class Printer {
    * @param type the operand of the instruction to be visited. This operand must be the internal
    *     name of an object or array class (see {@link Type#getInternalName()}).
    */
-  public abstract void visitTypeInsn(int opcode, String type);
+  public abstract void visitTypeInsn(int opcode, @InternalForm String type);
 
   /**
    * Method instruction. See {@link org.objectweb.asm.MethodVisitor#visitFieldInsn}.
@@ -940,7 +940,7 @@ public abstract class Printer {
    * @param name the field's name.
    * @param descriptor the field's descriptor (see {@link Type}).
    */
-  public abstract void visitFieldInsn(int opcode, String owner, String name, String descriptor);
+  public abstract void visitFieldInsn(int opcode, @InternalForm String owner, @Identifier String name, @FieldDescriptor String descriptor);
 
   /**
    * Method instruction. See {@link org.objectweb.asm.MethodVisitor#visitMethodInsn}.
@@ -955,7 +955,7 @@ public abstract class Printer {
    */
   @Deprecated
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     // This method was abstract before ASM5, and was therefore always overridden (without any
     // call to 'super'). Thus, at this point we necessarily have api >= ASM5, and we must then
     // redirect the method call to the ASM5 visitMethodInsn() method.
@@ -975,8 +975,8 @@ public abstract class Printer {
    */
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
@@ -1064,7 +1064,7 @@ public abstract class Printer {
    * @param descriptor an array type descriptor (see {@link Type}).
    * @param numDimensions the number of dimensions of the array to allocate.
    */
-  public abstract void visitMultiANewArrayInsn(String descriptor, int numDimensions);
+  public abstract void visitMultiANewArrayInsn(@FieldDescriptor String descriptor, int numDimensions);
 
   /**
    * Instruction type annotation. See {@link org.objectweb.asm.MethodVisitor#visitInsnAnnotation}.
@@ -1098,7 +1098,7 @@ public abstract class Printer {
    *     Type#getInternalName()}), or {@literal null} to catch any exceptions (for "finally"
    *     blocks).
    */
-  public abstract void visitTryCatchBlock(Label start, Label end, Label handler, String type);
+  public abstract void visitTryCatchBlock(Label start, Label end, Label handler, @InternalForm String type);
 
   /**
    * Try catch block type annotation. See {@link

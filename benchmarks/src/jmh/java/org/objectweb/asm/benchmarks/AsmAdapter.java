@@ -162,10 +162,10 @@ public class AsmAdapter extends Adapter {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       ++count;
     }
 
@@ -181,7 +181,7 @@ public class AsmAdapter extends Adapter {
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
       ++count;
     }
 
@@ -203,15 +203,15 @@ public class AsmAdapter extends Adapter {
 
     @Override
     public void visitInnerClass(
-        final String name, final String outerName, final String innerName, final int access) {
+        final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
       ++count;
     }
 
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       ++count;
@@ -241,7 +241,7 @@ public class AsmAdapter extends Adapter {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
 
         @Override
@@ -309,28 +309,28 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public void visitTypeInsn(final int opcode, final String type) {
+        public void visitTypeInsn(final int opcode, final @InternalForm String type) {
           ++count;
         }
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           ++count;
         }
 
         @Override
         @Deprecated
         public void visitMethodInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
           ++count;
         }
 
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
+            final @InternalForm String owner,
+            final @Identifier String name,
             final String descriptor,
             final boolean isInterface) {
           ++count;
@@ -378,7 +378,7 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+        public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
           ++count;
         }
 
@@ -394,7 +394,7 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public void visitTryCatchBlock(
-            final Label start, final Label end, final Label handler, final String type) {
+            final Label start, final Label end, final Label handler, final @InternalForm String type) {
           ++count;
         }
 

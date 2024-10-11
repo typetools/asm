@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.signature;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A parser for signature literals, as defined in the Java Virtual Machine Specification (JVMS), to
  * visit them with a SignatureVisitor.
@@ -193,7 +195,7 @@ public class SignatureReader {
             // or an inner class name. This name may already have been visited it is was followed by
             // type arguments between '<' and '>'. If not, we need to visit it here.
             if (!visited) {
-              String name = signature.substring(start, offset - 1);
+              @InternalForm String name = signature.substring(start, offset - 1);
               if (inner) {
                 signatureVisitor.visitInnerClassType(name);
               } else {
@@ -213,7 +215,7 @@ public class SignatureReader {
             // If a '<' is encountered, this means we have fully parsed the main class name or an
             // inner class name, and that we now need to parse TypeArguments. First, we need to
             // visit the parsed class name.
-            String name = signature.substring(start, offset - 1);
+            @InternalForm String name = signature.substring(start, offset - 1);
             if (inner) {
               signatureVisitor.visitInnerClassType(name);
             } else {

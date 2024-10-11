@@ -160,10 +160,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             classVersion.set(version);
           }
         },
@@ -377,10 +377,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             // access may contain ACC_RECORD
           }
 
@@ -399,8 +399,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             return null;
@@ -412,18 +412,18 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return null;
           }
 
           @Override
-          public void visitNestHost(final String nestHost) {}
+          public void visitNestHost(final @InternalForm String nestHost) {}
 
           @Override
-          public void visitNestMember(final String nestMember) {}
+          public void visitNestMember(final @InternalForm String nestMember) {}
 
           @Override
-          public void visitPermittedSubclass(final String permittedSubclass) {}
+          public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {}
         };
 
     Executable accept = () -> classReader.accept(classVisitor, 0);
@@ -541,8 +541,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             return new FieldVisitor(api) {};
@@ -554,7 +554,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api) {};
           }
         };
@@ -583,7 +583,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api, null) {
               @Override
               public AnnotationVisitor visitParameterAnnotation(
@@ -616,10 +616,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             classVersion.set(version);
           }
         };
@@ -666,8 +666,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       return new FieldVisitor(api) {
@@ -694,7 +694,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
 
         @Override

@@ -49,10 +49,10 @@ public class FieldNode extends FieldVisitor {
   public int access;
 
   /** The field's name. */
-  public String name;
+  public @Identifier String name;
 
   /** The field's descriptor (see {@link org.objectweb.asm.Type}). */
-  public String desc;
+  public @FieldDescriptor String desc;
 
   /** The field's signature. May be {@literal null}. */
   public String signature;
@@ -95,8 +95,8 @@ public class FieldNode extends FieldVisitor {
    */
   public FieldNode(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     this(/* latest api = */ Opcodes.ASM9, access, name, descriptor, signature, value);
@@ -122,8 +122,8 @@ public class FieldNode extends FieldVisitor {
   public FieldNode(
       final int api,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     super(api);

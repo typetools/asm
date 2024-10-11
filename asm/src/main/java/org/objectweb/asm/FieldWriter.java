@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 /**
  * A {@link FieldVisitor} that generates a corresponding 'field_info' structure, as defined in the
  * Java Virtual Machine Specification (JVMS).
@@ -121,7 +123,7 @@ final class FieldWriter extends FieldVisitor {
       final SymbolTable symbolTable,
       final int access,
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object constantValue) {
     super(/* latest api = */ Opcodes.ASM9);

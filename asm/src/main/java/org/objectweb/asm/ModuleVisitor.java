@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A visitor to visit a Java module. The methods of this class must be called in the following
  * order: ( {@code visitMainClass} | ( {@code visitPackage} | {@code visitRequire} | {@code
@@ -98,7 +101,7 @@ public abstract class ModuleVisitor {
    * @param mainClass the internal name of the main class of the current module (see {@link
    *     Type#getInternalName()}).
    */
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     if (mv != null) {
       mv.visitMainClass(mainClass);
     }
@@ -109,7 +112,7 @@ public abstract class ModuleVisitor {
    *
    * @param packaze the internal name of a package (see {@link Type#getInternalName()}).
    */
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     if (mv != null) {
       mv.visitPackage(packaze);
     }
@@ -123,7 +126,7 @@ public abstract class ModuleVisitor {
    *     ACC_STATIC_PHASE}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param version the module version at compile time, or {@literal null}.
    */
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     if (mv != null) {
       mv.visitRequire(module, access, version);
     }
@@ -138,7 +141,7 @@ public abstract class ModuleVisitor {
    * @param modules the fully qualified names (using dots) of the modules that can access the public
    *     classes of the exported package, or {@literal null}.
    */
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (mv != null) {
       mv.visitExport(packaze, access, modules);
     }
@@ -153,7 +156,7 @@ public abstract class ModuleVisitor {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (mv != null) {
       mv.visitOpen(packaze, access, modules);
     }
@@ -165,7 +168,7 @@ public abstract class ModuleVisitor {
    *
    * @param service the internal name of the service (see {@link Type#getInternalName()}).
    */
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     if (mv != null) {
       mv.visitUse(service);
     }
@@ -178,7 +181,7 @@ public abstract class ModuleVisitor {
    * @param providers the internal names (see {@link Type#getInternalName()}) of the implementations
    *     of the service (there is at least one provider).
    */
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     if (mv != null) {
       mv.visitProvide(service, providers);
     }

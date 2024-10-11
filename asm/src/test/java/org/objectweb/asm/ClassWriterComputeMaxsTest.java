@@ -966,7 +966,7 @@ class ClassWriterComputeMaxsTest {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             if (name.equals("m")) {
               return new MethodVisitor(Opcodes.ASM5) {
                 @Override

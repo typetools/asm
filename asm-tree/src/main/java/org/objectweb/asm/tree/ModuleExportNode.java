@@ -41,7 +41,7 @@ public class ModuleExportNode {
    * The internal name of the exported package (see {@link
    * org.objectweb.asm.Type#getInternalName()}).
    */
-  public String packaze;
+  public @InternalForm String packaze;
 
   /**
    * The access flags (see {@link org.objectweb.asm.Opcodes}). Valid values are {@code
@@ -53,7 +53,7 @@ public class ModuleExportNode {
    * The list of modules that can access this exported package, specified with fully qualified names
    * (using dots). May be {@literal null}.
    */
-  public List<String> modules;
+  public @Nullable List<@DotSeparatedIdentifiers String> modules;
 
   /**
    * Constructs a new {@link ModuleExportNode}.
@@ -65,7 +65,7 @@ public class ModuleExportNode {
    * @param modules a list of modules that can access this exported package, specified with fully
    *     qualified names (using dots).
    */
-  public ModuleExportNode(final String packaze, final int access, final List<String> modules) {
+  public ModuleExportNode(final @InternalForm String packaze, final int access, final List<String> modules) {
     this.packaze = packaze;
     this.access = access;
     this.modules = modules;

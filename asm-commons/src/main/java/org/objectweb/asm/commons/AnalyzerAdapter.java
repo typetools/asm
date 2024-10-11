@@ -97,7 +97,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   private int maxLocals;
 
   /** The owner's class name. */
-  private String owner;
+  private @InternalForm String owner;
 
   /**
    * Constructs a new {@link AnalyzerAdapter}. <i>Subclasses must not use this constructor</i>.
@@ -113,7 +113,7 @@ public class AnalyzerAdapter extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public AnalyzerAdapter(
-      final String owner,
+      final @InternalForm String owner,
       final int access,
       final String name,
       final String descriptor,
@@ -138,7 +138,7 @@ public class AnalyzerAdapter extends MethodVisitor {
    */
   protected AnalyzerAdapter(
       final int api,
-      final String owner,
+      final @InternalForm String owner,
       final int access,
       final String name,
       final String descriptor,
@@ -256,7 +256,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     if (opcode == Opcodes.NEW) {
       if (labels == null) {
         Label label = new Label();
@@ -276,7 +276,7 @@ public class AnalyzerAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     super.visitFieldInsn(opcode, owner, name, descriptor);
     execute(opcode, 0, descriptor);
   }
@@ -284,8 +284,8 @@ public class AnalyzerAdapter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
@@ -424,7 +424,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     super.visitMultiANewArrayInsn(descriptor, numDimensions);
     execute(Opcodes.MULTIANEWARRAY, numDimensions, descriptor);
   }
