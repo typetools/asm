@@ -67,12 +67,12 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     super.visitMainClass(remapper.mapType(mainClass));
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     super.visitPackage(remapper.mapPackageName(packaze));
   }
 
@@ -82,7 +82,7 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];
@@ -94,7 +94,7 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];

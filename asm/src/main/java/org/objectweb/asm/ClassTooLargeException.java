@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * Exception thrown when the constant pool of a class produced by a {@link ClassWriter} is too
  * large.
@@ -36,7 +38,7 @@ package org.objectweb.asm;
 public final class ClassTooLargeException extends IndexOutOfBoundsException {
   private static final long serialVersionUID = 160715609518896765L;
 
-  private final String className;
+  private final @InternalForm String className;
   private final int constantPoolCount;
 
   /**
@@ -46,7 +48,7 @@ public final class ClassTooLargeException extends IndexOutOfBoundsException {
    *     org.objectweb.asm.Type#getInternalName()}).
    * @param constantPoolCount the number of constant pool items of the class.
    */
-  public ClassTooLargeException(final String className, final int constantPoolCount) {
+  public ClassTooLargeException(final @InternalForm String className, final int constantPoolCount) {
     super("Class too large: " + className);
     this.className = className;
     this.constantPoolCount = constantPoolCount;
@@ -57,7 +59,7 @@ public final class ClassTooLargeException extends IndexOutOfBoundsException {
    *
    * @return the internal name of the class.
    */
-  public String getClassName() {
+  public @InternalForm String getClassName() {
     return className;
   }
 

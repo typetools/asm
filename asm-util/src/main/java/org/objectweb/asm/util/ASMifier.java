@@ -189,10 +189,10 @@ public class ASMifier extends Printer {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     String simpleName;
     if (name == null) {
       simpleName = "module-info";
@@ -287,7 +287,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitNestHost(");
     appendConstant(nestHost);
@@ -296,7 +296,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitOuterClass(");
     appendConstant(owner);
@@ -325,7 +325,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitNestMember(");
     appendConstant(nestMember);
@@ -334,7 +334,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitPermittedSubclass(");
     appendConstant(permittedSubclass);
@@ -344,7 +344,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitInnerClass(");
     appendConstant(name);
@@ -410,7 +410,7 @@ public class ASMifier extends Printer {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     stringBuilder.setLength(0);
     stringBuilder.append("{\n");
     stringBuilder.append("methodVisitor = classWriter.visitMethod(");
@@ -453,7 +453,7 @@ public class ASMifier extends Printer {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     stringBuilder.setLength(0);
     stringBuilder.append("moduleVisitor.visitMainClass(");
     appendConstant(mainClass);
@@ -462,7 +462,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     stringBuilder.setLength(0);
     stringBuilder.append("moduleVisitor.visitPackage(");
     appendConstant(packaze);
@@ -484,17 +484,17 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     visitExportOrOpen("moduleVisitor.visitExport(", packaze, access, modules);
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     visitExportOrOpen("moduleVisitor.visitOpen(", packaze, access, modules);
   }
 
   private void visitExportOrOpen(
-      final String visitMethod, final String packaze, final int access, final String... modules) {
+      final String visitMethod, final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     stringBuilder.setLength(0);
     stringBuilder.append(visitMethod);
     appendConstant(packaze);
@@ -845,7 +845,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     stringBuilder.setLength(0);
     stringBuilder.append(name).append(".visitTypeInsn(").append(OPCODES[opcode]).append(", ");
     appendConstant(type);
@@ -855,7 +855,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     stringBuilder.setLength(0);
     stringBuilder.append(this.name).append(".visitFieldInsn(").append(OPCODES[opcode]).append(", ");
     appendConstant(owner);
@@ -870,8 +870,8 @@ public class ASMifier extends Printer {
   @Override
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     stringBuilder.setLength(0);
@@ -1007,7 +1007,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     stringBuilder.setLength(0);
     stringBuilder.append(name).append(".visitMultiANewArrayInsn(");
     appendConstant(descriptor);
@@ -1023,7 +1023,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     stringBuilder.setLength(0);
     declareLabel(start);
     declareLabel(end);

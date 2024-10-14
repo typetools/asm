@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.BinaryName;
+import org.checkerframework.checker.signature.qual.BinaryNameOrPrimitiveType;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -248,7 +251,7 @@ public final class Type {
    * @param internalName an internal name (see {@link Type#getInternalName()}).
    * @return the {@link Type} corresponding to the given internal name.
    */
-  public static Type getObjectType(final String internalName) {
+  public static Type getObjectType(final @InternalForm String internalName) {
     return new Type(
         internalName.charAt(0) == '[' ? ARRAY : INTERNAL, internalName, 0, internalName.length());
   }
@@ -440,10 +443,10 @@ public final class Type {
    *
    * @return the binary name of the class corresponding to this type.
    */
-  public String getClassName() {
+  public @BinaryNameOrPrimitiveType String getClassName() {
     switch (sort) {
       case VOID:
-        return "void";
+        return (@BinaryNameOrPrimitiveType String) "void";  // to make type-checking pass
       case BOOLEAN:
         return "boolean";
       case CHAR:
@@ -465,10 +468,11 @@ public final class Type {
         for (int i = getDimensions(); i > 0; --i) {
           stringBuilder.append("[]");
         }
-        return stringBuilder.toString();
+        return (@BinaryNameOrPrimitiveType String) stringBuilder.toString();
       case OBJECT:
       case INTERNAL:
-        return valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
+        // If not an array or primitive, this conversion works.
+        return (@BinaryNameOrPrimitiveType String) valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
       default:
         throw new AssertionError();
     }
@@ -481,7 +485,8 @@ public final class Type {
    *
    * @return the internal name of the class corresponding to this object type.
    */
-  public String getInternalName() {
+  @SuppressWarnings("signature:return")  // string manipulation
+  public @InternalForm String getInternalName() {
     return valueBuffer.substring(valueBegin, valueEnd);
   }
 
@@ -492,7 +497,8 @@ public final class Type {
    * @param clazz an object or array class.
    * @return the internal name of the given class.
    */
-  public static String getInternalName(final Class<?> clazz) {
+  @SuppressWarnings("signature:return")  //  If not an array or primitive, this conversion works.
+  public static @InternalForm String getInternalName(final Class<?> clazz) {
     return clazz.getName().replace('.', '/');
   }
 

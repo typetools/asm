@@ -239,7 +239,7 @@ class LocalVariablesSorterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
       return new LocalVariablesSorter(api, access, descriptor, methodVisitor) {};

@@ -28,6 +28,8 @@
 
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A reference to a field or a method.
  *
@@ -45,7 +47,7 @@ public final class Handle {
   private final int tag;
 
   /** The internal name of the class that owns the field or method designated by this handle. */
-  private final String owner;
+  private final @InternalForm String owner;
 
   /** The name of the field or method designated by this handle. */
   private final String name;
@@ -72,7 +74,7 @@ public final class Handle {
    *     boolean)}.
    */
   @Deprecated
-  public Handle(final int tag, final String owner, final String name, final String descriptor) {
+  public Handle(final int tag, final @InternalForm String owner, final String name, final String descriptor) {
     this(tag, owner, name, descriptor, tag == Opcodes.H_INVOKEINTERFACE);
   }
 
@@ -92,7 +94,7 @@ public final class Handle {
    */
   public Handle(
       final int tag,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
@@ -121,7 +123,7 @@ public final class Handle {
    * @return the internal name of the class that owns the field or method designated by this handle
    *     (see {@link Type#getInternalName()}).
    */
-  public String getOwner() {
+  public @InternalForm String getOwner() {
     return owner;
   }
 

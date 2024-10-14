@@ -103,7 +103,7 @@ public class Analyzer<V extends Value> implements Opcodes {
    * @throws AnalyzerException if a problem occurs during the analysis.
    */
   @SuppressWarnings("unchecked")
-  public Frame<V>[] analyze(final String owner, final MethodNode method) throws AnalyzerException {
+  public Frame<V>[] analyze(final @InternalForm String owner, final MethodNode method) throws AnalyzerException {
     if ((method.access & (ACC_ABSTRACT | ACC_NATIVE)) != 0) {
       frames = (Frame<V>[]) new Frame<?>[0];
       return frames;
@@ -307,7 +307,7 @@ public class Analyzer<V extends Value> implements Opcodes {
    *     instruction cannot be reached (dead code).
    * @throws AnalyzerException if a problem occurs during the analysis.
    */
-  public Frame<V>[] analyzeAndComputeMaxs(final String owner, final MethodNode method)
+  public Frame<V>[] analyzeAndComputeMaxs(final @InternalForm String owner, final MethodNode method)
       throws AnalyzerException {
     method.maxLocals = computeMaxLocals(method);
     method.maxStack = -1;
@@ -492,7 +492,7 @@ public class Analyzer<V extends Value> implements Opcodes {
    * @param method the method to be analyzed.
    * @return the initial execution stack frame of the 'method'.
    */
-  private Frame<V> computeInitialFrame(final String owner, final MethodNode method) {
+  private Frame<V> computeInitialFrame(final @InternalForm String owner, final MethodNode method) {
     Frame<V> frame = newFrame(method.maxLocals, method.maxStack);
     int currentLocal = 0;
     boolean isInstanceMethod = (method.access & ACC_STATIC) == 0;
@@ -552,7 +552,7 @@ public class Analyzer<V extends Value> implements Opcodes {
    * @param method the method to be analyzed.
    * @throws AnalyzerException if a problem occurs.
    */
-  protected void init(final String owner, final MethodNode method) throws AnalyzerException {
+  protected void init(final @InternalForm String owner, final MethodNode method) throws AnalyzerException {
     // Nothing to do.
   }
 

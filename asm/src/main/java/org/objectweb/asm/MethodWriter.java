@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A {@link MethodVisitor} that generates a corresponding 'method_info' structure, as defined in the
  * Java Virtual Machine Specification (JVMS).
@@ -300,7 +305,7 @@ final class MethodWriter extends MethodVisitor {
   private final int nameIndex;
 
   /** The name of this method. */
-  private final String name;
+  private final @Identifier String name;
 
   /** The descriptor_index field of the method_info JVMS structure. */
   private final int descriptorIndex;
@@ -592,7 +597,7 @@ final class MethodWriter extends MethodVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions,
+      final @InternalForm String @Nullable [] exceptions,
       final int compute) {
     super(/* latest api = */ Opcodes.ASM9);
     this.symbolTable = symbolTable;
@@ -968,7 +973,7 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
     Symbol typeSymbol = symbolTable.addConstantClass(type);
@@ -990,7 +995,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
     Symbol fieldrefSymbol = symbolTable.addConstantFieldref(owner, name, descriptor);
@@ -1028,8 +1033,8 @@ final class MethodWriter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     lastBytecodeOffset = code.length;
@@ -1386,9 +1391,10 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
+    @SuppressWarnings("signature:argument") // BUG??
     Symbol descSymbol = symbolTable.addConstantClass(descriptor);
     code.put12(Opcodes.MULTIANEWARRAY, descSymbol.index).putByte(numDimensions);
     // If needed, update the maximum stack size and number of locals, and stack map frames.
@@ -1427,7 +1433,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     Handler newHandler =
         new Handler(
             start, end, handler, type != null ? symbolTable.addConstantClass(type).index : 0, type);
@@ -1978,7 +1984,7 @@ final class MethodWriter extends MethodVisitor {
     } else if (type instanceof String) {
       stackMapTableEntries
           .putByte(Frame.ITEM_OBJECT)
-          .putShort(symbolTable.addConstantClass((String) type).index);
+          .putShort(symbolTable.addConstantClass((@InternalForm String) type).index);
     } else {
       stackMapTableEntries.putByte(Frame.ITEM_UNINITIALIZED);
       ((Label) type).put(stackMapTableEntries);

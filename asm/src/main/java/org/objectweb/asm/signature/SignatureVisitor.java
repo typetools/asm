@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.signature;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
 import org.objectweb.asm.Opcodes;
 
 /**
@@ -183,7 +184,7 @@ public abstract class SignatureVisitor {
    * @param name the internal name of the class or interface (see {@link
    *     org.objectweb.asm.Type#getInternalName()}).
    */
-  public void visitClassType(final String name) {}
+  public void visitClassType(final @InternalForm String name) {}
 
   /**
    * Visits an inner class.

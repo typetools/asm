@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,13 +185,14 @@ final class Constants {
 
   static void checkAsmExperimental(final Object caller) {
     Class<?> callerClass = caller.getClass();
-    String internalName = callerClass.getName().replace('.', '/');
+    @SuppressWarnings("signature:assignment")  // If not an array or primitive, this conversion works.
+    @InternalForm String internalName = callerClass.getName().replace('.', '/');
     if (!isWhitelisted(internalName)) {
       checkIsPreview(callerClass.getClassLoader().getResourceAsStream(internalName + ".class"));
     }
   }
 
-  static boolean isWhitelisted(final String internalName) {
+  static boolean isWhitelisted(final @InternalForm String internalName) {
     if (!internalName.startsWith("org/objectweb/asm/")) {
       return false;
     }

@@ -141,7 +141,7 @@ public class Method {
       throw new IllegalArgumentException();
     }
     final String returnType = method.substring(0, spaceIndex);
-    final String methodName =
+    final @Identifier String methodName =
         method.substring(spaceIndex + 1, currentArgumentStartIndex - 1).trim();
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');

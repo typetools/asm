@@ -182,10 +182,10 @@ class ClassNodeTest extends AsmTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       super.visit(version, access & ~Opcodes.ACC_RECORD, name, signature, superName, interfaces);
     }
 
@@ -195,13 +195,13 @@ class ClassNodeTest extends AsmTest {
     }
 
     @Override
-    public void visitNestHost(final String nestHost) {}
+    public void visitNestHost(final @InternalForm String nestHost) {}
 
     @Override
-    public void visitNestMember(final String nestMember) {}
+    public void visitNestMember(final @InternalForm String nestMember) {}
 
     @Override
-    public void visitPermittedSubclass(final String permittedSubclass) {}
+    public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {}
 
     @Override
     public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
@@ -229,8 +229,8 @@ class ClassNodeTest extends AsmTest {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       return null;
@@ -242,7 +242,7 @@ class ClassNodeTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return null;
     }
   }

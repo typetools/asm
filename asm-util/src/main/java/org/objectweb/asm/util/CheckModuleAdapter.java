@@ -93,20 +93,20 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     // Modules can only appear in V9 or more classes.
     CheckMethodAdapter.checkInternalName(Opcodes.V9, mainClass, "module main class");
     super.visitMainClass(mainClass);
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "module package");
     super.visitPackage(packaze);
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     checkVisitEndNotCalled();
     CheckClassAdapter.checkFullyQualifiedName(Opcodes.V9, module, "required module");
     requiredModules.checkNameNotAlreadyDeclared(module);
@@ -128,7 +128,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     checkVisitEndNotCalled();
     CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "package name");
     exportedPackages.checkNameNotAlreadyDeclared(packaze);
@@ -142,7 +142,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     checkVisitEndNotCalled();
     if (isOpen) {
       throw new UnsupportedOperationException("An open module can not use open directive");
@@ -159,7 +159,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     checkVisitEndNotCalled();
     CheckMethodAdapter.checkInternalName(Opcodes.V9, service, "service");
     usedServices.checkNameNotAlreadyDeclared(service);
@@ -167,7 +167,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     checkVisitEndNotCalled();
     CheckMethodAdapter.checkInternalName(Opcodes.V9, service, "service");
     providedServices.checkNameNotAlreadyDeclared(service);

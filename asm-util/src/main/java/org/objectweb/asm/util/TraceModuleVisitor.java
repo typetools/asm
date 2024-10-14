@@ -62,13 +62,13 @@ public final class TraceModuleVisitor extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     p.visitMainClass(mainClass);
     super.visitMainClass(mainClass);
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     p.visitPackage(packaze);
     super.visitPackage(packaze);
   }
@@ -80,13 +80,13 @@ public final class TraceModuleVisitor extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     p.visitExport(packaze, access, modules);
     super.visitExport(packaze, access, modules);
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     p.visitOpen(packaze, access, modules);
     super.visitOpen(packaze, access, modules);
   }

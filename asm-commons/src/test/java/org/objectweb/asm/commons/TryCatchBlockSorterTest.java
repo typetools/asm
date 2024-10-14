@@ -71,7 +71,7 @@ class TryCatchBlockSorterTest extends AsmTest {
               final String name,
               final String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return new TryCatchBlockSorter(
                 super.visitMethod(access, name, descriptor, signature, exceptions),
                 access,

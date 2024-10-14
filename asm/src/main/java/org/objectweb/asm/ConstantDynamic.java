@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import java.util.Arrays;
 
 /**
@@ -40,7 +41,7 @@ public final class ConstantDynamic {
   private final String name;
 
   /** The constant type (must be a field descriptor). */
-  private final String descriptor;
+  private final @FieldDescriptor String descriptor;
 
   /** The bootstrap method to use to compute the constant value at runtime. */
   private final Handle bootstrapMethod;
@@ -62,7 +63,7 @@ public final class ConstantDynamic {
    */
   public ConstantDynamic(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final Handle bootstrapMethod,
       final Object... bootstrapMethodArguments) {
     this.name = name;
@@ -85,7 +86,7 @@ public final class ConstantDynamic {
    *
    * @return the type of this constant, as a field descriptor.
    */
-  public String getDescriptor() {
+  public @FieldDescriptor String getDescriptor() {
     return descriptor;
   }
 
