@@ -270,7 +270,7 @@ configure(subprojects.findAll{it.provides}) {
 
   // Retrofit the code in-place to Java 1.5 and generate a module-info class
   // from the code content, in compileJava.doLast.
-  if (name != 'asm-test') {
+  if (false) { // was: name != 'asm-test'
     compileJava.dependsOn ':tools:retrofitter:classes'
     compileJava.doLast {
       def path = project(':tools:retrofitter').sourceSets.main.runtimeClasspath
