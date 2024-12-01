@@ -851,6 +851,11 @@ public class CheckMethodAdapter extends MethodVisitor {
     if (keys == null || labels == null || keys.length != labels.length) {
       throw new IllegalArgumentException("There must be the same number of keys and labels");
     }
+    for (int i = 1; i < keys.length; ++i) {
+      if (keys[i] < keys[i - 1]) {
+        throw new IllegalArgumentException("The keys must be sorted in increasing order");
+      }
+    }
     for (int i = 0; i < labels.length; ++i) {
       checkLabel(labels[i], /* checkVisited= */ false, "label at index " + i);
     }
