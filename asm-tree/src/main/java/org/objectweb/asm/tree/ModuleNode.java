@@ -41,7 +41,7 @@ import org.objectweb.asm.Opcodes;
 public class ModuleNode extends ModuleVisitor {
 
   /** The fully qualified name (using dots) of this module. */
-  public String name;
+  public @DotSeparatedIdentifiers String name;
 
   /**
    * The module's access flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC} and {@code
@@ -56,13 +56,13 @@ public class ModuleNode extends ModuleVisitor {
    * The internal name of the main class of this module (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public String mainClass;
+  public @InternalForm String mainClass;
 
   /**
    * The internal name of the packages declared by this module (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public List<String> packages;
+  public List<@InternalForm String> packages;
 
   /** The dependencies of this module. May be {@literal null}. */
   public List<ModuleRequireNode> requires;
@@ -77,7 +77,7 @@ public class ModuleNode extends ModuleVisitor {
    * The internal names of the services used by this module (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public List<String> uses;
+  public List<@InternalForm String> uses;
 
   /** The services provided by this module. May be {@literal null}. */
   public List<ModuleProvideNode> provides;
@@ -92,7 +92,7 @@ public class ModuleNode extends ModuleVisitor {
    * @param version the module version, or {@literal null}.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public ModuleNode(final String name, final int access, final String version) {
+  public ModuleNode(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     super(/* latest api = */ Opcodes.ASM9);
     if (getClass() != ModuleNode.class) {
       throw new IllegalStateException();
@@ -121,13 +121,13 @@ public class ModuleNode extends ModuleVisitor {
    */
   public ModuleNode(
       final int api,
-      final String name,
+      final @DotSeparatedIdentifiers String name,
       final int access,
       final String version,
       final List<ModuleRequireNode> requires,
       final List<ModuleExportNode> exports,
       final List<ModuleOpenNode> opens,
-      final List<String> uses,
+      final List<@InternalForm String> uses,
       final List<ModuleProvideNode> provides) {
     super(api);
     this.name = name;
@@ -141,12 +141,12 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     this.mainClass = mainClass;
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @InternalForm String packaze) {
     if (packages == null) {
       packages = new ArrayList<>(5);
     }
@@ -162,7 +162,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (exports == null) {
       exports = new ArrayList<>(5);
     }
@@ -170,7 +170,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (opens == null) {
       opens = new ArrayList<>(5);
     }

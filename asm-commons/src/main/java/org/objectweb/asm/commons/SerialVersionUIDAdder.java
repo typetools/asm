@@ -124,10 +124,10 @@ public class SerialVersionUIDAdder extends ClassVisitor {
   private int access;
 
   /** The internal name of the class. */
-  private String name;
+  private @InternalForm String name;
 
   /** The interfaces implemented by the class. */
-  private String[] interfaces;
+  private @InternalForm String [] interfaces;
 
   /** The fields of the class that are needed to compute the SVUID. */
   private Collection<Item> svuidFields;
@@ -175,10 +175,10 @@ public class SerialVersionUIDAdder extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     // Get the class name, access flags, and interfaces information (step 1, 2 and 3) for SVUID
     // computation.
     computeSvuid = (access & Opcodes.ACC_ENUM) == 0;
@@ -201,7 +201,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     // Get constructor and method information (step 5 and 7). Also determine if there is a class
     // initializer (step 6).
     if (computeSvuid) {
@@ -238,8 +238,8 @@ public class SerialVersionUIDAdder extends ClassVisitor {
   @Override
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String desc,
+      final @Identifier String name,
+      final @FieldDescriptor String desc,
       final String signature,
       final Object value) {
     // Get the class field information for step 4 of the algorithm. Also determine if the class
@@ -273,9 +273,9 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
   @Override
   public void visitInnerClass(
-      final String innerClassName,
-      final String outerName,
-      final String innerName,
+      final @InternalForm String innerClassName,
+      final @InternalForm String outerName,
+      final @Identifier String innerName,
       final int innerClassAccess) {
     // Handles a bizarre special case. Nested classes (static classes declared inside another class)
     // that are protected have their access bit set to public in their class files to deal with some

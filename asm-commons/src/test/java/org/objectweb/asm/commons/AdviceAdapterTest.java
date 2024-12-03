@@ -831,7 +831,7 @@ class AdviceAdapterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
       if (methodVisitor == null || (access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE)) > 0) {

@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * An entry of the constant pool, of the BootstrapMethods attribute, or of the (ASM specific) type
  * table of a class.
@@ -142,7 +144,7 @@ abstract class Symbol {
    * #CONSTANT_FIELDREF_TAG}, {@link #CONSTANT_METHODREF_TAG}, {@link
    * #CONSTANT_INTERFACE_METHODREF_TAG}, and {@link #CONSTANT_METHOD_HANDLE_TAG} symbols.
    */
-  final String owner;
+  final @InternalForm String owner;
 
   /**
    * The name of the class field or method corresponding to this symbol. Only used for {@link
@@ -232,7 +234,7 @@ abstract class Symbol {
   Symbol(
       final int index,
       final int tag,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String value,
       final long data) {

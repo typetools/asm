@@ -45,7 +45,7 @@ public class MethodInsnNode extends AbstractInsnNode {
    *
    * <p>For methods of arrays, e.g., {@code clone()}, the array type descriptor.
    */
-  public String owner;
+  public @InternalForm String owner;
 
   /** The method's name. */
   public String name;
@@ -67,7 +67,7 @@ public class MethodInsnNode extends AbstractInsnNode {
    * @param descriptor the method's descriptor (see {@link org.objectweb.asm.Type}).
    */
   public MethodInsnNode(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     this(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
 
@@ -84,7 +84,7 @@ public class MethodInsnNode extends AbstractInsnNode {
    */
   public MethodInsnNode(
       final int opcode,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {

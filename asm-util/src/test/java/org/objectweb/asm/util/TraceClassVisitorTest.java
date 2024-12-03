@@ -115,8 +115,8 @@ class TraceClassVisitorTest extends AsmTest {
                   @Override
                   public FieldVisitor visitField(
                       final int access,
-                      final String name,
-                      final String descriptor,
+                      final @Identifier String name,
+                      final @FieldDescriptor String descriptor,
                       final String signature,
                       final Object value) {
                     return new TraceFieldVisitor(new Textifier());
@@ -128,7 +128,7 @@ class TraceClassVisitorTest extends AsmTest {
                       final String name,
                       final String descriptor,
                       final String signature,
-                      final String[] exceptions) {
+                      final @InternalForm String @Nullable [] exceptions) {
                     return new TraceMethodVisitor(new Textifier());
                   }
                 },

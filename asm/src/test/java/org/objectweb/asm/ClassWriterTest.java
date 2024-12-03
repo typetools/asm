@@ -341,7 +341,7 @@ class ClassWriterTest extends AsmTest {
   @ValueSource(ints = {65535, 65536})
   void testToByteArray_methodCodeSizeTooLarge(final int methodCodeSize) {
     ClassWriter classWriter = newEmptyClassWriter();
-    String methodName = "m";
+    @Identifier String methodName = "m";
     String descriptor = "()V";
     MethodVisitor methodVisitor =
         classWriter.visitMethod(Opcodes.ACC_STATIC, methodName, descriptor, null, null);
@@ -853,10 +853,10 @@ class ClassWriterTest extends AsmTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       className = name;
       // Set V1_7 version to prevent fallback to old verifier.
       super.visit(
@@ -874,7 +874,7 @@ class ClassWriterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       int seed = (className + "." + name + descriptor).hashCode();
       return new MethodDeadCodeInserter(
           api, seed, super.visitMethod(access, name, descriptor, signature, exceptions));
@@ -910,14 +910,14 @@ class ClassWriterTest extends AsmTest {
     }
 
     @Override
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode, final @InternalForm String type) {
       super.visitTypeInsn(opcode, type);
       maybeInsertDeadCode();
     }
 
     @Override
     public void visitFieldInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       super.visitFieldInsn(opcode, owner, name, descriptor);
       maybeInsertDeadCode();
     }
@@ -925,8 +925,8 @@ class ClassWriterTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcode,
-        final String owner,
-        final String name,
+        final @InternalForm String owner,
+        final @Identifier String name,
         final String descriptor,
         final boolean isInterface) {
       super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -993,7 +993,7 @@ class ClassWriterTest extends AsmTest {
     }
 
     @Override
-    public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+    public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
       super.visitMultiANewArrayInsn(descriptor, numDimensions);
       maybeInsertDeadCode();
     }
@@ -1037,7 +1037,7 @@ class ClassWriterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
         private final HashSet<Label> labels = new HashSet<>();
@@ -1076,10 +1076,10 @@ class ClassWriterTest extends AsmTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       needFrames = (version & 0xFFFF) >= Opcodes.V1_7;
       super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -1090,7 +1090,7 @@ class ClassWriterTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
@@ -1129,7 +1129,7 @@ class ClassWriterTest extends AsmTest {
     }
 
     @Override
-    protected String getCommonSuperClass(final String type1, final String type2) {
+    protected String getCommonSuperClass(final @InternalForm String type1, final @InternalForm String type2) {
       throw new UnsupportedOperationException();
     }
   }

@@ -92,7 +92,7 @@ public class TypeBenchmark extends AbstractBenchmark {
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
       if (descriptor != null) {
         methodDescriptors.add(descriptor);
       }
@@ -117,8 +117,8 @@ public class TypeBenchmark extends AbstractBenchmark {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       descriptors.add(descriptor);
@@ -148,7 +148,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       methodDescriptors.add(descriptor);
       return new MethodVisitor(api) {
 
@@ -177,15 +177,15 @@ public class TypeBenchmark extends AbstractBenchmark {
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           descriptors.add(descriptor);
         }
 
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
+            final @InternalForm String owner,
+            final @Identifier String name,
             final String descriptor,
             final boolean isInterface) {
           methodDescriptors.add(descriptor);
@@ -201,7 +201,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         }
 
         @Override
-        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+        public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
           descriptors.add(descriptor);
         }
 

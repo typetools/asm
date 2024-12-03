@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * Exception thrown when the Code attribute of a method produced by a {@link ClassWriter} is too
  * large.
@@ -36,8 +39,8 @@ package org.objectweb.asm;
 public final class MethodTooLargeException extends IndexOutOfBoundsException {
   private static final long serialVersionUID = 6807380416709738314L;
 
-  private final String className;
-  private final String methodName;
+  private final @InternalForm String className;
+  private final @Identifier String methodName;
   private final String descriptor;
   private final int codeSize;
 
@@ -50,8 +53,8 @@ public final class MethodTooLargeException extends IndexOutOfBoundsException {
    * @param codeSize the size of the method's Code attribute, in bytes.
    */
   public MethodTooLargeException(
-      final String className,
-      final String methodName,
+      final @InternalForm String className,
+      final @Identifier String methodName,
       final String descriptor,
       final int codeSize) {
     super("Method too large: " + className + "." + methodName + " " + descriptor);
@@ -66,7 +69,7 @@ public final class MethodTooLargeException extends IndexOutOfBoundsException {
    *
    * @return the internal name of the owner class (see {@link Type#getInternalName()}).
    */
-  public String getClassName() {
+  public @InternalForm String getClassName() {
     return className;
   }
 

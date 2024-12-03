@@ -149,14 +149,14 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     p.visitTypeInsn(opcode, type);
     super.visitTypeInsn(opcode, type);
   }
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     p.visitFieldInsn(opcode, owner, name, descriptor);
     super.visitFieldInsn(opcode, owner, name, descriptor);
   }
@@ -165,8 +165,8 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @SuppressWarnings("deprecation")
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     // Call the method that p is supposed to implement, depending on its api version.
@@ -235,7 +235,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     p.visitMultiANewArrayInsn(descriptor, numDimensions);
     super.visitMultiANewArrayInsn(descriptor, numDimensions);
   }
@@ -250,7 +250,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     p.visitTryCatchBlock(start, end, handler, type);
     super.visitTryCatchBlock(start, end, handler, type);
   }

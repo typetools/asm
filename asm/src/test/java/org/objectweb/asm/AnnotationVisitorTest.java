@@ -148,7 +148,7 @@ class AnnotationVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
@@ -236,7 +236,7 @@ class AnnotationVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 

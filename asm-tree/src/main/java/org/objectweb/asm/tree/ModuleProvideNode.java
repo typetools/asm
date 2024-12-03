@@ -38,13 +38,13 @@ import org.objectweb.asm.ModuleVisitor;
 public class ModuleProvideNode {
 
   /** The internal name of the service (see {@link org.objectweb.asm.Type#getInternalName()}). */
-  public String service;
+  public @InternalForm String service;
 
   /**
    * The internal names of the implementations of the service (there is at least one provider). See
    * {@link org.objectweb.asm.Type#getInternalName()}.
    */
-  public List<String> providers;
+  public List<@InternalForm String> providers;
 
   /**
    * Constructs a new {@link ModuleProvideNode}.
@@ -53,7 +53,7 @@ public class ModuleProvideNode {
    * @param providers the internal names of the implementations of the service (there is at least
    *     one provider). See {@link org.objectweb.asm.Type#getInternalName()}.
    */
-  public ModuleProvideNode(final String service, final List<String> providers) {
+  public ModuleProvideNode(final @InternalForm String service, final List<@InternalForm String> providers) {
     this.service = service;
     this.providers = providers;
   }

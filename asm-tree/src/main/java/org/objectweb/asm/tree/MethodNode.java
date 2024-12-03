@@ -63,7 +63,7 @@ public class MethodNode extends MethodVisitor {
   public String signature;
 
   /** The internal names of the method's exception classes (see {@link Type#getInternalName()}). */
-  public List<String> exceptions;
+  public List<@InternalForm String> exceptions;
 
   /** The method parameter info (access flags and name). */
   public List<ParameterNode> parameters;
@@ -190,7 +190,7 @@ public class MethodNode extends MethodVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     this(/* latest api = */ Opcodes.ASM9, access, name, descriptor, signature, exceptions);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
@@ -216,7 +216,7 @@ public class MethodNode extends MethodVisitor {
       final String name,
       final String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     super(api);
     this.access = access;
     this.name = name;
@@ -352,21 +352,21 @@ public class MethodNode extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     instructions.add(new TypeInsnNode(opcode, type));
   }
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     instructions.add(new FieldInsnNode(opcode, owner, name, descriptor));
   }
 
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
+      final @InternalForm String owner,
+      final @Identifier String name,
       final String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
@@ -422,7 +422,7 @@ public class MethodNode extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     instructions.add(new MultiANewArrayInsnNode(descriptor, numDimensions));
   }
 
@@ -448,7 +448,7 @@ public class MethodNode extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     TryCatchBlockNode tryCatchBlock =
         new TryCatchBlockNode(getLabelNode(start), getLabelNode(end), getLabelNode(handler), type);
     tryCatchBlocks = Util.add(tryCatchBlocks, tryCatchBlock);
@@ -640,7 +640,7 @@ public class MethodNode extends MethodVisitor {
    * @param classVisitor a class visitor.
    */
   public void accept(final ClassVisitor classVisitor) {
-    String[] exceptionsArray = exceptions == null ? null : exceptions.toArray(new String[0]);
+    @InternalForm String @Nullable [] exceptionsArray = exceptions == null ? null : exceptions.toArray(new String[0]);
     MethodVisitor methodVisitor =
         classVisitor.visitMethod(access, name, desc, signature, exceptionsArray);
     if (methodVisitor != null) {

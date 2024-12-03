@@ -278,7 +278,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param types a set of types.
    * @return the internal names of the given types (see {@link Type#getInternalName()}).
    */
-  private static String[] getInternalNames(final Type[] types) {
+  private static @InternalForm String[] getInternalNames(final Type[] types) {
     String[] names = new String[types.length];
     for (int i = 0; i < names.length; ++i) {
       names[i] = types[i].getInternalName();
@@ -1186,7 +1186,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    */
   private void invokeInsn(
       final int opcode, final Type type, final Method method, final boolean isInterface) {
-    String owner = type.getSort() == Type.ARRAY ? type.getDescriptor() : type.getInternalName();
+    @InternalForm String owner = type.getSort() == Type.ARRAY ? type.getDescriptor() : type.getInternalName();
     mv.visitMethodInsn(opcode, owner, method.getName(), method.getDescriptor(), isInterface);
   }
 
@@ -1357,7 +1357,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    *
    * @param start beginning of the exception handler's scope (inclusive).
    * @param end end of the exception handler's scope (exclusive).
-   * @param exception internal name of the type of exceptions handled by the handler (see {@link
+   * @param exception the type of exceptions handled by the handler (see {@link
    *     Type#getInternalName()}).
    */
   public void catchException(final Label start, final Label end, final Type exception) {

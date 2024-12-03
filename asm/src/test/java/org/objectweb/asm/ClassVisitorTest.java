@@ -267,10 +267,10 @@ class ClassVisitorTest extends AsmTest {
             return new ModuleVisitor(api, super.visitModule(name, access, version)) {
 
               @Override
-              public void visitMainClass(final String mainClass) {}
+              public void visitMainClass(final @InternalForm String mainClass) {}
 
               @Override
-              public void visitPackage(final String packaze) {}
+              public void visitPackage(final @InternalForm String packaze) {}
 
               @Override
               public void visitRequire(
@@ -280,13 +280,13 @@ class ClassVisitorTest extends AsmTest {
 
               @Override
               public void visitExport(
-                  final String packaze, final int access, final String... modules) {
+                  final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
                 super.visitExport(packaze, access, (String[]) null);
               }
 
               @Override
               public void visitOpen(
-                  final String packaze, final int access, final String... modules) {
+                  final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
                 super.visitOpen(packaze, access, (String[]) null);
               }
             };
@@ -345,8 +345,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       return new FieldAdapter(api, super.visitField(access, name, descriptor, signature, value));
@@ -358,7 +358,7 @@ class ClassVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodAdapter(
           api, super.visitMethod(access, name, descriptor, signature, exceptions));
     }
@@ -472,7 +472,7 @@ class ClassVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       if (exceptions != null && exceptions.length > 0) {
         exceptions[0] = "java/lang/Throwable";
       }
@@ -493,10 +493,10 @@ class ClassVisitorTest extends AsmTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       super.visit(newVersion, access, name, signature, superName, interfaces);
     }
   }
@@ -516,7 +516,7 @@ class ClassVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return super.visitMethod(access ^ accessFlags, name, descriptor, signature, exceptions);
     }
   }
@@ -554,8 +554,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       return new FieldVisitor(api, super.visitField(access, name, descriptor, signature, value)) {
@@ -588,7 +588,7 @@ class ClassVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
@@ -677,7 +677,7 @@ class ClassVisitorTest extends AsmTest {
         final String name,
         final String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       List<Type> argumentTypes = new ArrayList<>(Arrays.asList(Type.getArgumentTypes(descriptor)));
       argumentTypes.add(Type.INT_TYPE);
       Type returnType = Type.getReturnType(descriptor);
