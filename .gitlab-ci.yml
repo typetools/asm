@@ -12,10 +12,24 @@ cache:
     # Cache the downloaded dependencies and plugins between builds.
     - '$GRADLE_USER_HOME'
 
-build:
+build-job:
+  stage: build
   script:
     - $GRADLE build
+
+test-job:
+  stage: test
+  script:
     - $GRADLE test jacocoTestCoverageVerification
+
+deploy-job:
+  stage: deploy
+  script:
     - if [ $NEXUS_USER_NAME ]; then $GRADLE publish; fi
     - if [ !$NEXUS_USER_NAME ]; then $GRADLE publishToMavenLocal; fi
+
+sonar-job:
+  stage: deploy
+  allow_failure: true
+  script:
     - if [ $SONAR_LOGIN ]; then $GRADLE -Dorg.gradle.jvmargs='-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M' jacocoTestReport sonar -Dsonar.host.url=$SONAR -Dsonar.login=${SONAR_LOGIN}; fi
