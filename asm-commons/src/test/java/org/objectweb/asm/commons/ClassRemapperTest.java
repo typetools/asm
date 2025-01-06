@@ -34,11 +34,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -268,6 +270,56 @@ class ClassRemapperTest extends AsmTest {
     InvokeDynamicInsnNode invokeDynamic =
         (InvokeDynamicInsnNode) classNode.methods.get(0).instructions.get(0);
     assertEquals("demo", invokeDynamic.bsm.getName());
+  }
+
+  /** Tests that classes transformed with an empty ClassRemapper are unchanged. */
+  @ParameterizedTest
+  @MethodSource(ALL_CLASSES_AND_ALL_APIS)
+  void testEmptyClassRemapper_precompiledClass(
+      final PrecompiledClass classParameter, final Api apiParameter) {
+    byte[] classFile = classParameter.getBytes();
+    ClassReader classReader = new ClassReader(classFile);
+    ClassWriter classWriter = new ClassWriter(0);
+    ClassRemapper classRemapper =
+        newClassRemapper(apiParameter.value(), classWriter, new SimpleRemapper(Map.of()));
+
+    Executable accept =
+        () -> classReader.accept(classRemapper, new Attribute[] {new CodeComment()}, 0);
+
+    if (classParameter.isMoreRecentThan(apiParameter)) {
+      Exception exception = assertThrows(UnsupportedOperationException.class, accept);
+      assertTrue(exception.getMessage().matches(UNSUPPORTED_OPERATION_MESSAGE_PATTERN));
+    } else {
+      assertDoesNotThrow(accept);
+      assertEquals(new ClassFile(classFile), new ClassFile(classWriter.toByteArray()));
+    }
+  }
+
+  /** Tests that inner class names are unchanged with by an empty ClassRemapper. */
+  @Test
+  void testEmptyClassRemapper_innerClassNames() {
+    ClassWriter classFileWriter = new ClassWriter(0);
+    classFileWriter.visit(
+        Opcodes.V1_8,
+        Opcodes.ACC_ABSTRACT | Opcodes.ACC_INTERFACE,
+        "Outer",
+        null,
+        "java/lang/Object",
+        null);
+    classFileWriter.visitInnerClass(
+        "Outer$$Inner",
+        "Outer",
+        "$Inner",
+        Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_INTERFACE);
+    classFileWriter.visitEnd();
+    byte[] classFile = classFileWriter.toByteArray();
+    ClassReader classReader = new ClassReader(classFile);
+    ClassWriter classWriter = new ClassWriter(0);
+    ClassRemapper classRemapper = new ClassRemapper(classWriter, new SimpleRemapper(Map.of()));
+
+    classReader.accept(classRemapper, new Attribute[] {new CodeComment()}, 0);
+
+    assertEquals(new ClassFile(classFile), new ClassFile(classWriter.toByteArray()));
   }
 
   /** Tests that classes transformed with a ClassRemapper can be loaded and instantiated. */

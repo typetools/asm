@@ -777,6 +777,21 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
   }
 
   @Test
+  void testVisitLookupSwitchInsn_nonSortedKeys() {
+    Label label0 = new Label();
+    Label label1 = new Label();
+    checkMethodAdapter.visitCode();
+
+    Executable visitLookupSwitchInsn =
+        () ->
+            checkMethodAdapter.visitLookupSwitchInsn(
+                new Label(), new int[] {2, 1}, new Label[] {label0, label1});
+
+    Exception exception = assertThrows(IllegalArgumentException.class, visitLookupSwitchInsn);
+    assertEquals("The keys must be sorted in increasing order", exception.getMessage());
+  }
+
+  @Test
   void testVisitMultiANewArrayInsn_invalidDescriptor() {
     checkMethodAdapter.visitCode();
 

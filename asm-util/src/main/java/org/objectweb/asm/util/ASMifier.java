@@ -114,6 +114,7 @@ public class ASMifier extends Printer {
     classVersions.put(Opcodes.V22, "V22");
     classVersions.put(Opcodes.V23, "V23");
     classVersions.put(Opcodes.V24, "V24");
+    classVersions.put(Opcodes.V25, "V25");
     CLASS_VERSIONS = Collections.unmodifiableMap(classVersions);
   }
 
@@ -1474,24 +1475,24 @@ public class ASMifier extends Printer {
       }
       stringBuilder.append("})");
     } else if (value instanceof Byte) {
-      stringBuilder.append("new Byte((byte)").append(value).append(')');
+      stringBuilder.append("Byte.valueOf((byte)").append(value).append(')');
     } else if (value instanceof Boolean) {
       stringBuilder.append(((Boolean) value).booleanValue() ? "Boolean.TRUE" : "Boolean.FALSE");
     } else if (value instanceof Short) {
-      stringBuilder.append("new Short((short)").append(value).append(')');
+      stringBuilder.append("Short.valueOf((short)").append(value).append(')');
     } else if (value instanceof Character) {
       stringBuilder
-          .append("new Character((char)")
+          .append("Character.valueOf((char)")
           .append((int) ((Character) value).charValue())
           .append(')');
     } else if (value instanceof Integer) {
-      stringBuilder.append("new Integer(").append(value).append(')');
+      stringBuilder.append("Integer.valueOf(").append(value).append(')');
     } else if (value instanceof Float) {
-      stringBuilder.append("new Float(\"").append(value).append("\")");
+      stringBuilder.append("Float.valueOf(\"").append(value).append("\")");
     } else if (value instanceof Long) {
-      stringBuilder.append("new Long(").append(value).append("L)");
+      stringBuilder.append("Long.valueOf(").append(value).append("L)");
     } else if (value instanceof Double) {
-      stringBuilder.append("new Double(\"").append(value).append("\")");
+      stringBuilder.append("Double.valueOf(\"").append(value).append("\")");
     } else if (value instanceof byte[]) {
       byte[] byteArray = (byte[]) value;
       stringBuilder.append("new byte[] {");
