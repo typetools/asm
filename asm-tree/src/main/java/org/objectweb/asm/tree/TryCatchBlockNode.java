@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.List;
 import org.objectweb.asm.MethodVisitor;
 

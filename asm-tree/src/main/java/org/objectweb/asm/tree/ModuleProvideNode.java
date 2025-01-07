@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.List;
 import org.objectweb.asm.ModuleVisitor;
 
@@ -64,6 +66,6 @@ public class ModuleProvideNode {
    * @param moduleVisitor a module visitor.
    */
   public void accept(final ModuleVisitor moduleVisitor) {
-    moduleVisitor.visitProvide(service, providers.toArray(new String[0]));
+    moduleVisitor.visitProvide(service, providers.toArray(new @InternalForm String[0]));
   }
 }

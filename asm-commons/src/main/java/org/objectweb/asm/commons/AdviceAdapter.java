@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -446,7 +451,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
       final int opcodeAndSource,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -498,7 +503,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);

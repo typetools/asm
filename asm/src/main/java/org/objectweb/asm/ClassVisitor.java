@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
@@ -199,7 +201,7 @@ public abstract class ClassVisitor {
    *     enclosed in an instance initializer, static initializer, instance variable initializer, or
    *     class variable initializer).
    */
-  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     if (cv != null) {
       cv.visitOuterClass(owner, name, descriptor);
     }
@@ -213,7 +215,7 @@ public abstract class ClassVisitor {
    * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
    *     interested in visiting this annotation.
    */
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (cv != null) {
       return cv.visitAnnotation(descriptor, visible);
     }
@@ -236,7 +238,7 @@ public abstract class ClassVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (api < Opcodes.ASM5) {
       throw new UnsupportedOperationException("TypeAnnotation requires ASM5");
     }
@@ -324,7 +326,7 @@ public abstract class ClassVisitor {
    *     if this class visitor is not interested in visiting these annotations and attributes.
    */
   public RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     if (api < Opcodes.ASM8) {
       throw new UnsupportedOperationException("Record requires ASM8");
     }
@@ -382,8 +384,8 @@ public abstract class ClassVisitor {
    */
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     if (cv != null) {

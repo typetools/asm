@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -418,14 +420,14 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapDesc(final String descriptor) {
+    public @FieldDescriptor String mapDesc(final @FieldDescriptor String descriptor) {
       checkDescriptor(descriptor);
       return super.mapDesc(descriptor);
     }
 
     @Override
     // The argument may be "module-info" or an "ASM internal name".
-    public String mapType(final @InternalForm String type) {
+    public @InternalForm String mapType(final @InternalForm String type) {
       if (type != null && !type.equals("module-info")) {
         checkInternalName(type);
       }
@@ -433,7 +435,7 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapMethodName(final @InternalForm String owner, final String name, final String descriptor) {
+    public @Identifier String mapMethodName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
       if (name.equals("<init>") || name.equals("<clinit>")) {
         return name;
       }
@@ -446,7 +448,7 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapFieldName(final @InternalForm String owner, final String name, final String descriptor) {
+    public @Identifier String mapFieldName(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       return owner.equals(internalClassName) ? name.toUpperCase(LOCALE) : name;
     }
 

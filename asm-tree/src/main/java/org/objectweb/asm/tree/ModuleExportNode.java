@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+
 import java.util.List;
 import org.objectweb.asm.ModuleVisitor;
 
@@ -78,6 +82,6 @@ public class ModuleExportNode {
    */
   public void accept(final ModuleVisitor moduleVisitor) {
     moduleVisitor.visitExport(
-        packaze, access, modules == null ? null : modules.toArray(new String[0]));
+        packaze, access, modules == null ? null : modules.toArray(new @DotSeparatedIdentifiers String[0]));
   }
 }

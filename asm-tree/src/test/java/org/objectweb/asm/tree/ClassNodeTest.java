@@ -204,7 +204,7 @@ class ClassNodeTest extends AsmTest {
     public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {}
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -212,7 +212,7 @@ class ClassNodeTest extends AsmTest {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return null;
     }
@@ -222,7 +222,7 @@ class ClassNodeTest extends AsmTest {
 
     @Override
     public RecordComponentVisitor visitRecordComponent(
-        final String name, final String descriptor, final String signature) {
+        final @Identifier String name, final String descriptor, final String signature) {
       return null;
     }
 
@@ -239,8 +239,8 @@ class ClassNodeTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return null;

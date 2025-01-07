@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree.analysis;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

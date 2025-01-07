@@ -155,13 +155,13 @@ public final class TraceClassVisitor extends ClassVisitor {
   }
 
   @Override
-  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     p.visitOuterClass(owner, name, descriptor);
     super.visitOuterClass(owner, name, descriptor);
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitClassAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -169,7 +169,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitClassTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -202,7 +202,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final String descriptor, final String signature) {
     Printer recordComponentPrinter = p.visitRecordComponent(name, descriptor, signature);
     return new TraceRecordComponentVisitor(
         super.visitRecordComponent(name, descriptor, signature), recordComponentPrinter);
@@ -223,8 +223,8 @@ public final class TraceClassVisitor extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     Printer methodPrinter = p.visitMethod(access, name, descriptor, signature, exceptions);

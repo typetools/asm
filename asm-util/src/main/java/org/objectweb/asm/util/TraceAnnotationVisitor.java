@@ -74,7 +74,7 @@ public final class TraceAnnotationVisitor extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     Printer annotationPrinter = printer.visitAnnotation(name, descriptor);
     return new TraceAnnotationVisitor(super.visitAnnotation(name, descriptor), annotationPrinter);
   }

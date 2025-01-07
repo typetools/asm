@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
@@ -311,7 +312,7 @@ final class MethodWriter extends MethodVisitor {
   private final int descriptorIndex;
 
   /** The descriptor of this method. */
-  private final String descriptor;
+  private final @MethodDescriptor String descriptor;
 
   // Code attribute fields and sub attributes:
 
@@ -595,7 +596,7 @@ final class MethodWriter extends MethodVisitor {
       final SymbolTable symbolTable,
       final int access,
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions,
       final int compute) {
@@ -660,7 +661,7 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleAnnotation =
           AnnotationWriter.create(symbolTable, descriptor, lastRuntimeVisibleAnnotation);
@@ -672,7 +673,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -695,7 +696,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String annotationDescriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String annotationDescriptor, final boolean visible) {
     if (visible) {
       if (lastRuntimeVisibleParameterAnnotations == null) {
         lastRuntimeVisibleParameterAnnotations =
@@ -1035,7 +1036,7 @@ final class MethodWriter extends MethodVisitor {
       final int opcode,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
@@ -1070,7 +1071,7 @@ final class MethodWriter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     lastBytecodeOffset = code.length;
@@ -1411,7 +1412,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastCodeRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -1447,7 +1448,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastCodeRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -1462,7 +1463,7 @@ final class MethodWriter extends MethodVisitor {
   @Override
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -1505,7 +1506,7 @@ final class MethodWriter extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     // Create a ByteVector to hold a 'type_annotation' JVMS structure.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.20.

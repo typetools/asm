@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -48,10 +52,10 @@ public class MethodInsnNode extends AbstractInsnNode {
   public @InternalForm String owner;
 
   /** The method's name. */
-  public String name;
+  public @Identifier String name;
 
   /** The method's descriptor (see {@link org.objectweb.asm.Type}). */
-  public String desc;
+  public @MethodDescriptor String desc;
 
   /** Whether the method's owner class if an interface. */
   public boolean itf;
@@ -67,7 +71,7 @@ public class MethodInsnNode extends AbstractInsnNode {
    * @param descriptor the method's descriptor (see {@link org.objectweb.asm.Type}).
    */
   public MethodInsnNode(
-      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     this(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
 
@@ -85,8 +89,8 @@ public class MethodInsnNode extends AbstractInsnNode {
   public MethodInsnNode(
       final int opcode,
       final @InternalForm String owner,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     super(opcode);
     this.owner = owner;

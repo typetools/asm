@@ -318,7 +318,7 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitClassAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitClassAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -346,8 +346,8 @@ class PrinterTest {
     @Override
     public Printer visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return null;
@@ -370,7 +370,7 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitAnnotation(final String name, final String descriptor) {
+    public Printer visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
       return null;
     }
 
@@ -385,7 +385,7 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitFieldAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitFieldAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -405,7 +405,7 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitMethodAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitMethodAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -464,7 +464,7 @@ class PrinterTest {
     @Override
     public void visitInvokeDynamicInsn(
         final String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final Handle bootstrapMethodHandle,
         final Object... bootstrapMethodArguments) {
       // Do nothing.
@@ -515,7 +515,7 @@ class PrinterTest {
     @Override
     public void visitLocalVariable(
         final String name,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Label start,
         final Label end,

@@ -46,6 +46,7 @@ import java.io.InputStream;
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
+@SuppressWarnings("signature") // parsing and string manipulation
 public class ClassReader {
 
   /**
@@ -607,7 +608,7 @@ public class ClassReader {
       int currentAnnotationOffset = runtimeVisibleAnnotationsOffset + 2;
       while (numAnnotations-- > 0) {
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -625,7 +626,7 @@ public class ClassReader {
       int currentAnnotationOffset = runtimeInvisibleAnnotationsOffset + 2;
       while (numAnnotations-- > 0) {
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -645,7 +646,7 @@ public class ClassReader {
         // Parse the target_type, target_info and target_path fields.
         currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -669,7 +670,7 @@ public class ClassReader {
         // Parse the target_type, target_info and target_path fields.
         currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -3036,7 +3037,7 @@ public class ClassReader {
   private int readElementValue(
       final AnnotationVisitor annotationVisitor,
       final int elementValueOffset,
-      final String elementName,
+      final @Identifier String elementName,
       final char[] charBuffer) {
     int currentOffset = elementValueOffset;
     if (annotationVisitor == null) {

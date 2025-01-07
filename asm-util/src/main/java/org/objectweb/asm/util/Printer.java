@@ -489,7 +489,7 @@ public abstract class Printer {
    *     if this class visitor is not interested in visiting these annotations and attributes.
    */
   public Printer visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -678,7 +678,7 @@ public abstract class Printer {
    * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
    *     interested in visiting this annotation.
    */
-  public Printer visitRecordComponentAnnotation(final String descriptor, final boolean visible) {
+  public Printer visitRecordComponentAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -699,7 +699,7 @@ public abstract class Printer {
    *     interested in visiting this annotation.
    */
   public Printer visitRecordComponentTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -791,7 +791,7 @@ public abstract class Printer {
    * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
-  public abstract Printer visitMethodAnnotation(String descriptor, boolean visible);
+  public abstract Printer visitMethodAnnotation(@FieldDescriptor String descriptor, boolean visible);
 
   /**
    * Method type annotation. See {@link org.objectweb.asm.MethodVisitor#visitTypeAnnotation}.
@@ -955,7 +955,7 @@ public abstract class Printer {
    */
   @Deprecated
   public void visitMethodInsn(
-      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     // This method was abstract before ASM5, and was therefore always overridden (without any
     // call to 'super'). Thus, at this point we necessarily have api >= ASM5, and we must then
     // redirect the method call to the ASM5 visitMethodInsn() method.
@@ -1084,7 +1084,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public Printer visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -1114,7 +1114,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public Printer visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -1159,7 +1159,7 @@ public abstract class Printer {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }

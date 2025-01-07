@@ -27,6 +27,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
@@ -101,7 +108,7 @@ public class ClassNode extends ClassVisitor {
    * it is enclosed in an instance initializer, static initializer, instance variable initializer,
    * or class variable initializer).
    */
-  public String outerMethod;
+  public @Nullable @Identifier String outerMethod;
 
   /**
    * The descriptor of the method that contains the class, or {@literal null} if the class has no
@@ -109,7 +116,7 @@ public class ClassNode extends ClassVisitor {
    * it is enclosed in an instance initializer, static initializer, instance variable initializer,
    * or class variable initializer).
    */
-  public String outerMethodDesc;
+  public @MethodDescriptor String outerMethodDesc;
 
   /** The runtime visible annotations of this class. May be {@literal null}. */
   public List<AnnotationNode> visibleAnnotations;
@@ -210,7 +217,7 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
-  public ModuleVisitor visitModule(final String name, final int access, final String version) {
+  public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     module = new ModuleNode(name, access, version);
     return module;
   }
@@ -221,14 +228,14 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
-  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     outerClass = owner;
     outerMethod = name;
     outerMethodDesc = descriptor;
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
       visibleAnnotations = Util.add(visibleAnnotations, annotation);
@@ -240,7 +247,7 @@ public class ClassNode extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);
@@ -274,7 +281,7 @@ public class ClassNode extends ClassVisitor {
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     RecordComponentNode recordComponent = new RecordComponentNode(name, descriptor, signature);
     recordComponents = Util.add(recordComponents, recordComponent);
     return recordComponent;
@@ -295,10 +302,10 @@ public class ClassNode extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String[] exceptions) {
     MethodNode method = new MethodNode(access, name, descriptor, signature, exceptions);
     methods.add(method);
     return method;
@@ -383,7 +390,7 @@ public class ClassNode extends ClassVisitor {
    */
   public void accept(final ClassVisitor classVisitor) {
     // Visit the header.
-    String[] interfacesArray = new String[this.interfaces.size()];
+    @InternalForm String[] interfacesArray = new String[this.interfaces.size()];
     this.interfaces.toArray(interfacesArray);
     classVisitor.visit(version, access, name, signature, superName, interfacesArray);
     // Visit the source.

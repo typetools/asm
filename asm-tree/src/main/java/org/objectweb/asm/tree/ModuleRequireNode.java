@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+
 import org.objectweb.asm.ModuleVisitor;
 
 /**

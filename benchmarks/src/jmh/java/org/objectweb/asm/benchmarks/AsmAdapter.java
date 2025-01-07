@@ -142,7 +142,7 @@ public class AsmAdapter extends Adapter {
           }
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             ++count;
             return this;
           }
@@ -181,12 +181,12 @@ public class AsmAdapter extends Adapter {
     }
 
     @Override
-    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
       ++count;
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       ++count;
       return annotationVisitor;
     }
@@ -195,7 +195,7 @@ public class AsmAdapter extends Adapter {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       ++count;
       return annotationVisitor;
@@ -218,7 +218,7 @@ public class AsmAdapter extends Adapter {
       return new FieldVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -227,7 +227,7 @@ public class AsmAdapter extends Adapter {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           ++count;
           return annotationVisitor;
@@ -238,8 +238,8 @@ public class AsmAdapter extends Adapter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
@@ -256,7 +256,7 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -265,7 +265,7 @@ public class AsmAdapter extends Adapter {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           ++count;
           return annotationVisitor;

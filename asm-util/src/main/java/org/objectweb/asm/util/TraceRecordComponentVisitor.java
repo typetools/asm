@@ -67,7 +67,7 @@ public final class TraceRecordComponentVisitor extends RecordComponentVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = printer.visitRecordComponentAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -75,7 +75,7 @@ public final class TraceRecordComponentVisitor extends RecordComponentVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter =
         printer.visitRecordComponentTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(

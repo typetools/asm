@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
@@ -40,7 +43,7 @@ import org.objectweb.asm.Opcodes;
 public class AnnotationNode extends AnnotationVisitor {
 
   /** The class descriptor of the annotation class. */
-  public String desc;
+  public @FieldDescriptor String desc;
 
   /**
    * The name value pairs of this annotation. Each name value pair is stored as two consecutive
@@ -59,7 +62,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @param descriptor the class descriptor of the annotation class.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public AnnotationNode(final String descriptor) {
+  public AnnotationNode(final @FieldDescriptor String descriptor) {
     this(/* latest api = */ Opcodes.ASM9, descriptor);
     if (getClass() != AnnotationNode.class) {
       throw new IllegalStateException();
@@ -73,7 +76,7 @@ public class AnnotationNode extends AnnotationVisitor {
    *     ASM}<i>x</i> values in {@link Opcodes}.
    * @param descriptor the class descriptor of the annotation class.
    */
-  public AnnotationNode(final int api, final String descriptor) {
+  public AnnotationNode(final int api, final @FieldDescriptor String descriptor) {
     super(api);
     this.desc = descriptor;
   }
@@ -133,7 +136,7 @@ public class AnnotationNode extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     if (values == null) {
       values = new ArrayList<>(this.desc != null ? 2 : 1);
     }
@@ -188,7 +191,7 @@ public class AnnotationNode extends AnnotationVisitor {
     if (annotationVisitor != null) {
       if (values != null) {
         for (int i = 0, n = values.size(); i < n; i += 2) {
-          String name = (String) values.get(i);
+          @Identifier String name = (String) values.get(i);
           Object value = values.get(i + 1);
           accept(annotationVisitor, name, value);
         }
@@ -204,8 +207,9 @@ public class AnnotationNode extends AnnotationVisitor {
    * @param name the value name.
    * @param value the actual value.
    */
+  @SuppressWarnings("signature") // casting values of type Object
   static void accept(
-      final AnnotationVisitor annotationVisitor, final String name, final Object value) {
+      final AnnotationVisitor annotationVisitor, final @Identifier String name, final Object value) {
     if (annotationVisitor != null) {
       if (value instanceof String[]) {
         String[] typeValue = (String[]) value;

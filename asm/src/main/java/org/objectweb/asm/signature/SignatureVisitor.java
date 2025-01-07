@@ -27,7 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.signature;
 
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.Opcodes;
 
 /**
@@ -90,7 +92,7 @@ public abstract class SignatureVisitor {
    *
    * @param name the name of the formal parameter.
    */
-  public void visitFormalTypeParameter(final String name) {}
+  public void visitFormalTypeParameter(final @Identifier String name) {}
 
   /**
    * Visits the class bound of the last visited formal type parameter.
@@ -167,7 +169,7 @@ public abstract class SignatureVisitor {
    *
    * @param name the name of the type variable.
    */
-  public void visitTypeVariable(final String name) {}
+  public void visitTypeVariable(final @Identifier String name) {}
 
   /**
    * Visits a signature corresponding to an array type.

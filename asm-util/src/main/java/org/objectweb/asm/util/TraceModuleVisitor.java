@@ -98,7 +98,7 @@ public final class TraceModuleVisitor extends ModuleVisitor {
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     p.visitProvide(service, providers);
     super.visitProvide(service, providers);
   }

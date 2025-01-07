@@ -472,8 +472,8 @@ public final class Retrofitter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       addPackageReferences(Type.getType(descriptor), /* export= */ false);
@@ -684,8 +684,8 @@ public final class Retrofitter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       currentMethodName = name + descriptor;

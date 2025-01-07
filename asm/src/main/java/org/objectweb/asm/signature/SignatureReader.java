@@ -38,6 +38,7 @@ import org.checkerframework.checker.signature.qual.InternalForm;
  * @author Thomas Hallgren
  * @author Eric Bruneton
  */
+@SuppressWarnings("signature")  // parsing and string manipulation
 public class SignatureReader {
 
   /** The JVMS signature to be read. */

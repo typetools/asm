@@ -28,6 +28,10 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -76,7 +80,7 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapMethodName(final @InternalForm String owner, final String name, final String descriptor) {
+  public @Identifier String mapMethodName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     String remappedName = map(owner + '.' + name + descriptor);
     return remappedName == null ? name : remappedName;
   }
@@ -88,13 +92,13 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapAnnotationAttributeName(final String descriptor, final String name) {
+  public @DotSeparatedIdentifiers String mapAnnotationAttributeName(final String descriptor, final String name) {
     String remappedName = map(descriptor + '.' + name);
     return remappedName == null ? name : remappedName;
   }
 
   @Override
-  public String mapFieldName(final @InternalForm String owner, final String name, final String descriptor) {
+  public @Identifier String mapFieldName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     String remappedName = map(owner + '.' + name);
     return remappedName == null ? name : remappedName;
   }

@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -93,14 +98,14 @@ public class StaticInitMerger extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     MethodVisitor methodVisitor;
     if ("<clinit>".equals(name)) {
       int newAccess = Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC;
-      String newName = renamedClinitMethodPrefix + numClinitMethods++;
+      @Identifier String newName = renamedClinitMethodPrefix + numClinitMethods++;
       methodVisitor = super.visitMethod(newAccess, newName, descriptor, signature, exceptions);
 
       if (mergedClinitVisitor == null) {

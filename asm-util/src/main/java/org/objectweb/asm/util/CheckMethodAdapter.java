@@ -504,7 +504,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     checkDescriptor(version, descriptor, false);
     return new CheckAnnotationAdapter(super.visitAnnotation(descriptor, visible));
@@ -512,7 +512,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     int sort = new TypeReference(typeRef).getSort();
     if (sort != TypeReference.METHOD_TYPE_PARAMETER
@@ -730,7 +730,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       final int opcodeAndSource,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -764,7 +764,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     checkVisitCodeCalled();
@@ -887,7 +887,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     int sort = new TypeReference(typeRef).getSort();
@@ -931,7 +931,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     int sort = new TypeReference(typeRef).getSort();
@@ -947,7 +947,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   @Override
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -978,7 +978,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();

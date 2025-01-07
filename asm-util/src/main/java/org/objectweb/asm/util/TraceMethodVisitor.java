@@ -73,7 +73,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitMethodAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -81,7 +81,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitMethodTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -190,7 +190,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     p.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -242,7 +242,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitInsnAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitInsnAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -257,7 +257,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -266,7 +266,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @Override
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -282,7 +282,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     Printer annotationPrinter =
         p.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, descriptor, visible);

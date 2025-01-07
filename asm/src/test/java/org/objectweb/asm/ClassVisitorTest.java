@@ -311,7 +311,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+    public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
       return new AnnotationAdapter(api, super.visitAnnotation(name, descriptor));
     }
 
@@ -328,7 +328,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return new AnnotationAdapter(api, super.visitAnnotation(descriptor, visible));
     }
 
@@ -336,7 +336,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
@@ -355,8 +355,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return new MethodAdapter(
@@ -376,7 +376,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return new AnnotationAdapter(api, super.visitAnnotation(descriptor, visible));
     }
 
@@ -384,7 +384,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
@@ -403,7 +403,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return new AnnotationAdapter(api, super.visitAnnotation(descriptor, visible));
     }
 
@@ -411,7 +411,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
@@ -428,7 +428,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitInsnAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitInsnAnnotation(typeRef, typePath, descriptor, visible));
@@ -438,7 +438,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitTryCatchAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible));
@@ -451,7 +451,7 @@ class ClassVisitorTest extends AsmTest {
         final Label[] start,
         final Label[] end,
         final int[] index,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return new AnnotationAdapter(
           api,
@@ -469,8 +469,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       if (exceptions != null && exceptions.length > 0) {
@@ -513,8 +513,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return super.visitMethod(access ^ accessFlags, name, descriptor, signature, exceptions);
@@ -532,7 +532,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       if (visible == visibilityValue) {
         return null;
       }
@@ -543,7 +543,7 @@ class ClassVisitorTest extends AsmTest {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       if (visible == visibilityValue) {
         return null;
@@ -561,7 +561,7 @@ class ClassVisitorTest extends AsmTest {
       return new FieldVisitor(api, super.visitField(access, name, descriptor, signature, value)) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           if (visible == visibilityValue) {
             return null;
           }
@@ -572,7 +572,7 @@ class ClassVisitorTest extends AsmTest {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           if (visible == visibilityValue) {
             return null;
@@ -585,15 +585,15 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           if (visible == visibilityValue) {
             return null;
           }
@@ -604,7 +604,7 @@ class ClassVisitorTest extends AsmTest {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           if (visible == visibilityValue) {
             return null;
@@ -674,8 +674,8 @@ class ClassVisitorTest extends AsmTest {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       List<Type> argumentTypes = new ArrayList<>(Arrays.asList(Type.getArgumentTypes(descriptor)));

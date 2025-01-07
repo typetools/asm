@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -279,7 +283,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @return the internal names of the given types (see {@link Type#getInternalName()}).
    */
   private static @InternalForm String[] getInternalNames(final Type[] types) {
-    String[] names = new String[types.length];
+    @InternalForm String[] names = new String[types.length];
     for (int i = 0; i < names.length; ++i) {
       names[i] = types[i].getInternalName();
     }
@@ -817,7 +821,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
         dupX1();
         swap();
       }
-      invokeConstructor(boxedType, new Method("<init>", Type.VOID_TYPE, new Type[] {type}));
+      invokeConstructor(boxedType, new Method((@Identifier String) "<init>", Type.VOID_TYPE, new Type[] {type}));
     }
   }
 
@@ -1124,7 +1128,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param fieldType the type of the field.
    */
   private void fieldInsn(
-      final int opcode, final Type ownerType, final String name, final Type fieldType) {
+      final int opcode, final Type ownerType, final @Identifier String name, final Type fieldType) {
     mv.visitFieldInsn(opcode, ownerType.getInternalName(), name, fieldType.getDescriptor());
   }
 
@@ -1135,7 +1139,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param name the name of the field.
    * @param type the type of the field.
    */
-  public void getStatic(final Type owner, final String name, final Type type) {
+  public void getStatic(final Type owner, final @Identifier String name, final Type type) {
     fieldInsn(Opcodes.GETSTATIC, owner, name, type);
   }
 
@@ -1146,7 +1150,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param name the name of the field.
    * @param type the type of the field.
    */
-  public void putStatic(final Type owner, final String name, final Type type) {
+  public void putStatic(final Type owner, final @Identifier String name, final Type type) {
     fieldInsn(Opcodes.PUTSTATIC, owner, name, type);
   }
 
@@ -1157,7 +1161,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param name the name of the field.
    * @param type the type of the field.
    */
-  public void getField(final Type owner, final String name, final Type type) {
+  public void getField(final Type owner, final @Identifier String name, final Type type) {
     fieldInsn(Opcodes.GETFIELD, owner, name, type);
   }
 
@@ -1168,7 +1172,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    * @param name the name of the field.
    * @param type the type of the field.
    */
-  public void putField(final Type owner, final String name, final Type type) {
+  public void putField(final Type owner, final @Identifier String name, final Type type) {
     fieldInsn(Opcodes.PUTFIELD, owner, name, type);
   }
 
@@ -1243,7 +1247,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
    */
   public void invokeDynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     mv.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);

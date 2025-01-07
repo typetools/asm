@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
@@ -568,7 +569,7 @@ final class SymbolTable {
    * @return a new or already existing Symbol with the given value.
    */
   Symbol addConstantMethodref(
-      final @InternalForm String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     int tag = isInterface ? Symbol.CONSTANT_INTERFACE_METHODREF_TAG : Symbol.CONSTANT_METHODREF_TAG;
     return addConstantMemberReference(tag, owner, name, descriptor);
   }
@@ -857,7 +858,7 @@ final class SymbolTable {
       constantPool.put112(tag, referenceKind, addConstantFieldref(owner, name, (@FieldDescriptor String) descriptor).index);
     } else {
       constantPool.put112(
-          tag, referenceKind, addConstantMethodref(owner, name, descriptor, isInterface).index);
+          tag, referenceKind, addConstantMethodref(owner, name, (@MethodDescriptor String) descriptor, isInterface).index);
     }
     return put(new Entry(constantPoolCount++, tag, owner, name, descriptor, data, hashCode));
   }
@@ -950,7 +951,7 @@ final class SymbolTable {
    */
   Symbol addConstantInvokeDynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     Symbol bootstrapMethod = addBootstrapMethod(bootstrapMethodHandle, bootstrapMethodArguments);

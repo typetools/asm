@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.checkerframework.checker.signature.qual.InternalForm;
@@ -154,7 +155,7 @@ public abstract class MethodVisitor {
    * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
    *     interested in visiting this annotation.
    */
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (mv != null) {
       return mv.visitAnnotation(descriptor, visible);
     }
@@ -178,7 +179,7 @@ public abstract class MethodVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (api < Opcodes.ASM5) {
       throw new UnsupportedOperationException("visitTypeAnnotation requires ASM5, found " + (api >> 16));
     }
@@ -223,7 +224,7 @@ public abstract class MethodVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     if (mv != null) {
       return mv.visitParameterAnnotation(parameter, descriptor, visible);
     }
@@ -422,7 +423,7 @@ public abstract class MethodVisitor {
    */
   @Deprecated
   public void visitMethodInsn(
-      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     int opcodeAndSource = opcode | (api < Opcodes.ASM5 ? Opcodes.SOURCE_DEPRECATED : 0);
     visitMethodInsn(opcodeAndSource, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
@@ -442,7 +443,7 @@ public abstract class MethodVisitor {
       final int opcode,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcode & Opcodes.SOURCE_DEPRECATED) == 0) {
       if (isInterface != (opcode == Opcodes.INVOKEINTERFACE)) {
@@ -469,7 +470,7 @@ public abstract class MethodVisitor {
    */
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     if (api < Opcodes.ASM5) {
@@ -642,7 +643,7 @@ public abstract class MethodVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (api < Opcodes.ASM5) {
       throw new UnsupportedOperationException("visitInsnAnnotation requires ASM5, found " + (api >> 16));
     }
@@ -691,7 +692,7 @@ public abstract class MethodVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (api < Opcodes.ASM5) {
       throw new UnsupportedOperationException("visitTryCatchAnnotation requires ASM5, found " + (api >> 16));
     }
@@ -717,7 +718,7 @@ public abstract class MethodVisitor {
    */
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -753,7 +754,7 @@ public abstract class MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     if (api < Opcodes.ASM5) {
       throw new UnsupportedOperationException("visitLocalVariableAnnotation requires ASM5, found " + (api >> 16));

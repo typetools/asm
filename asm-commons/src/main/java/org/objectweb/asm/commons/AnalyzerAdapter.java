@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -286,7 +291,7 @@ public class AnalyzerAdapter extends MethodVisitor {
       final int opcodeAndSource,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -329,7 +334,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -432,7 +437,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   @Override
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -892,7 +897,7 @@ public class AnalyzerAdapter extends MethodVisitor {
         break;
       case Opcodes.ANEWARRAY:
         pop();
-        pushDescriptor("[" + Type.getObjectType(stringArg));
+        pushDescriptor((@InternalForm String)("[" + Type.getObjectType(stringArg)));
         break;
       case Opcodes.CHECKCAST:
         pop();

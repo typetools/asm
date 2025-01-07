@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -150,7 +152,7 @@ public class LocalVariablesSorter extends MethodVisitor {
   @Override
   public void visitLocalVariable(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -166,7 +168,7 @@ public class LocalVariablesSorter extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     Type type = Type.getType(descriptor);
     int[] remappedIndex = new int[index.length];
@@ -211,7 +213,7 @@ public class LocalVariablesSorter extends MethodVisitor {
         } else if (localType == Opcodes.DOUBLE) {
           varType = Type.DOUBLE_TYPE;
         } else if (localType instanceof String) {
-          varType = Type.getObjectType((String) localType);
+          varType = Type.getObjectType((@InternalForm String) localType);
         }
         setFrameLocal(remap(oldVar, varType), localType);
       }

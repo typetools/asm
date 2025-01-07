@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.ClassVisitor;
@@ -154,7 +157,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     if (requires == null) {
       requires = new ArrayList<>(5);
     }
@@ -178,7 +181,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     if (uses == null) {
       uses = new ArrayList<>(5);
     }
@@ -186,7 +189,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     if (provides == null) {
       provides = new ArrayList<>(5);
     }

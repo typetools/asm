@@ -443,7 +443,7 @@ class MethodVisitorTest extends AsmTest {
     @Deprecated
     @Override
     public void visitMethodInsn(
-        final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
       super.visitMethodInsn(opcode, owner, name + "4", descriptor);
       log.append("MethodVisitor4:" + name + descriptor + ";");
     }
@@ -471,7 +471,7 @@ class MethodVisitorTest extends AsmTest {
         final int opcode,
         final @InternalForm String owner,
         final @Identifier String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       super.visitMethodInsn(opcode, owner, name + "5", descriptor, isInterface);
       log.append("MethodVisitor5:" + name + descriptor + ";");
@@ -519,7 +519,7 @@ class MethodVisitorTest extends AsmTest {
     @Override
     @SuppressWarnings("deprecation")
     public void visitMethodInsn(
-        final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
       super.visitMethodInsn(opcode, owner, name, descriptor);
       log.append("UserTraceMethodVisitor4:" + name + descriptor + ";");
     }
@@ -537,7 +537,7 @@ class MethodVisitorTest extends AsmTest {
         final int opcode,
         final @InternalForm String owner,
         final @Identifier String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
       log.append("UserTraceMethodVisitor5:" + name + descriptor + ";");

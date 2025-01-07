@@ -28,6 +28,11 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collections;
 import java.util.Comparator;
 import org.objectweb.asm.MethodVisitor;
@@ -66,8 +71,8 @@ public class TryCatchBlockSorter extends MethodNode {
   public TryCatchBlockSorter(
       final MethodVisitor methodVisitor,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     this(
@@ -87,8 +92,8 @@ public class TryCatchBlockSorter extends MethodNode {
       final int api,
       final MethodVisitor methodVisitor,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     super(api, access, name, descriptor, signature, exceptions);

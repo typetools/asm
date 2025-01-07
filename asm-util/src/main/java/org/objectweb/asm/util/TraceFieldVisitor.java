@@ -65,7 +65,7 @@ public final class TraceFieldVisitor extends FieldVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitFieldAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -73,7 +73,7 @@ public final class TraceFieldVisitor extends FieldVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitFieldTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);

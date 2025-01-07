@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.signature;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.Opcodes;
 
 /**
@@ -84,7 +87,7 @@ public class SignatureWriter extends SignatureVisitor {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public void visitFormalTypeParameter(final String name) {
+  public void visitFormalTypeParameter(final @Identifier String name) {
     if (!hasFormals) {
       hasFormals = true;
       stringBuilder.append('<');
@@ -147,7 +150,7 @@ public class SignatureWriter extends SignatureVisitor {
   }
 
   @Override
-  public void visitTypeVariable(final String name) {
+  public void visitTypeVariable(final @Identifier String name) {
     stringBuilder.append('T');
     stringBuilder.append(name);
     stringBuilder.append(';');
@@ -160,7 +163,7 @@ public class SignatureWriter extends SignatureVisitor {
   }
 
   @Override
-  public void visitClassType(final String name) {
+  public void visitClassType(final @InternalForm String name) {
     stringBuilder.append('L');
     stringBuilder.append(name);
     // Pushes 'false' on the stack, meaning that this type does not have type arguments (as far as

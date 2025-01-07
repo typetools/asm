@@ -27,7 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import org.plumelib.reflection.Signatures;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
@@ -348,7 +350,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final void visitOuterClass(
-      final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+      final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     enclosingClassIndex = symbolTable.addConstantClass(owner).index;
     if (name != null && descriptor != null) {
       enclosingMethodIndex = symbolTable.addConstantNameAndType(name, descriptor);
@@ -356,7 +358,7 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public final AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleAnnotation =
           AnnotationWriter.create(symbolTable, descriptor, lastRuntimeVisibleAnnotation);
@@ -368,7 +370,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -432,7 +434,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     RecordComponentWriter recordComponentWriter =
         new RecordComponentWriter(symbolTable, name, descriptor, signature);
     if (firstRecordComponent == null) {
@@ -463,8 +465,8 @@ public class ClassWriter extends ClassVisitor {
   @Override
   public final MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     MethodWriter methodWriter =
@@ -969,7 +971,7 @@ public class ClassWriter extends ClassVisitor {
    */
   public int newInvokeDynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     return symbolTable.addConstantInvokeDynamic(
@@ -1004,7 +1006,7 @@ public class ClassWriter extends ClassVisitor {
    * @return the index of a new or already existing method reference item.
    */
   public int newMethod(
-      final @InternalForm String owner, final @Identifier String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     return symbolTable.addConstantMethodref(owner, name, descriptor, isInterface).index;
   }
 
@@ -1017,7 +1019,7 @@ public class ClassWriter extends ClassVisitor {
    * @param descriptor a type descriptor.
    * @return the index of a new or already existing name and type item.
    */
-  public int newNameType(final String name, final String descriptor) {
+  public int newNameType(final String name, final @FieldDescriptor String descriptor) {
     return symbolTable.addConstantNameAndType(name, descriptor);
   }
 

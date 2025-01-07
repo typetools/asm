@@ -28,6 +28,9 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -72,12 +75,12 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     super.visitPackage(remapper.mapPackageName(packaze));
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     super.visitRequire(remapper.mapModuleName(module), access, version);
   }
 
@@ -111,7 +114,7 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     String[] remappedProviders = new String[providers.length];
     for (int i = 0; i < providers.length; ++i) {
       remappedProviders[i] = remapper.mapType(providers[i]);

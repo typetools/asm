@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.InternalForm;
 
 /**
@@ -403,7 +404,7 @@ class Frame {
   final void setInputFrameFromDescriptor(
       final SymbolTable symbolTable,
       final int access,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final int maxLocals) {
     inputLocals = new int[maxLocals];
     inputStack = new int[0];

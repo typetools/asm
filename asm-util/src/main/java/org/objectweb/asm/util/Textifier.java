@@ -267,7 +267,7 @@ public class Textifier extends Printer {
   }
 
   @Override
-  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab).append("OUTERCLASS ");
     appendDescriptor(INTERNAL_NAME, owner);
@@ -281,7 +281,7 @@ public class Textifier extends Printer {
   }
 
   @Override
-  public Textifier visitClassAnnotation(final String descriptor, final boolean visible) {
+  public Textifier visitClassAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     text.add("\n");
     return visitAnnotation(descriptor, visible);
   }
@@ -337,7 +337,7 @@ public class Textifier extends Printer {
 
   @Override
   public Printer visitRecordComponent(
-      final String name, final @FieldDescriptor String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab).append("RECORDCOMPONENT ");
     if (signature != null) {
@@ -396,8 +396,8 @@ public class Textifier extends Printer {
   @Override
   public Textifier visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {
     stringBuilder.setLength(0);
@@ -678,7 +678,7 @@ public class Textifier extends Printer {
   }
 
   @Override
-  public Textifier visitAnnotation(final String name, final @FieldDescriptor String descriptor) {
+  public Textifier visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     visitAnnotationValue(name);
     stringBuilder.append('@');
     appendDescriptor(FIELD_DESCRIPTOR, descriptor);
@@ -713,13 +713,13 @@ public class Textifier extends Printer {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public Textifier visitRecordComponentAnnotation(final String descriptor, final boolean visible) {
+  public Textifier visitRecordComponentAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     return visitAnnotation(descriptor, visible);
   }
 
   @Override
   public Printer visitRecordComponentTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 
@@ -738,7 +738,7 @@ public class Textifier extends Printer {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public Textifier visitFieldAnnotation(final String descriptor, final boolean visible) {
+  public Textifier visitFieldAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     return visitAnnotation(descriptor, visible);
   }
 
@@ -778,7 +778,7 @@ public class Textifier extends Printer {
   }
 
   @Override
-  public Textifier visitMethodAnnotation(final String descriptor, final boolean visible) {
+  public Textifier visitMethodAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     return visitAnnotation(descriptor, visible);
   }
 
@@ -918,7 +918,7 @@ public class Textifier extends Printer {
       final int opcode,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab2).append(OPCODES[opcode]).append(' ');
@@ -935,7 +935,7 @@ public class Textifier extends Printer {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     stringBuilder.setLength(0);
@@ -1043,7 +1043,7 @@ public class Textifier extends Printer {
 
   @Override
   public Printer visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 

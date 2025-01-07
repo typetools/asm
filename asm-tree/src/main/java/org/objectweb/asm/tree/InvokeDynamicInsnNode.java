@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+
 import java.util.Map;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
@@ -43,7 +45,7 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode {
   public String name;
 
   /** The method's descriptor (see {@link org.objectweb.asm.Type}). */
-  public String desc;
+  public @MethodDescriptor String desc;
 
   /** The bootstrap method. */
   public Handle bsm;
@@ -64,7 +66,7 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode {
    */
   public InvokeDynamicInsnNode(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     super(Opcodes.INVOKEDYNAMIC);

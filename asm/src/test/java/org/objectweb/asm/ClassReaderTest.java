@@ -496,7 +496,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         new EmptyClassVisitor(apiParameter.value()) {
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+          public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
             return new AnnotationVisitor(api) {};
           }
 
@@ -504,7 +504,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public AnnotationVisitor visitTypeAnnotation(
               final int typeRef,
               final TypePath typePath,
-              final String descriptor,
+              final @FieldDescriptor String descriptor,
               final boolean visible) {
             return new AnnotationVisitor(api) {};
           }
@@ -531,7 +531,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               public AnnotationVisitor visitTypeAnnotation(
                   final int typeRef,
                   final TypePath typePath,
-                  final String descriptor,
+                  final @FieldDescriptor String descriptor,
                   final boolean visible) {
                 return new AnnotationVisitor(api) {};
               }
@@ -635,7 +635,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         new AnnotationVisitor(api) {
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             return this;
           }
 
@@ -650,7 +650,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return annotationVisitor;
     }
 
@@ -658,7 +658,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return annotationVisitor;
     }
@@ -673,7 +673,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
       return new FieldVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 
@@ -681,7 +681,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           return annotationVisitor;
         }
@@ -691,8 +691,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
         final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
@@ -703,7 +703,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 
@@ -711,7 +711,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           return annotationVisitor;
         }

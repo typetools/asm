@@ -27,9 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.BinaryName;
 import org.checkerframework.checker.signature.qual.BinaryNameOrPrimitiveType;
 import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -507,7 +510,8 @@ public final class Type {
    *
    * @return the descriptor corresponding to this type.
    */
-  public String getDescriptor() {
+  @SuppressWarnings("return") // string concatenation
+  public @FieldDescriptor String getDescriptor() {
     if (sort == OBJECT) {
       return valueBuffer.substring(valueBegin - 1, valueEnd + 1);
     } else if (sort == INTERNAL) {
@@ -523,7 +527,8 @@ public final class Type {
    * @param clazz an object class, a primitive class or an array class.
    * @return the descriptor corresponding to the given class.
    */
-  public static String getDescriptor(final Class<?> clazz) {
+  @SuppressWarnings("return") // string concatenation
+  public static @FieldDescriptor String getDescriptor(final Class<?> clazz) {
     StringBuilder stringBuilder = new StringBuilder();
     appendDescriptor(clazz, stringBuilder);
     return stringBuilder.toString();
@@ -535,7 +540,8 @@ public final class Type {
    * @param constructor a {@link Constructor} object.
    * @return the descriptor of the given constructor.
    */
-  public static String getConstructorDescriptor(final Constructor<?> constructor) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getConstructorDescriptor(final Constructor<?> constructor) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     Class<?>[] parameters = constructor.getParameterTypes();
@@ -552,7 +558,8 @@ public final class Type {
    * @param argumentTypes the argument types of the method.
    * @return the descriptor corresponding to the given argument and return types.
    */
-  public static String getMethodDescriptor(final Type returnType, final Type... argumentTypes) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getMethodDescriptor(final Type returnType, final Type... argumentTypes) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     for (Type argumentType : argumentTypes) {
@@ -569,7 +576,8 @@ public final class Type {
    * @param method a {@link Method} object.
    * @return the descriptor of the given method.
    */
-  public static String getMethodDescriptor(final Method method) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getMethodDescriptor(final Method method) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     Class<?>[] parameters = method.getParameterTypes();
