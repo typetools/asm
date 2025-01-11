@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -68,7 +70,7 @@ public final class TraceAnnotationVisitor extends AnnotationVisitor {
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
     printer.visitEnum(name, descriptor, value);
     super.visitEnum(name, descriptor, value);
   }

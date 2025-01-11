@@ -27,6 +27,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -403,7 +410,7 @@ public abstract class Printer {
    * @param descriptor the descriptor of the method that contains the class, or {@literal null} if
    *     the class is not enclosed in a method of its enclosing class.
    */
-  public abstract void visitOuterClass(@InternalForm String owner, @Nullable @Identifier String name, String descriptor);
+  public abstract void visitOuterClass(@InternalForm String owner, @Nullable @Identifier String name, @MethodDescriptor String descriptor);
 
   /**
    * Class annotation. See {@link org.objectweb.asm.ClassVisitor#visitAnnotation}.
@@ -412,7 +419,7 @@ public abstract class Printer {
    * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
-  public abstract Printer visitClassAnnotation(String descriptor, boolean visible);
+  public abstract Printer visitClassAnnotation(@FieldDescriptor String descriptor, boolean visible);
 
   /**
    * Class type annotation. See {@link org.objectweb.asm.ClassVisitor#visitTypeAnnotation}.
@@ -429,7 +436,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public Printer visitClassTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -527,7 +534,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public abstract Printer visitMethod(
-      int access, String name, String descriptor, String signature, @InternalForm String @Nullable [] exceptions);
+      int access, @Identifier String name, @MethodDescriptor String descriptor, String signature, @InternalForm String @Nullable [] exceptions);
 
   /** Class end. See {@link org.objectweb.asm.ClassVisitor#visitEnd}. */
   public abstract void visitClassEnd();
@@ -551,7 +558,7 @@ public abstract class Printer {
    *
    * @param packaze the internal name of a package (see {@link Type#getInternalName()}).
    */
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -576,7 +583,7 @@ public abstract class Printer {
    * @param modules the fully qualified names (using dots) of the modules that can access the public
    *     classes of the exported package, or {@literal null}.
    */
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -589,7 +596,7 @@ public abstract class Printer {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -643,7 +650,7 @@ public abstract class Printer {
    * @param descriptor the class descriptor of the enumeration class.
    * @param value the actual enumeration value.
    */
-  public abstract void visitEnum(String name, String descriptor, String value);
+  public abstract void visitEnum(String name, @FieldDescriptor String descriptor, String value);
 
   /**
    * Nested annotation value. See {@link org.objectweb.asm.AnnotationVisitor#visitAnnotation}.
@@ -652,7 +659,7 @@ public abstract class Printer {
    * @param descriptor the class descriptor of the nested annotation class.
    * @return the printer.
    */
-  public abstract Printer visitAnnotation(String name, String descriptor);
+  public abstract Printer visitAnnotation(@Identifier String name, @FieldDescriptor String descriptor);
 
   /**
    * Annotation array value. See {@link org.objectweb.asm.AnnotationVisitor#visitArray}.
@@ -733,7 +740,7 @@ public abstract class Printer {
    * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
-  public abstract Printer visitFieldAnnotation(String descriptor, boolean visible);
+  public abstract Printer visitFieldAnnotation(@FieldDescriptor String descriptor, boolean visible);
 
   /**
    * Field type annotation. See {@link org.objectweb.asm.FieldVisitor#visitTypeAnnotation}.
@@ -748,7 +755,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public Printer visitFieldTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -809,7 +816,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public Printer visitMethodTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -846,7 +853,7 @@ public abstract class Printer {
    * @return the printer.
    */
   public abstract Printer visitParameterAnnotation(
-      int parameter, String descriptor, boolean visible);
+      int parameter, @FieldDescriptor String descriptor, boolean visible);
 
   /**
    * Method attribute. See {@link org.objectweb.asm.MethodVisitor#visitAttribute}.
@@ -977,7 +984,7 @@ public abstract class Printer {
       final int opcode,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
@@ -1286,7 +1293,7 @@ public abstract class Printer {
 
     TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, output);
 
-    String className;
+    @FullyQualifiedName String className;
     int parsingOptions;
     if (args[0].equals("-nodebug")) {
       className = args[1];

@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -409,8 +414,8 @@ public class CheckMethodAdapter extends MethodVisitor {
    */
   public CheckMethodAdapter(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
     this(
@@ -437,8 +442,8 @@ public class CheckMethodAdapter extends MethodVisitor {
   protected CheckMethodAdapter(
       final int api,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
     this(
@@ -548,7 +553,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     if ((visible
             && visibleAnnotableParameterCount > 0
@@ -1091,7 +1096,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       return;
     }
     if (value instanceof String) {
-      checkInternalName(version, (String) value, "Invalid stack frame value");
+      checkInternalName(version, (@InternalForm String) value, "Invalid stack frame value");
     } else if (value instanceof Label) {
       checkLabel((Label) value, /* checkVisited= */ false, "label");
     } else {
@@ -1404,7 +1409,7 @@ public class CheckMethodAdapter extends MethodVisitor {
           throw new IllegalArgumentException(INVALID_DESCRIPTOR + descriptor);
         }
         try {
-          checkInternalClassName(version, descriptor.substring(startPos + 1, endPos), null);
+          checkInternalClassName(version, (@InternalForm String) descriptor.substring(startPos + 1, endPos), null);
         } catch (IllegalArgumentException e) {
           throw new IllegalArgumentException(INVALID_DESCRIPTOR + descriptor, e);
         }

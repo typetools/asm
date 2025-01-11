@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -316,7 +322,7 @@ public class ASMifier extends Printer {
 
   @Override
   public ASMifier visitClassTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 
@@ -463,7 +469,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     stringBuilder.setLength(0);
     stringBuilder.append("moduleVisitor.visitPackage(");
     appendConstant(packaze);
@@ -485,17 +491,17 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     visitExportOrOpen("moduleVisitor.visitExport(", packaze, access, modules);
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     visitExportOrOpen("moduleVisitor.visitOpen(", packaze, access, modules);
   }
 
   private void visitExportOrOpen(
-      final String visitMethod, final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+      final String visitMethod, final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     stringBuilder.setLength(0);
     stringBuilder.append(visitMethod);
     appendConstant(packaze);
@@ -558,7 +564,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
     stringBuilder.setLength(0);
     stringBuilder.append(ANNOTATION_VISITOR).append(id).append(".visitEnum(");
     appendConstant(name);
@@ -705,7 +711,7 @@ public class ASMifier extends Printer {
 
   @Override
   public ASMifier visitMethodTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 
@@ -725,7 +731,7 @@ public class ASMifier extends Printer {
 
   @Override
   public ASMifier visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     stringBuilder.setLength(0);
     stringBuilder
         .append("{\n")

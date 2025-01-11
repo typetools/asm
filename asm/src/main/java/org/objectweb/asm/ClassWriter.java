@@ -885,7 +885,7 @@ public class ClassWriter extends ClassVisitor {
    * @param packageName name of the package in its internal form.
    * @return the index of a new or already existing module reference item.
    */
-  public int newPackage(final @InternalForm String packageName) {
+  public int newPackage(final @DotSeparatedIdentifiers String packageName) {
     return symbolTable.addConstantPackage(packageName).index;
   }
 

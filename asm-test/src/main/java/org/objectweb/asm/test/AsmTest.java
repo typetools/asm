@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.test;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,6 +166,9 @@ public abstract class AsmTest {
     JDK14_ALL_STRUCTURES_EMPTY_RECORD("jdk14.AllStructures$EmptyRecord", JdkVersion.JDK14, true),
     JDK15_ALL_STRUCTURES("jdk15.AllStructures", JdkVersion.JDK15, true);
 
+    // The documentation of getName says this is @FullyQualifiedName, but there
+    // are examples above that are not, such as "jdk9.module-info" and
+    // "jdk8.Artificial$()$Structures".
     private final String name;
     private final JdkVersion jdkVersion;
     private final boolean preview;
@@ -179,7 +184,7 @@ public abstract class AsmTest {
       this(name, jdkVersion, false);
     }
 
-    PrecompiledClass(final String name) {
+    PrecompiledClass(final @FullyQualifiedName String name) {
       this(name, JdkVersion.JDK7, false);
     }
 
@@ -188,6 +193,7 @@ public abstract class AsmTest {
      *
      * @return the fully qualified name of this class.
      */
+    @SuppressWarnings("signature:return") // bug? some constructors pass a values that is not fully-qualified.
     public @FullyQualifiedName String getName() {
       return name;
     }
@@ -197,6 +203,7 @@ public abstract class AsmTest {
      *
      * @return the internal name of this class.
      */
+    @SuppressWarnings("signature:return") // string concatenation
     public @InternalForm String getInternalName() {
       return name.endsWith(ClassFile.MODULE_INFO) ? ClassFile.MODULE_INFO : name.replace('.', '/');
     }
@@ -269,9 +276,9 @@ public abstract class AsmTest {
     INVALID_VERIFICATION_TYPE_INFO("invalid.InvalidVerificationTypeInfo"),
     INVALID_WIDE_OPCODE("invalid.InvalidWideOpcode");
 
-    private final String name;
+    private final @FullyQualifiedName String name;
 
-    InvalidClass(final String name) {
+    InvalidClass(final @FullyQualifiedName String name) {
       this.name = name;
     }
 

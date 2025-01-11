@@ -138,7 +138,7 @@ public class MethodRemapper extends MethodVisitor {
           remappedFrameTypes = new Object[numTypes];
           System.arraycopy(frameTypes, 0, remappedFrameTypes, 0, numTypes);
         }
-        remappedFrameTypes[i] = remapper.mapType((String) frameTypes[i]);
+        remappedFrameTypes[i] = remapper.mapType((@InternalForm String) frameTypes[i]);
       }
     }
     return remappedFrameTypes == null ? frameTypes : remappedFrameTypes;

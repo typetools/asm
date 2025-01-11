@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.util.Collections;
 import java.util.List;
 import org.objectweb.asm.Opcodes;
@@ -343,7 +344,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
     } else if (type == Opcodes.UNINITIALIZED_THIS) {
       return interpreter.newValue(Type.getObjectType(owner));
     } else if (type instanceof String) {
-      return interpreter.newValue(Type.getObjectType((String) type));
+      return interpreter.newValue(Type.getObjectType((@InternalForm String) type));
     } else if (type instanceof LabelNode) {
       AbstractInsnNode referencedNode = (LabelNode) type;
       while (referencedNode != null && !isJvmInsnNode(referencedNode)) {

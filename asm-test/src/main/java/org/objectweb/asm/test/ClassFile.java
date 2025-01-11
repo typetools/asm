@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.test;
 
+import org.checkerframework.checker.signature.qual.BinaryName;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -125,7 +126,7 @@ public class ClassFile {
   private final byte[] classBytes;
 
   /** The name of the class contained in this class file, lazily computed. */
-  private String className;
+  private @BinaryName String className;
 
   /** The dump of the constant pool of {@link #classBytes}, lazily computed. */
   private String constantPoolDump;
@@ -180,7 +181,7 @@ public class ClassFile {
    * @throws ReflectiveOperationException if the class is invalid or if an error occurs in its
    *     constructor.
    */
-  static Object newInstance(final String className, final byte[] classContent)
+  static Object newInstance(final @BinaryName String className, final byte[] classContent)
       throws ReflectiveOperationException {
     if (className.endsWith(MODULE_INFO)) {
       if (Util.getMajorJavaVersion() < 9) {
@@ -2615,11 +2616,11 @@ public class ClassFile {
 
   /** A simple ClassLoader to test that a class can be loaded in the JVM. */
   private static class ByteClassLoader extends ClassLoader {
-    private final String className;
+    private final @BinaryName String className;
     private final byte[] classContent;
     private boolean classLoaded;
 
-    ByteClassLoader(final String className, final byte[] classContent) {
+    ByteClassLoader(final @BinaryName String className, final byte[] classContent) {
       this.className = className;
       this.classContent = classContent;
     }
@@ -2629,7 +2630,7 @@ public class ClassFile {
     }
 
     @Override
-    protected Class<?> loadClass(final String name, final boolean resolve)
+    protected Class<?> loadClass(final @BinaryName String name, final boolean resolve)
         throws ClassNotFoundException {
       if (name.equals(className)) {
         classLoaded = true;

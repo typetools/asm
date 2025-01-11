@@ -137,7 +137,7 @@ public class AsmAdapter extends Adapter {
           }
 
           @Override
-          public void visitEnum(final String name, final String descriptor, final String value) {
+          public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
             ++count;
           }
 
@@ -278,7 +278,7 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -322,7 +322,7 @@ public class AsmAdapter extends Adapter {
         @Override
         @Deprecated
         public void visitMethodInsn(
-            final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
           ++count;
         }
 
@@ -331,7 +331,7 @@ public class AsmAdapter extends Adapter {
             final int opcode,
             final @InternalForm String owner,
             final @Identifier String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           ++count;
         }

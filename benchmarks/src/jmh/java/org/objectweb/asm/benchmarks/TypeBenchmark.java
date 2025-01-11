@@ -76,7 +76,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         new AnnotationVisitor(api) {
 
           @Override
-          public void visitEnum(final String name, final String descriptor, final String value) {
+          public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
             descriptors.add(descriptor);
           }
 
@@ -170,7 +170,7 @@ public class TypeBenchmark extends AbstractBenchmark {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
         }
@@ -186,7 +186,7 @@ public class TypeBenchmark extends AbstractBenchmark {
             final int opcode,
             final @InternalForm String owner,
             final @Identifier String name,
-            final String descriptor,
+            final @MethodDescriptior String descriptor,
             final boolean isInterface) {
           methodDescriptors.add(descriptor);
         }

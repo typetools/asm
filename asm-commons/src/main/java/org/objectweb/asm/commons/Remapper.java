@@ -84,7 +84,9 @@ public abstract class Remapper {
         String remappedInternalName = map(type.getInternalName());
         return remappedInternalName != null ? Type.getObjectType(remappedInternalName) : type;
       case Type.METHOD:
-        return Type.getMethodType(mapMethodDesc(type.getDescriptor()));
+        @SuppressWarnings("signature") // BUG? passing a field descriptor to mapMethodDesc
+        Type result = Type.getMethodType(mapMethodDesc(type.getDescriptor()));
+        return result;
       default:
         return type;
     }
@@ -151,7 +153,9 @@ public abstract class Remapper {
     } else {
       stringBuilder.append(')').append(mapType(returnType).getDescriptor());
     }
-    return stringBuilder.toString();
+    @SuppressWarnings("signature:return") // string concatenation
+    @MethodDescriptor String result = stringBuilder.toString();
+    return result;
   }
 
   /**
@@ -273,7 +277,9 @@ public abstract class Remapper {
    * @param innerName the internal name of the inner class (see {@link Type#getInternalName()}).
    * @return the new inner name of the inner class.
    */
-  public String mapInnerClassName(
+  @SuppressWarnings("signature:return") // does this return an @Identifier or an @InternalForm?
+  // and, should "innerName" be an Identifier or an @InternalForm?
+  public @Identifier String mapInnerClassName(
       final @InternalForm String name, final @InternalForm String ownerName, final @InternalForm String innerName) {
     final String remappedInnerName = this.mapType(name);
 

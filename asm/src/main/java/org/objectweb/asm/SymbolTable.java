@@ -1031,7 +1031,7 @@ final class SymbolTable {
    * @param packageName the internal name of a package.
    * @return a new or already existing Symbol with the given value.
    */
-  Symbol addConstantPackage(final @InternalForm String packageName) {
+  Symbol addConstantPackage(final @DotSeparatedIdentifiers String packageName) {
     return addConstantUtf8Reference(Symbol.CONSTANT_PACKAGE_TAG, packageName);
   }
 

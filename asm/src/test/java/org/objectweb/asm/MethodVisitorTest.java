@@ -496,7 +496,7 @@ class MethodVisitorTest extends AsmTest {
         final int opcodeAndSource,
         final @InternalForm String owner,
         final @Identifier String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
         // Redirect the call to the deprecated version of this method.
@@ -559,7 +559,7 @@ class MethodVisitorTest extends AsmTest {
         final int opcode,
         final @InternalForm String owner,
         final @Identifier String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       log.append("LogMethodVisitor:" + name + descriptor + ";");
     }

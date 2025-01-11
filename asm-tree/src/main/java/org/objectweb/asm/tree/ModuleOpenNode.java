@@ -44,7 +44,7 @@ public class ModuleOpenNode {
   /**
    * The internal name of the opened package (see {@link org.objectweb.asm.Type#getInternalName()}).
    */
-  public @InternalForm String packaze;
+  public @DotSeparatedIdentifiers String packaze;
 
   /**
    * The access flag of the opened package, valid values are among {@code ACC_SYNTHETIC} and {@code
@@ -68,7 +68,7 @@ public class ModuleOpenNode {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public ModuleOpenNode(final @InternalForm String packaze, final int access, final List<@DotSeparatedIdentifiers String> modules) {
+  public ModuleOpenNode(final @DotSeparatedIdentifiers String packaze, final int access, final List<@DotSeparatedIdentifiers String> modules) {
     this.packaze = packaze;
     this.access = access;
     this.modules = modules;

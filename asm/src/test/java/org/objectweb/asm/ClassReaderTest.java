@@ -409,8 +409,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
               final @InternalForm String @Nullable [] exceptions) {
             return null;
@@ -523,7 +523,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
             return new RecordComponentVisitor(api) {
               @Override
               public AnnotationVisitor visitAnnotation(
-                  final String descriptor, final boolean visible) {
+                  final @FieldDescriptor String descriptor, final boolean visible) {
                 return new AnnotationVisitor(api) {};
               }
 
@@ -551,8 +551,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
               final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api) {};
@@ -580,14 +580,14 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
               final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api, null) {
               @Override
               public AnnotationVisitor visitParameterAnnotation(
-                  final int parameter, final String descriptor, final boolean visible) {
+                  final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
                 if (descriptor.equals("Ljava/lang/Deprecated;")) {
                   parameterIndex.set(parameter);
                 }
@@ -718,7 +718,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 

@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Handle;
@@ -107,7 +111,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitParameterAnnotation(parameter, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitParameterAnnotation(parameter, descriptor, visible), annotationPrinter);
@@ -167,7 +171,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
       final int opcode,
       final @InternalForm String owner,
       final @Identifier String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     // Call the method that p is supposed to implement, depending on its api version.
     if (p.api < Opcodes.ASM5) {

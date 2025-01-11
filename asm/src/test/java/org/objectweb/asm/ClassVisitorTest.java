@@ -270,7 +270,7 @@ class ClassVisitorTest extends AsmTest {
               public void visitMainClass(final @InternalForm String mainClass) {}
 
               @Override
-              public void visitPackage(final @InternalForm String packaze) {}
+              public void visitPackage(final @DotSeparatedIdentifiers String packaze) {}
 
               @Override
               public void visitRequire(
@@ -280,13 +280,13 @@ class ClassVisitorTest extends AsmTest {
 
               @Override
               public void visitExport(
-                  final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+                  final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
                 super.visitExport(packaze, access, (String[]) null);
               }
 
               @Override
               public void visitOpen(
-                  final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+                  final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
                 super.visitOpen(packaze, access, (String[]) null);
               }
             };
@@ -419,7 +419,7 @@ class ClassVisitorTest extends AsmTest {
 
     @Override
     public AnnotationVisitor visitParameterAnnotation(
-        final int parameter, final String descriptor, final boolean visible) {
+        final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
       return new AnnotationAdapter(
           api, super.visitParameterAnnotation(parameter, descriptor, visible));
     }
@@ -614,7 +614,7 @@ class ClassVisitorTest extends AsmTest {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           if (visible == visibilityValue) {
             return null;
           }

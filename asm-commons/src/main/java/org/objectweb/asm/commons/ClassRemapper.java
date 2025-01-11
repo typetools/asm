@@ -201,6 +201,7 @@ public class ClassRemapper extends ClassVisitor {
   }
 
   @Override
+  @SuppressWarnings("signature:argument") // is an inner name an @Identifier or an @InternalForm??
   public void visitInnerClass(
       final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     super.visitInnerClass(

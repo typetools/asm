@@ -245,8 +245,8 @@ public final class Retrofitter {
             @Override
             public MethodVisitor visitMethod(
                 final int access,
-                final String name,
-                final String descriptor,
+                final @Identifier String name,
+                final @MethodDescriptor String descriptor,
                 final String signature,
                 final @InternalForm String @Nullable [] exceptions) {
               if ((access & ACC_PRIVATE) != 0) {
@@ -282,8 +282,8 @@ public final class Retrofitter {
             @Override
             public MethodVisitor visitMethod(
                 final int access,
-                final String name,
-                final String descriptor,
+                final @Identifier String name,
+                final @MethodDescriptor String descriptor,
                 final String signature,
                 final @InternalForm String @Nullable [] exceptions) {
               currentMethodName = name + descriptor;
@@ -320,7 +320,7 @@ public final class Retrofitter {
                     final int opcode,
                     final @InternalForm String owner,
                     final @Identifier String name,
-                    final String descriptor,
+                    final @MethodDescriptor String descriptor,
                     final boolean isInterface) {
                   checkAccess(owner, name, descriptor);
                 }
@@ -499,7 +499,7 @@ public final class Retrofitter {
             final int opcode,
             final @InternalForm String owner,
             final @Identifier String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           addPackageReferences(Type.getType(descriptor), /* export= */ false);
           // Remove the addSuppressed() method calls generated for try-with-resources statements.
@@ -703,7 +703,7 @@ public final class Retrofitter {
             final int opcode,
             final @InternalForm String owner,
             final @Identifier String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           check(owner, name + descriptor);
         }

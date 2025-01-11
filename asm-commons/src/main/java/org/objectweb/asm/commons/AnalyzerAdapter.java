@@ -897,11 +897,11 @@ public class AnalyzerAdapter extends MethodVisitor {
         break;
       case Opcodes.ANEWARRAY:
         pop();
-        pushDescriptor((@InternalForm String)("[" + Type.getObjectType(stringArg)));
+        pushDescriptor((@InternalForm String)("[" + Type.getObjectType((@InternalForm String) stringArg)));
         break;
       case Opcodes.CHECKCAST:
         pop();
-        pushDescriptor(Type.getObjectType(stringArg).getDescriptor());
+        pushDescriptor(Type.getObjectType((@InternalForm String) stringArg).getDescriptor());
         break;
       case Opcodes.MULTIANEWARRAY:
         pop(intArg);

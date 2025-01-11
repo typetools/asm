@@ -173,7 +173,7 @@ class AnnotationVisitorTest extends AsmTest {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           return new EmptyAnnotationVisitor(api);
         }
 
@@ -261,7 +261,7 @@ class AnnotationVisitorTest extends AsmTest {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           return null;
         }
 

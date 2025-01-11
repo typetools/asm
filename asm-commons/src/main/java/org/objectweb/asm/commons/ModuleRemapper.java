@@ -85,8 +85,8 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
-    String[] remappedModules = null;
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+    @DotSeparatedIdentifiers String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];
       for (int i = 0; i < modules.length; ++i) {
@@ -97,8 +97,8 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
-    String[] remappedModules = null;
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+    @DotSeparatedIdentifiers String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];
       for (int i = 0; i < modules.length; ++i) {
@@ -109,13 +109,13 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     super.visitUse(remapper.mapType(service));
   }
 
   @Override
   public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
-    String[] remappedProviders = new String[providers.length];
+    @InternalForm String[] remappedProviders = new String[providers.length];
     for (int i = 0; i < providers.length; ++i) {
       remappedProviders[i] = remapper.mapType(providers[i]);
     }

@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -68,31 +70,31 @@ public final class TraceModuleVisitor extends ModuleVisitor {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     p.visitPackage(packaze);
     super.visitPackage(packaze);
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     p.visitRequire(module, access, version);
     super.visitRequire(module, access, version);
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     p.visitExport(packaze, access, modules);
     super.visitExport(packaze, access, modules);
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     p.visitOpen(packaze, access, modules);
     super.visitOpen(packaze, access, modules);
   }
 
   @Override
-  public void visitUse(final String use) {
+  public void visitUse(final @InternalForm String use) {
     p.visitUse(use);
     super.visitUse(use);
   }

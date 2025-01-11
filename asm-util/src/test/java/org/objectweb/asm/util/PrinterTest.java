@@ -313,7 +313,7 @@ class PrinterTest {
     }
 
     @Override
-    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
       // Do nothing.
     }
 
@@ -365,7 +365,7 @@ class PrinterTest {
     }
 
     @Override
-    public void visitEnum(final String name, final String descriptor, final String value) {
+    public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
       // Do nothing.
     }
 
@@ -411,7 +411,7 @@ class PrinterTest {
 
     @Override
     public Printer visitParameterAnnotation(
-        final int parameter, final String descriptor, final boolean visible) {
+        final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 

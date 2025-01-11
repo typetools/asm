@@ -108,7 +108,7 @@ class TraceClassVisitorTest extends AsmTest {
 
                   @Override
                   public AnnotationVisitor visitAnnotation(
-                      final String descriptor, final boolean visible) {
+                      final @FieldDescriptor String descriptor, final boolean visible) {
                     return new TraceAnnotationVisitor(new Textifier());
                   }
 
@@ -125,8 +125,8 @@ class TraceClassVisitorTest extends AsmTest {
                   @Override
                   public MethodVisitor visitMethod(
                       final int access,
-                      final String name,
-                      final String descriptor,
+                      final @Identifier String name,
+                      final @MethodDescriptor String descriptor,
                       final String signature,
                       final @InternalForm String @Nullable [] exceptions) {
                     return new TraceMethodVisitor(new Textifier());

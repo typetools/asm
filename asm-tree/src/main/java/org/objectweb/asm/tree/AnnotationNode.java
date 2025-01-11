@@ -125,7 +125,7 @@ public class AnnotationNode extends AnnotationVisitor {
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
     if (values == null) {
       values = new ArrayList<>(this.desc != null ? 2 : 1);
     }

@@ -100,7 +100,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
   public JSRInlinerAdapter(
       final MethodVisitor methodVisitor,
       final int access,
-      final String name,
+      final @Identifier String name,
       final @MethodDescriptor String descriptor,
       final String signature,
       final @InternalForm String @Nullable [] exceptions) {

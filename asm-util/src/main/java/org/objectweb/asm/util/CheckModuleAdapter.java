@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.util.HashSet;
 import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
@@ -100,7 +102,8 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  @SuppressWarnings("signature:argument") // bug: checkInternalName is being passed a @DotSeparatedIdentifiers
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "module package");
     super.visitPackage(packaze);
   }
@@ -128,7 +131,8 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  @SuppressWarnings("signature:argument") // bug: checkInternalName is being passed a @DotSeparatedIdentifiers
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     checkVisitEndNotCalled();
     CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "package name");
     exportedPackages.checkNameNotAlreadyDeclared(packaze);
@@ -142,7 +146,8 @@ public class CheckModuleAdapter extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  @SuppressWarnings("signature:argument") // bug: checkInternalName is being passed a @DotSeparatedIdentifiers
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     checkVisitEndNotCalled();
     if (isOpen) {
       throw new UnsupportedOperationException("An open module can not use open directive");

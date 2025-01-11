@@ -27,6 +27,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -377,7 +385,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final @Identifier String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     checkState();
     CheckMethodAdapter.checkUnqualifiedName(version, name, "record component name");
     CheckMethodAdapter.checkDescriptor(version, descriptor, /* canBeVoid= */ false);
@@ -1014,7 +1022,7 @@ public class CheckClassAdapter extends ClassVisitor {
         classReader = new ClassReader(inputStream);
       }
     } else {
-      classReader = new ClassReader(args[0]);
+      classReader = new ClassReader((@FullyQualifiedName String) args[0]);
     }
 
     verify(classReader, false, logger);

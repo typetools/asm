@@ -112,7 +112,7 @@ public abstract class ModuleVisitor {
    *
    * @param packaze the internal name of a package (see {@link Type#getInternalName()}).
    */
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     if (mv != null) {
       mv.visitPackage(packaze);
     }
@@ -141,7 +141,7 @@ public abstract class ModuleVisitor {
    * @param modules the fully qualified names (using dots) of the modules that can access the public
    *     classes of the exported package, or {@literal null}.
    */
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (mv != null) {
       mv.visitExport(packaze, access, modules);
     }
@@ -156,7 +156,7 @@ public abstract class ModuleVisitor {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (mv != null) {
       mv.visitOpen(packaze, access, modules);
     }

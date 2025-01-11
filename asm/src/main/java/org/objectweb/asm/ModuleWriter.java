@@ -116,7 +116,7 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     packageIndex.putShort(symbolTable.addConstantPackage(packaze).index);
     packageCount++;
   }
@@ -131,7 +131,7 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     exports.putShort(symbolTable.addConstantPackage(packaze).index).putShort(access);
     if (modules == null) {
       exports.putShort(0);
@@ -145,7 +145,7 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     opens.putShort(symbolTable.addConstantPackage(packaze).index).putShort(access);
     if (modules == null) {
       opens.putShort(0);

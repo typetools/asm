@@ -65,7 +65,7 @@ public class ModuleNode extends ModuleVisitor {
    * The internal name of the packages declared by this module (see {@link
    * org.objectweb.asm.Type#getInternalName()}). May be {@literal null}.
    */
-  public List<@InternalForm String> packages;
+  public List<@DotSeparatedIdentifiers String> packages;
 
   /** The dependencies of this module. May be {@literal null}. */
   public List<ModuleRequireNode> requires;
@@ -149,7 +149,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitPackage(final @InternalForm String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     if (packages == null) {
       packages = new ArrayList<>(5);
     }
@@ -165,7 +165,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (exports == null) {
       exports = new ArrayList<>(5);
     }
@@ -173,7 +173,7 @@ public class ModuleNode extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final @InternalForm String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     if (opens == null) {
       opens = new ArrayList<>(5);
     }
