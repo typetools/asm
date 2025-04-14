@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+
 import java.util.List;
 import org.objectweb.asm.ModuleVisitor;
 
@@ -41,7 +45,7 @@ public class ModuleExportNode {
    * The internal name of the exported package (see {@link
    * org.objectweb.asm.Type#getInternalName()}).
    */
-  public String packaze;
+  public @DotSeparatedIdentifiers String packaze;
 
   /**
    * The access flags (see {@link org.objectweb.asm.Opcodes}). Valid values are {@code
@@ -53,7 +57,7 @@ public class ModuleExportNode {
    * The list of modules that can access this exported package, specified with fully qualified names
    * (using dots). May be {@literal null}.
    */
-  public List<String> modules;
+  public @Nullable List<@DotSeparatedIdentifiers String> modules;
 
   /**
    * Constructs a new {@link ModuleExportNode}.
@@ -65,7 +69,7 @@ public class ModuleExportNode {
    * @param modules a list of modules that can access this exported package, specified with fully
    *     qualified names (using dots).
    */
-  public ModuleExportNode(final String packaze, final int access, final List<String> modules) {
+  public ModuleExportNode(final @DotSeparatedIdentifiers String packaze, final int access, final List<String> modules) {
     this.packaze = packaze;
     this.access = access;
     this.modules = modules;
@@ -78,6 +82,6 @@ public class ModuleExportNode {
    */
   public void accept(final ModuleVisitor moduleVisitor) {
     moduleVisitor.visitExport(
-        packaze, access, modules == null ? null : modules.toArray(new String[0]));
+        packaze, access, modules == null ? null : modules.toArray(new @DotSeparatedIdentifiers String[0]));
   }
 }

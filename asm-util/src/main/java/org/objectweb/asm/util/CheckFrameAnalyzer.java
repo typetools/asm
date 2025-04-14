@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.util.Collections;
 import java.util.List;
 import org.objectweb.asm.Opcodes;
@@ -115,7 +116,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
   }
 
   @Override
-  protected void init(final String owner, final MethodNode method) throws AnalyzerException {
+  protected void init(final @InternalForm String owner, final MethodNode method) throws AnalyzerException {
     insnList = method.instructions;
     currentLocals = Type.getArgumentsAndReturnSizes(method.desc) >> 2;
     if ((method.access & Opcodes.ACC_STATIC) != 0) {
@@ -229,7 +230,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
    *     "instructions", are invalid.
    */
   private void expandFrames(
-      final String owner, final MethodNode method, final Frame<V> initialFrame)
+      final @InternalForm String owner, final MethodNode method, final Frame<V> initialFrame)
       throws AnalyzerException {
     int lastJvmOrFrameInsnIndex = -1;
     Frame<V> currentFrame = initialFrame;
@@ -263,7 +264,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
    * @throws AnalyzerException if 'frameNode' is invalid.
    */
   private Frame<V> expandFrame(
-      final String owner, final Frame<V> previousFrame, final FrameNode frameNode)
+      final @InternalForm String owner, final Frame<V> previousFrame, final FrameNode frameNode)
       throws AnalyzerException {
     Frame<V> frame = newFrame(previousFrame);
     List<Object> locals = frameNode.local == null ? Collections.emptyList() : frameNode.local;
@@ -326,7 +327,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
    * @return a value that represents the given type.
    * @throws AnalyzerException if 'type' is an invalid stack map frame type.
    */
-  private V newFrameValue(final String owner, final FrameNode frameNode, final Object type)
+  private V newFrameValue(final @InternalForm String owner, final FrameNode frameNode, final Object type)
       throws AnalyzerException {
     if (type == Opcodes.TOP) {
       return interpreter.newValue(null);
@@ -343,7 +344,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
     } else if (type == Opcodes.UNINITIALIZED_THIS) {
       return interpreter.newValue(Type.getObjectType(owner));
     } else if (type instanceof String) {
-      return interpreter.newValue(Type.getObjectType((String) type));
+      return interpreter.newValue(Type.getObjectType((@InternalForm String) type));
     } else if (type instanceof LabelNode) {
       AbstractInsnNode referencedNode = (LabelNode) type;
       while (referencedNode != null && !isJvmInsnNode(referencedNode)) {

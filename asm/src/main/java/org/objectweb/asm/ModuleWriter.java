@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A {@link ModuleVisitor} that generates the corresponding Module, ModulePackages and
  * ModuleMainClass attributes, as defined in the Java Virtual Machine Specification (JVMS).
@@ -108,18 +111,18 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     this.mainClassIndex = symbolTable.addConstantClass(mainClass).index;
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     packageIndex.putShort(symbolTable.addConstantPackage(packaze).index);
     packageCount++;
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     requires
         .putShort(symbolTable.addConstantModule(module).index)
         .putShort(access)
@@ -128,7 +131,7 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     exports.putShort(symbolTable.addConstantPackage(packaze).index).putShort(access);
     if (modules == null) {
       exports.putShort(0);
@@ -142,7 +145,7 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
     opens.putShort(symbolTable.addConstantPackage(packaze).index).putShort(access);
     if (modules == null) {
       opens.putShort(0);
@@ -156,13 +159,13 @@ final class ModuleWriter extends ModuleVisitor {
   }
 
   @Override
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     usesIndex.putShort(symbolTable.addConstantClass(service).index);
     usesCount++;
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
     provides.putShort(symbolTable.addConstantClass(service).index);
     provides.putShort(providers.length);
     for (String provider : providers) {

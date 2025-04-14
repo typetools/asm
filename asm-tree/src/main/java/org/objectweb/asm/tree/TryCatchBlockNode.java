@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.List;
 import org.objectweb.asm.MethodVisitor;
 
@@ -50,7 +52,7 @@ public class TryCatchBlockNode {
    * The internal name of the type of exceptions handled by the handler. May be {@literal null} to
    * catch any exceptions (for "finally" blocks).
    */
-  public String type;
+  public @InternalForm String type;
 
   /** The runtime visible type annotations on the exception handler type. May be {@literal null}. */
   public List<TypeAnnotationNode> visibleTypeAnnotations;
@@ -71,7 +73,7 @@ public class TryCatchBlockNode {
    *     "finally" blocks).
    */
   public TryCatchBlockNode(
-      final LabelNode start, final LabelNode end, final LabelNode handler, final String type) {
+      final LabelNode start, final LabelNode end, final LabelNode handler, final @InternalForm String type) {
     this.start = start;
     this.end = end;
     this.handler = handler;

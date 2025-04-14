@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+
 import org.objectweb.asm.ModuleVisitor;
 
 /**
@@ -37,7 +39,7 @@ import org.objectweb.asm.ModuleVisitor;
 public class ModuleRequireNode {
 
   /** The fully qualified name (using dots) of the dependence. */
-  public String module;
+  public @DotSeparatedIdentifiers String module;
 
   /**
    * The access flag of the dependence among {@code ACC_TRANSITIVE}, {@code ACC_STATIC_PHASE},
@@ -56,7 +58,7 @@ public class ModuleRequireNode {
    *     ACC_STATIC_PHASE}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param version the module version at compile time, or {@literal null}.
    */
-  public ModuleRequireNode(final String module, final int access, final String version) {
+  public ModuleRequireNode(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     this.module = module;
     this.access = access;
     this.version = version;

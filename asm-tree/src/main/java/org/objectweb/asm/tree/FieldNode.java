@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -49,10 +52,10 @@ public class FieldNode extends FieldVisitor {
   public int access;
 
   /** The field's name. */
-  public String name;
+  public @Identifier String name;
 
   /** The field's descriptor (see {@link org.objectweb.asm.Type}). */
-  public String desc;
+  public @FieldDescriptor String desc;
 
   /** The field's signature. May be {@literal null}. */
   public String signature;
@@ -95,8 +98,8 @@ public class FieldNode extends FieldVisitor {
    */
   public FieldNode(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     this(/* latest api = */ Opcodes.ASM9, access, name, descriptor, signature, value);
@@ -122,8 +125,8 @@ public class FieldNode extends FieldVisitor {
   public FieldNode(
       final int api,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     super(api);
@@ -139,7 +142,7 @@ public class FieldNode extends FieldVisitor {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
       visibleAnnotations = Util.add(visibleAnnotations, annotation);
@@ -151,7 +154,7 @@ public class FieldNode extends FieldVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);

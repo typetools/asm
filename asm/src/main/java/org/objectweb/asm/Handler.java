@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * Information about an exception handler. Corresponds to an element of the exception_table array of
  * a Code attribute, as defined in the Java Virtual Machine Specification (JVMS). Handler instances
@@ -67,7 +69,7 @@ final class Handler {
    * The internal name of the type of exceptions handled by this handler, or {@literal null} to
    * catch any exceptions.
    */
-  final String catchTypeDescriptor;
+  final @InternalForm String catchTypeDescriptor;
 
   /** The next exception handler. */
   Handler nextHandler;
@@ -87,7 +89,7 @@ final class Handler {
       final Label endPc,
       final Label handlerPc,
       final int catchType,
-      final String catchTypeDescriptor) {
+      final @InternalForm String catchTypeDescriptor) {
     this.startPc = startPc;
     this.endPc = endPc;
     this.handlerPc = handlerPc;

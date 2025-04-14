@@ -28,6 +28,7 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
@@ -68,7 +69,7 @@ public class FieldRemapper extends FieldVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitAnnotation(remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -78,7 +79,7 @@ public class FieldRemapper extends FieldVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -108,7 +109,7 @@ public class FieldRemapper extends FieldVisitor {
    * @return the newly created remapper.
    */
   protected AnnotationVisitor createAnnotationRemapper(
-      final String descriptor, final AnnotationVisitor annotationVisitor) {
+      final @FieldDescriptor String descriptor, final AnnotationVisitor annotationVisitor) {
     return new AnnotationRemapper(api, descriptor, annotationVisitor, remapper)
         .orDeprecatedValue(createAnnotationRemapper(annotationVisitor));
   }

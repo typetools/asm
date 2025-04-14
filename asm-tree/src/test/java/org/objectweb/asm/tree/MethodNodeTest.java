@@ -80,10 +80,10 @@ class MethodNodeTest extends AsmTest {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             MethodNode method = new MethodNode();
             method.access = access;
             method.name = name;

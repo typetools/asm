@@ -53,6 +53,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
    * Special type used for the {@literal null} literal. This is an object reference type with
    * descriptor 'Lnull;'.
    */
+  @SuppressWarnings("argument")  // "null" is not @InternalForm
   public static final Type NULL_TYPE = Type.getObjectType("null");
 
   /**

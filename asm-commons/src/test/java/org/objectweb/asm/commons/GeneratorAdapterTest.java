@@ -1176,17 +1176,17 @@ class GeneratorAdapterTest {
       return toString();
     }
 
-    public String putStatic(final Type owner, final String name, final Type type) {
+    public String putStatic(final Type owner, final @Identifier String name, final Type type) {
       generatorAdapter.putStatic(owner, name, type);
       return toString();
     }
 
-    public String getField(final Type owner, final String name, final Type type) {
+    public String getField(final Type owner, final @Identifier String name, final Type type) {
       generatorAdapter.getField(owner, name, type);
       return toString();
     }
 
-    public String putField(final Type owner, final String name, final Type type) {
+    public String putField(final Type owner, final @Identifier String name, final Type type) {
       generatorAdapter.putField(owner, name, type);
       return toString();
     }

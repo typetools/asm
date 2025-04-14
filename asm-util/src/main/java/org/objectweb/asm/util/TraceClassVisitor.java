@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.PrintWriter;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -128,10 +134,10 @@ public final class TraceClassVisitor extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     p.visit(version, access, name, signature, superName, interfaces);
     super.visit(version, access, name, signature, superName, interfaces);
   }
@@ -143,25 +149,25 @@ public final class TraceClassVisitor extends ClassVisitor {
   }
 
   @Override
-  public ModuleVisitor visitModule(final String name, final int flags, final String version) {
+  public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int flags, final String version) {
     Printer modulePrinter = p.visitModule(name, flags, version);
     return new TraceModuleVisitor(super.visitModule(name, flags, version), modulePrinter);
   }
 
   @Override
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     p.visitNestHost(nestHost);
     super.visitNestHost(nestHost);
   }
 
   @Override
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     p.visitOuterClass(owner, name, descriptor);
     super.visitOuterClass(owner, name, descriptor);
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitClassAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -169,7 +175,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitClassTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -182,27 +188,27 @@ public final class TraceClassVisitor extends ClassVisitor {
   }
 
   @Override
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     p.visitNestMember(nestMember);
     super.visitNestMember(nestMember);
   }
 
   @Override
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     p.visitPermittedSubclass(permittedSubclass);
     super.visitPermittedSubclass(permittedSubclass);
   }
 
   @Override
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     p.visitInnerClass(name, outerName, innerName, access);
     super.visitInnerClass(name, outerName, innerName, access);
   }
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     Printer recordComponentPrinter = p.visitRecordComponent(name, descriptor, signature);
     return new TraceRecordComponentVisitor(
         super.visitRecordComponent(name, descriptor, signature), recordComponentPrinter);
@@ -211,8 +217,8 @@ public final class TraceClassVisitor extends ClassVisitor {
   @Override
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     Printer fieldPrinter = p.visitField(access, name, descriptor, signature, value);
@@ -223,10 +229,10 @@ public final class TraceClassVisitor extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     Printer methodPrinter = p.visitMethod(access, name, descriptor, signature, exceptions);
     return new TraceMethodVisitor(
         super.visitMethod(access, name, descriptor, signature, exceptions), methodPrinter);

@@ -28,6 +28,8 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -42,7 +44,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    * The descriptor of the visited annotation. May be {@literal null}, for instance for
    * AnnotationDefault.
    */
-  protected final String descriptor;
+  protected final @FieldDescriptor String descriptor;
 
   /** The remapper used to remap the types in the visited annotation. */
   protected final Remapper remapper;
@@ -70,7 +72,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    * @param remapper the remapper to use to remap the types in the visited annotation.
    */
   public AnnotationRemapper(
-      final String descriptor, final AnnotationVisitor annotationVisitor, final Remapper remapper) {
+      final @FieldDescriptor String descriptor, final AnnotationVisitor annotationVisitor, final Remapper remapper) {
     this(/* latest api = */ Opcodes.ASM9, descriptor, annotationVisitor, remapper);
   }
 
@@ -100,7 +102,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    */
   protected AnnotationRemapper(
       final int api,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final AnnotationVisitor annotationVisitor,
       final Remapper remapper) {
     super(api, annotationVisitor);
@@ -109,17 +111,17 @@ public class AnnotationRemapper extends AnnotationVisitor {
   }
 
   @Override
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     super.visit(mapAnnotationAttributeName(name), remapper.mapValue(value));
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     super.visitEnum(mapAnnotationAttributeName(name), remapper.mapDesc(descriptor), value);
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     AnnotationVisitor annotationVisitor =
         super.visitAnnotation(mapAnnotationAttributeName(name), remapper.mapDesc(descriptor));
     if (annotationVisitor == null) {
@@ -132,7 +134,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitArray(final String name) {
+  public AnnotationVisitor visitArray(final @Identifier String name) {
     AnnotationVisitor annotationVisitor = super.visitArray(mapAnnotationAttributeName(name));
     if (annotationVisitor == null) {
       return null;
@@ -165,7 +167,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    * @return the newly created remapper.
    */
   protected AnnotationVisitor createAnnotationRemapper(
-      final String descriptor, final AnnotationVisitor annotationVisitor) {
+      final @FieldDescriptor String descriptor, final AnnotationVisitor annotationVisitor) {
     return new AnnotationRemapper(api, descriptor, annotationVisitor, remapper)
         .orDeprecatedValue(createAnnotationRemapper(annotationVisitor));
   }
@@ -201,7 +203,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    * @param name the name of the annotation attribute.
    * @return the new name of the annotation attribute.
    */
-  private String mapAnnotationAttributeName(final String name) {
+  private @Identifier String mapAnnotationAttributeName(final @Identifier String name) {
     if (descriptor == null) {
       return name;
     }

@@ -437,6 +437,7 @@ public class SimpleVerifier extends BasicVerifier {
    * @param type an object reference type (i.e., with Type.OBJECT sort).
    * @return the class corresponding to 'type'.
    */
+   @SuppressWarnings("argument") // "e.toString()" is @FullyQualifiedName ?
   protected Class<?> getClass(final Type type) {
     try {
       if (type.getSort() == Type.ARRAY) {

@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 /**
  * An {@link AnnotationVisitor} that generates a corresponding 'annotation' or 'type_annotation'
  * structure, as defined in the Java Virtual Machine Specification (JVMS). AnnotationWriter
@@ -136,7 +139,7 @@ final class AnnotationWriter extends AnnotationVisitor {
    */
   static AnnotationWriter create(
       final SymbolTable symbolTable,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final AnnotationWriter previousAnnotation) {
     // Create a ByteVector to hold an 'annotation' JVMS structure.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.16.
@@ -168,7 +171,7 @@ final class AnnotationWriter extends AnnotationVisitor {
       final SymbolTable symbolTable,
       final int typeRef,
       final TypePath typePath,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final AnnotationWriter previousAnnotation) {
     // Create a ByteVector to hold a 'type_annotation' JVMS structure.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.20.
@@ -187,7 +190,7 @@ final class AnnotationWriter extends AnnotationVisitor {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     // Case of an element_value with a const_value_index, class_info_index or array_index field.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.16.1.
     ++numElementValuePairs;
@@ -262,7 +265,7 @@ final class AnnotationWriter extends AnnotationVisitor {
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     // Case of an element_value with an enum_const_value field.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.16.1.
     ++numElementValuePairs;
@@ -275,7 +278,7 @@ final class AnnotationWriter extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     // Case of an element_value with an annotation_value field.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.16.1.
     ++numElementValuePairs;

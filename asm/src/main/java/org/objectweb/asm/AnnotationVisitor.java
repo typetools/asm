@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+
 /**
  * A visitor to visit a Java annotation. The methods of this class must be called in the following
  * order: ( {@code visit} | {@code visitEnum} | {@code visitAnnotation} | {@code visitArray} )*
@@ -106,7 +109,7 @@ public abstract class AnnotationVisitor {
    *     (this is equivalent to using {@link #visitArray} and visiting each array element in turn,
    *     but is more convenient).
    */
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     if (av != null) {
       av.visit(name, value);
     }
@@ -119,7 +122,7 @@ public abstract class AnnotationVisitor {
    * @param descriptor the class descriptor of the enumeration class.
    * @param value the actual enumeration value.
    */
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     if (av != null) {
       av.visitEnum(name, descriptor, value);
     }
@@ -134,7 +137,7 @@ public abstract class AnnotationVisitor {
    *     visitor is not interested in visiting this nested annotation. <i>The nested annotation
    *     value must be fully visited before calling other methods on this annotation visitor</i>.
    */
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     if (av != null) {
       return av.visitAnnotation(name, descriptor);
     }
@@ -152,7 +155,7 @@ public abstract class AnnotationVisitor {
    *     this visitor are ignored. <i>All the array values must be visited before calling other
    *     methods on this annotation visitor</i>.
    */
-  public AnnotationVisitor visitArray(final String name) {
+  public AnnotationVisitor visitArray(final @Identifier String name) {
     if (av != null) {
       return av.visitArray(name);
     }

@@ -160,10 +160,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             classVersion.set(version);
           }
         },
@@ -377,16 +377,16 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             // access may contain ACC_RECORD
           }
 
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             return null;
           }
 
@@ -399,8 +399,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             return null;
@@ -409,21 +409,21 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return null;
           }
 
           @Override
-          public void visitNestHost(final String nestHost) {}
+          public void visitNestHost(final @InternalForm String nestHost) {}
 
           @Override
-          public void visitNestMember(final String nestMember) {}
+          public void visitNestMember(final @InternalForm String nestMember) {}
 
           @Override
-          public void visitPermittedSubclass(final String permittedSubclass) {}
+          public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {}
         };
 
     Executable accept = () -> classReader.accept(classVisitor, 0);
@@ -496,7 +496,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         new EmptyClassVisitor(apiParameter.value()) {
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+          public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
             return new AnnotationVisitor(api) {};
           }
 
@@ -504,14 +504,14 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public AnnotationVisitor visitTypeAnnotation(
               final int typeRef,
               final TypePath typePath,
-              final String descriptor,
+              final @FieldDescriptor String descriptor,
               final boolean visible) {
             return new AnnotationVisitor(api) {};
           }
 
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             super.visitModule(name, access, version);
             return new ModuleVisitor(api) {};
           }
@@ -523,7 +523,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
             return new RecordComponentVisitor(api) {
               @Override
               public AnnotationVisitor visitAnnotation(
-                  final String descriptor, final boolean visible) {
+                  final @FieldDescriptor String descriptor, final boolean visible) {
                 return new AnnotationVisitor(api) {};
               }
 
@@ -531,7 +531,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               public AnnotationVisitor visitTypeAnnotation(
                   final int typeRef,
                   final TypePath typePath,
-                  final String descriptor,
+                  final @FieldDescriptor String descriptor,
                   final boolean visible) {
                 return new AnnotationVisitor(api) {};
               }
@@ -541,8 +541,8 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             return new FieldVisitor(api) {};
@@ -551,10 +551,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api) {};
           }
         };
@@ -580,14 +580,14 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             return new MethodVisitor(api, null) {
               @Override
               public AnnotationVisitor visitParameterAnnotation(
-                  final int parameter, final String descriptor, final boolean visible) {
+                  final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
                 if (descriptor.equals("Ljava/lang/Deprecated;")) {
                   parameterIndex.set(parameter);
                 }
@@ -616,10 +616,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             classVersion.set(version);
           }
         };
@@ -635,7 +635,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         new AnnotationVisitor(api) {
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             return this;
           }
 
@@ -650,7 +650,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return annotationVisitor;
     }
 
@@ -658,7 +658,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       return annotationVisitor;
     }
@@ -666,14 +666,14 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       return new FieldVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 
@@ -681,7 +681,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           return annotationVisitor;
         }
@@ -691,10 +691,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
 
         @Override
@@ -703,7 +703,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 
@@ -711,14 +711,14 @@ class ClassReaderTest extends AsmTest implements Opcodes {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           return annotationVisitor;
         }
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           return annotationVisitor;
         }
 

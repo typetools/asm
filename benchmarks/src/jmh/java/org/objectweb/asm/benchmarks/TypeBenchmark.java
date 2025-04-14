@@ -76,12 +76,12 @@ public class TypeBenchmark extends AbstractBenchmark {
         new AnnotationVisitor(api) {
 
           @Override
-          public void visitEnum(final String name, final String descriptor, final String value) {
+          public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
             descriptors.add(descriptor);
           }
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             descriptors.add(descriptor);
             return this;
           }
@@ -92,14 +92,14 @@ public class TypeBenchmark extends AbstractBenchmark {
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
       if (descriptor != null) {
         methodDescriptors.add(descriptor);
       }
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       descriptors.add(descriptor);
       return annotationVisitor;
     }
@@ -108,7 +108,7 @@ public class TypeBenchmark extends AbstractBenchmark {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       descriptors.add(descriptor);
       return annotationVisitor;
@@ -117,15 +117,15 @@ public class TypeBenchmark extends AbstractBenchmark {
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       descriptors.add(descriptor);
       return new FieldVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
         }
@@ -134,7 +134,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
@@ -145,15 +145,15 @@ public class TypeBenchmark extends AbstractBenchmark {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       methodDescriptors.add(descriptor);
       return new MethodVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
         }
@@ -162,7 +162,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
@@ -170,23 +170,23 @@ public class TypeBenchmark extends AbstractBenchmark {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           descriptors.add(descriptor);
           return annotationVisitor;
         }
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           descriptors.add(descriptor);
         }
 
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
-            final String descriptor,
+            final @InternalForm String owner,
+            final @Identifier String name,
+            final @MethodDescriptior String descriptor,
             final boolean isInterface) {
           methodDescriptors.add(descriptor);
         }
@@ -194,14 +194,14 @@ public class TypeBenchmark extends AbstractBenchmark {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           methodDescriptors.add(descriptor);
         }
 
         @Override
-        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+        public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
           descriptors.add(descriptor);
         }
 
@@ -227,8 +227,8 @@ public class TypeBenchmark extends AbstractBenchmark {
 
         @Override
         public void visitLocalVariable(
-            final String name,
-            final String descriptor,
+            final @Identifier String name,
+            final @FieldDescriptor String descriptor,
             final String signature,
             final Label start,
             final Label end,

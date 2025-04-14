@@ -82,7 +82,7 @@ class ModuleNodeTest extends AsmTest {
         new ClassVisitor(/* latest */ Opcodes.ASM10_EXPERIMENTAL) {
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             dstModuleNode.name = name;
             dstModuleNode.access = access;
             dstModuleNode.version = version;

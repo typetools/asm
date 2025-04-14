@@ -28,6 +28,11 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
@@ -79,7 +84,7 @@ public class MethodRemapper extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitAnnotation(remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -89,7 +94,7 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -99,7 +104,7 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitParameterAnnotation(parameter, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -133,7 +138,7 @@ public class MethodRemapper extends MethodVisitor {
           remappedFrameTypes = new Object[numTypes];
           System.arraycopy(frameTypes, 0, remappedFrameTypes, 0, numTypes);
         }
-        remappedFrameTypes[i] = remapper.mapType((String) frameTypes[i]);
+        remappedFrameTypes[i] = remapper.mapType((@InternalForm String) frameTypes[i]);
       }
     }
     return remappedFrameTypes == null ? frameTypes : remappedFrameTypes;
@@ -141,7 +146,7 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     super.visitFieldInsn(
         opcode,
         remapper.mapType(owner),
@@ -152,9 +157,9 @@ public class MethodRemapper extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -172,7 +177,7 @@ public class MethodRemapper extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     Object[] remappedBootstrapMethodArguments = new Object[bootstrapMethodArguments.length];
@@ -187,7 +192,7 @@ public class MethodRemapper extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     super.visitTypeInsn(opcode, remapper.mapType(type));
   }
 
@@ -197,13 +202,13 @@ public class MethodRemapper extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     super.visitMultiANewArrayInsn(remapper.mapDesc(descriptor), numDimensions);
   }
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitInsnAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -213,13 +218,13 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     super.visitTryCatchBlock(start, end, handler, type == null ? null : remapper.mapType(type));
   }
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitTryCatchAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
@@ -229,8 +234,8 @@ public class MethodRemapper extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -251,7 +256,7 @@ public class MethodRemapper extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitLocalVariableAnnotation(
@@ -283,7 +288,7 @@ public class MethodRemapper extends MethodVisitor {
    * @return the newly created remapper.
    */
   protected AnnotationVisitor createAnnotationRemapper(
-      final String descriptor, final AnnotationVisitor annotationVisitor) {
+      final @FieldDescriptor String descriptor, final AnnotationVisitor annotationVisitor) {
     return new AnnotationRemapper(api, descriptor, annotationVisitor, remapper)
         .orDeprecatedValue(createAnnotationRemapper(annotationVisitor));
   }

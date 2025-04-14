@@ -28,6 +28,9 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -67,23 +70,23 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitMainClass(final String mainClass) {
+  public void visitMainClass(final @InternalForm String mainClass) {
     super.visitMainClass(remapper.mapType(mainClass));
   }
 
   @Override
-  public void visitPackage(final String packaze) {
+  public void visitPackage(final @DotSeparatedIdentifiers String packaze) {
     super.visitPackage(remapper.mapPackageName(packaze));
   }
 
   @Override
-  public void visitRequire(final String module, final int access, final String version) {
+  public void visitRequire(final @DotSeparatedIdentifiers String module, final int access, final String version) {
     super.visitRequire(remapper.mapModuleName(module), access, version);
   }
 
   @Override
-  public void visitExport(final String packaze, final int access, final String... modules) {
-    String[] remappedModules = null;
+  public void visitExport(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+    @DotSeparatedIdentifiers String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];
       for (int i = 0; i < modules.length; ++i) {
@@ -94,8 +97,8 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitOpen(final String packaze, final int access, final String... modules) {
-    String[] remappedModules = null;
+  public void visitOpen(final @DotSeparatedIdentifiers String packaze, final int access, final @DotSeparatedIdentifiers String... modules) {
+    @DotSeparatedIdentifiers String[] remappedModules = null;
     if (modules != null) {
       remappedModules = new String[modules.length];
       for (int i = 0; i < modules.length; ++i) {
@@ -106,13 +109,13 @@ public class ModuleRemapper extends ModuleVisitor {
   }
 
   @Override
-  public void visitUse(final String service) {
+  public void visitUse(final @InternalForm String service) {
     super.visitUse(remapper.mapType(service));
   }
 
   @Override
-  public void visitProvide(final String service, final String... providers) {
-    String[] remappedProviders = new String[providers.length];
+  public void visitProvide(final @InternalForm String service, final @InternalForm String... providers) {
+    @InternalForm String[] remappedProviders = new String[providers.length];
     for (int i = 0; i < providers.length; ++i) {
       remappedProviders[i] = remapper.mapType(providers[i]);
     }

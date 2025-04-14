@@ -28,6 +28,7 @@
 
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import java.util.List;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -83,7 +84,7 @@ public class LocalVariableAnnotationNode extends TypeAnnotationNode {
       final LabelNode[] start,
       final LabelNode[] end,
       final int[] index,
-      final String descriptor) {
+      final @FieldDescriptor String descriptor) {
     this(/* latest api = */ Opcodes.ASM9, typeRef, typePath, start, end, index, descriptor);
   }
 
@@ -111,7 +112,7 @@ public class LocalVariableAnnotationNode extends TypeAnnotationNode {
       final LabelNode[] start,
       final LabelNode[] end,
       final int[] index,
-      final String descriptor) {
+      final @FieldDescriptor String descriptor) {
     super(api, typeRef, typePath, descriptor);
     this.start = Util.asArrayList(start);
     this.end = Util.asArrayList(end);

@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * The constant pool entries, the BootstrapMethods attribute entries and the (ASM specific) type
  * table entries of a class.
@@ -56,7 +62,7 @@ final class SymbolTable {
   private int majorVersion;
 
   /** The internal name of the class to which this symbol table belongs. */
-  private String className;
+  private @InternalForm String className;
 
   /**
    * The total number of {@link Entry} instances in {@link #entries}. This includes entries that are
@@ -190,7 +196,7 @@ final class SymbolTable {
           addConstantMemberReference(
               itemIndex,
               itemTag,
-              classReader.readClass(itemOffset, charBuffer),
+              (@InternalForm String) classReader.readClass(itemOffset, charBuffer),
               classReader.readUTF8(nameAndTypeItemOffset, charBuffer),
               classReader.readUTF8(nameAndTypeItemOffset + 2, charBuffer));
           break;
@@ -219,7 +225,7 @@ final class SymbolTable {
           addConstantMethodHandle(
               itemIndex,
               classReader.readByte(itemOffset),
-              classReader.readClass(memberRefItemOffset, charBuffer),
+              (@InternalForm String) classReader.readClass(memberRefItemOffset, charBuffer),
               classReader.readUTF8(nameAndTypeItemOffset, charBuffer),
               classReader.readUTF8(nameAndTypeItemOffset + 2, charBuffer),
               classReader.readByte(memberRefItemOffset - 1)
@@ -233,7 +239,7 @@ final class SymbolTable {
           addConstantDynamicOrInvokeDynamicReference(
               itemTag,
               itemIndex,
-              classReader.readUTF8(nameAndTypeItemOffset, charBuffer),
+              (@Identifier String) classReader.readUTF8(nameAndTypeItemOffset, charBuffer),
               classReader.readUTF8(nameAndTypeItemOffset + 2, charBuffer),
               classReader.readUnsignedShort(itemOffset));
           break;
@@ -328,7 +334,7 @@ final class SymbolTable {
    *
    * @return the internal name of the class to which this symbol table belongs.
    */
-  String getClassName() {
+  @InternalForm String getClassName() {
     return className;
   }
 
@@ -340,7 +346,7 @@ final class SymbolTable {
    * @param className an internal class name.
    * @return the constant pool index of a new or already existing Symbol with the given class name.
    */
-  int setMajorVersionAndClassName(final int majorVersion, final String className) {
+  int setMajorVersionAndClassName(final int majorVersion, final @InternalForm String className) {
     this.majorVersion = majorVersion;
     this.className = className;
     return addConstantClass(className).index;
@@ -506,7 +512,7 @@ final class SymbolTable {
       } else if (typeSort == Type.METHOD) {
         return addConstantMethodType(type.getDescriptor());
       } else { // type is a primitive or array type.
-        return addConstantClass(type.getDescriptor());
+        return addConstantClass((@InternalForm String) type.getDescriptor());
       }
     } else if (value instanceof Handle) {
       Handle handle = (Handle) value;
@@ -535,7 +541,7 @@ final class SymbolTable {
    * @param value the internal name of a class.
    * @return a new or already existing Symbol with the given value.
    */
-  Symbol addConstantClass(final String value) {
+  Symbol addConstantClass(final @InternalForm String value) {
     return addConstantUtf8Reference(Symbol.CONSTANT_CLASS_TAG, value);
   }
 
@@ -548,7 +554,7 @@ final class SymbolTable {
    * @param descriptor a field descriptor.
    * @return a new or already existing Symbol with the given value.
    */
-  Symbol addConstantFieldref(final String owner, final String name, final String descriptor) {
+  Symbol addConstantFieldref(final @InternalForm String owner, final String name, final @FieldDescriptor String descriptor) {
     return addConstantMemberReference(Symbol.CONSTANT_FIELDREF_TAG, owner, name, descriptor);
   }
 
@@ -563,7 +569,7 @@ final class SymbolTable {
    * @return a new or already existing Symbol with the given value.
    */
   Symbol addConstantMethodref(
-      final String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     int tag = isInterface ? Symbol.CONSTANT_INTERFACE_METHODREF_TAG : Symbol.CONSTANT_METHODREF_TAG;
     return addConstantMemberReference(tag, owner, name, descriptor);
   }
@@ -581,7 +587,7 @@ final class SymbolTable {
    * @return a new or already existing Symbol with the given value.
    */
   private Entry addConstantMemberReference(
-      final int tag, final String owner, final String name, final String descriptor) {
+      final int tag, final @InternalForm String owner, final String name, final String descriptor) {
     int hashCode = hash(tag, owner, name, descriptor);
     Entry entry = get(hashCode);
     while (entry != null) {
@@ -613,7 +619,7 @@ final class SymbolTable {
   private void addConstantMemberReference(
       final int index,
       final int tag,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor) {
     add(new Entry(index, tag, owner, name, descriptor, 0, hash(tag, owner, name, descriptor)));
@@ -827,7 +833,7 @@ final class SymbolTable {
    */
   Symbol addConstantMethodHandle(
       final int referenceKind,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
@@ -849,10 +855,10 @@ final class SymbolTable {
       entry = entry.next;
     }
     if (referenceKind <= Opcodes.H_PUTSTATIC) {
-      constantPool.put112(tag, referenceKind, addConstantFieldref(owner, name, descriptor).index);
+      constantPool.put112(tag, referenceKind, addConstantFieldref(owner, name, (@FieldDescriptor String) descriptor).index);
     } else {
       constantPool.put112(
-          tag, referenceKind, addConstantMethodref(owner, name, descriptor, isInterface).index);
+          tag, referenceKind, addConstantMethodref(owner, name, (@MethodDescriptor String) descriptor, isInterface).index);
     }
     return put(new Entry(constantPoolCount++, tag, owner, name, descriptor, data, hashCode));
   }
@@ -873,7 +879,7 @@ final class SymbolTable {
   private void addConstantMethodHandle(
       final int index,
       final int referenceKind,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
@@ -924,7 +930,7 @@ final class SymbolTable {
    */
   Symbol addConstantDynamic(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     Symbol bootstrapMethod = addBootstrapMethod(bootstrapMethodHandle, bootstrapMethodArguments);
@@ -945,7 +951,7 @@ final class SymbolTable {
    */
   Symbol addConstantInvokeDynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     Symbol bootstrapMethod = addBootstrapMethod(bootstrapMethodHandle, bootstrapMethodArguments);
@@ -966,7 +972,7 @@ final class SymbolTable {
    * @return a new or already existing Symbol with the given value.
    */
   private Symbol addConstantDynamicOrInvokeDynamicReference(
-      final int tag, final String name, final String descriptor, final int bootstrapMethodIndex) {
+      final int tag, final String name, final /*@FieldOrMethodDescriptor*/ String descriptor, final int bootstrapMethodIndex) {
     int hashCode = hash(tag, name, descriptor, bootstrapMethodIndex);
     Entry entry = get(hashCode);
     while (entry != null) {
@@ -1000,8 +1006,8 @@ final class SymbolTable {
   private void addConstantDynamicOrInvokeDynamicReference(
       final int tag,
       final int index,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final /*@FieldOrMethodDescriptor*/ String descriptor,
       final int bootstrapMethodIndex) {
     int hashCode = hash(tag, name, descriptor, bootstrapMethodIndex);
     add(new Entry(index, tag, null, name, descriptor, bootstrapMethodIndex, hashCode));
@@ -1014,7 +1020,7 @@ final class SymbolTable {
    * @param moduleName a fully qualified name (using dots) of a module.
    * @return a new or already existing Symbol with the given value.
    */
-  Symbol addConstantModule(final String moduleName) {
+  Symbol addConstantModule(final @DotSeparatedIdentifiers String moduleName) {
     return addConstantUtf8Reference(Symbol.CONSTANT_MODULE_TAG, moduleName);
   }
 
@@ -1025,7 +1031,7 @@ final class SymbolTable {
    * @param packageName the internal name of a package.
    * @return a new or already existing Symbol with the given value.
    */
-  Symbol addConstantPackage(final String packageName) {
+  Symbol addConstantPackage(final @DotSeparatedIdentifiers String packageName) {
     return addConstantUtf8Reference(Symbol.CONSTANT_PACKAGE_TAG, packageName);
   }
 
@@ -1194,7 +1200,7 @@ final class SymbolTable {
    * @param value an internal class name.
    * @return the index of a new or already existing type Symbol with the given value.
    */
-  int addType(final String value) {
+  int addType(final @InternalForm String value) {
     int hashCode = hash(Symbol.TYPE_TAG, value);
     Entry entry = get(hashCode);
     while (entry != null) {
@@ -1215,7 +1221,7 @@ final class SymbolTable {
    *     uninitialized type value.
    * @return the index of a new or already existing type #@link Symbol} with the given value.
    */
-  int addUninitializedType(final String value, final int bytecodeOffset) {
+  int addUninitializedType(final @InternalForm String value, final int bytecodeOffset) {
     int hashCode = hash(Symbol.UNINITIALIZED_TYPE_TAG, value, bytecodeOffset);
     Entry entry = get(hashCode);
     while (entry != null) {
@@ -1240,7 +1246,7 @@ final class SymbolTable {
    *     the label is resolved, use the {@link #addUninitializedType} method instead.
    * @return the index of a new or already existing type {@link Symbol} with the given value.
    */
-  int addForwardUninitializedType(final String value, final Label label) {
+  int addForwardUninitializedType(final @InternalForm String value, final Label label) {
     int labelIndex = getOrAddLabelEntry(label).index;
     int hashCode = hash(Symbol.FORWARD_UNINITIALIZED_TYPE_TAG, value, labelIndex);
     Entry entry = get(hashCode);
@@ -1281,8 +1287,8 @@ final class SymbolTable {
       }
       entry = entry.next;
     }
-    String type1 = typeTable[typeTableIndex1].value;
-    String type2 = typeTable[typeTableIndex2].value;
+    @InternalForm String type1 = typeTable[typeTableIndex1].value;
+    @InternalForm String type2 = typeTable[typeTableIndex2].value;
     int commonSuperTypeIndex = addType(classWriter.getCommonSuperClass(type1, type2));
     put(new Entry(typeCount, Symbol.MERGED_TYPE_TAG, data, hashCode)).info = commonSuperTypeIndex;
     return commonSuperTypeIndex;
@@ -1426,7 +1432,7 @@ final class SymbolTable {
     Entry(
         final int index,
         final int tag,
-        final String owner,
+        final @InternalForm String owner,
         final String name,
         final String value,
         final long data,

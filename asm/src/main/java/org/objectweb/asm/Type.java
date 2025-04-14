@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.BinaryName;
+import org.checkerframework.checker.signature.qual.BinaryNameOrPrimitiveType;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -248,7 +254,7 @@ public final class Type {
    * @param internalName an internal name (see {@link Type#getInternalName()}).
    * @return the {@link Type} corresponding to the given internal name.
    */
-  public static Type getObjectType(final String internalName) {
+  public static Type getObjectType(final @InternalForm String internalName) {
     return new Type(
         internalName.charAt(0) == '[' ? ARRAY : INTERNAL, internalName, 0, internalName.length());
   }
@@ -440,10 +446,10 @@ public final class Type {
    *
    * @return the binary name of the class corresponding to this type.
    */
-  public String getClassName() {
+  public @BinaryNameOrPrimitiveType String getClassName() {
     switch (sort) {
       case VOID:
-        return "void";
+        return (@BinaryNameOrPrimitiveType String) "void";  // to make type-checking pass
       case BOOLEAN:
         return "boolean";
       case CHAR:
@@ -465,10 +471,11 @@ public final class Type {
         for (int i = getDimensions(); i > 0; --i) {
           stringBuilder.append("[]");
         }
-        return stringBuilder.toString();
+        return (@BinaryNameOrPrimitiveType String) stringBuilder.toString();
       case OBJECT:
       case INTERNAL:
-        return valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
+        // If not an array or primitive, this conversion works.
+        return (@BinaryNameOrPrimitiveType String) valueBuffer.substring(valueBegin, valueEnd).replace('/', '.');
       default:
         throw new AssertionError();
     }
@@ -481,7 +488,8 @@ public final class Type {
    *
    * @return the internal name of the class corresponding to this object type.
    */
-  public String getInternalName() {
+  @SuppressWarnings("signature:return")  // string manipulation
+  public @InternalForm String getInternalName() {
     return valueBuffer.substring(valueBegin, valueEnd);
   }
 
@@ -492,7 +500,8 @@ public final class Type {
    * @param clazz an object or array class.
    * @return the internal name of the given class.
    */
-  public static String getInternalName(final Class<?> clazz) {
+  @SuppressWarnings("signature:return")  //  If not an array or primitive, this conversion works.
+  public static @InternalForm String getInternalName(final Class<?> clazz) {
     return clazz.getName().replace('.', '/');
   }
 
@@ -501,7 +510,8 @@ public final class Type {
    *
    * @return the descriptor corresponding to this type.
    */
-  public String getDescriptor() {
+  @SuppressWarnings("return") // string concatenation
+  public @FieldDescriptor String getDescriptor() {
     if (sort == OBJECT) {
       return valueBuffer.substring(valueBegin - 1, valueEnd + 1);
     } else if (sort == INTERNAL) {
@@ -517,7 +527,8 @@ public final class Type {
    * @param clazz an object class, a primitive class or an array class.
    * @return the descriptor corresponding to the given class.
    */
-  public static String getDescriptor(final Class<?> clazz) {
+  @SuppressWarnings("return") // string concatenation
+  public static @FieldDescriptor String getDescriptor(final Class<?> clazz) {
     StringBuilder stringBuilder = new StringBuilder();
     appendDescriptor(clazz, stringBuilder);
     return stringBuilder.toString();
@@ -529,7 +540,8 @@ public final class Type {
    * @param constructor a {@link Constructor} object.
    * @return the descriptor of the given constructor.
    */
-  public static String getConstructorDescriptor(final Constructor<?> constructor) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getConstructorDescriptor(final Constructor<?> constructor) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     Class<?>[] parameters = constructor.getParameterTypes();
@@ -546,7 +558,8 @@ public final class Type {
    * @param argumentTypes the argument types of the method.
    * @return the descriptor corresponding to the given argument and return types.
    */
-  public static String getMethodDescriptor(final Type returnType, final Type... argumentTypes) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getMethodDescriptor(final Type returnType, final Type... argumentTypes) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     for (Type argumentType : argumentTypes) {
@@ -563,7 +576,8 @@ public final class Type {
    * @param method a {@link Method} object.
    * @return the descriptor of the given method.
    */
-  public static String getMethodDescriptor(final Method method) {
+  @SuppressWarnings("signature:return") // string concatenation
+  public static @MethodDescriptor String getMethodDescriptor(final Method method) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
     Class<?>[] parameters = method.getParameterTypes();

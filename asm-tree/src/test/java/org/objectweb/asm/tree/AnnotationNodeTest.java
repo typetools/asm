@@ -106,7 +106,7 @@ class AnnotationNodeTest extends AsmTest {
         new AnnotationVisitor(/* latest */ Opcodes.ASM10_EXPERIMENTAL, dstAnnotationNode) {
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             return null;
           }
 

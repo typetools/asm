@@ -28,6 +28,11 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
@@ -465,7 +470,7 @@ public class InstructionAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     Type objectType = Type.getObjectType(type);
     switch (opcode) {
       case Opcodes.NEW:
@@ -487,7 +492,7 @@ public class InstructionAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     switch (opcode) {
       case Opcodes.GETSTATIC:
         getstatic(owner, name, descriptor);
@@ -509,9 +514,9 @@ public class InstructionAdapter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -541,7 +546,7 @@ public class InstructionAdapter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     invokedynamic(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -619,7 +624,7 @@ public class InstructionAdapter extends MethodVisitor {
     if (api < Opcodes.ASM5
         && (value instanceof Handle
             || (value instanceof Type && ((Type) value).getSort() == Type.METHOD))) {
-      throw new UnsupportedOperationException("This feature requires ASM5");
+      throw new UnsupportedOperationException("visitLdcInsn requires ASM5, found " + (api >> 16));
     }
     if (api < Opcodes.ASM7 && value instanceof ConstantDynamic) {
       throw new UnsupportedOperationException("This feature requires ASM7");
@@ -670,7 +675,7 @@ public class InstructionAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     multianewarray(descriptor, numDimensions);
   }
 
@@ -1044,19 +1049,19 @@ public class InstructionAdapter extends MethodVisitor {
     mv.visitInsn(type.getOpcode(Opcodes.IRETURN));
   }
 
-  public void getstatic(final String owner, final String name, final String descriptor) {
+  public void getstatic(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     mv.visitFieldInsn(Opcodes.GETSTATIC, owner, name, descriptor);
   }
 
-  public void putstatic(final String owner, final String name, final String descriptor) {
+  public void putstatic(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, descriptor);
   }
 
-  public void getfield(final String owner, final String name, final String descriptor) {
+  public void getfield(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     mv.visitFieldInsn(Opcodes.GETFIELD, owner, name, descriptor);
   }
 
-  public void putfield(final String owner, final String name, final String descriptor) {
+  public void putfield(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, descriptor);
   }
 
@@ -1070,7 +1075,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @deprecated use {@link #invokevirtual(String, String, String, boolean)} instead.
    */
   @Deprecated
-  public void invokevirtual(final String owner, final String name, final String descriptor) {
+  public void invokevirtual(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokevirtual(owner, name, descriptor, false);
       return;
@@ -1088,7 +1093,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param isInterface if the method's owner class is an interface.
    */
   public void invokevirtual(
-      final String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
         throw new UnsupportedOperationException("INVOKEVIRTUAL on interfaces require ASM 5");
@@ -1109,7 +1114,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @deprecated use {@link #invokespecial(String, String, String, boolean)} instead.
    */
   @Deprecated
-  public void invokespecial(final String owner, final String name, final String descriptor) {
+  public void invokespecial(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokespecial(owner, name, descriptor, false);
       return;
@@ -1127,7 +1132,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param isInterface if the method's owner class is an interface.
    */
   public void invokespecial(
-      final String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
         throw new UnsupportedOperationException("INVOKESPECIAL on interfaces require ASM 5");
@@ -1148,7 +1153,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @deprecated use {@link #invokestatic(String, String, String, boolean)} instead.
    */
   @Deprecated
-  public void invokestatic(final String owner, final String name, final String descriptor) {
+  public void invokestatic(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokestatic(owner, name, descriptor, false);
       return;
@@ -1166,7 +1171,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param isInterface if the method's owner class is an interface.
    */
   public void invokestatic(
-      final String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
         throw new UnsupportedOperationException("INVOKESTATIC on interfaces require ASM 5");
@@ -1185,7 +1190,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link Type}).
    */
-  public void invokeinterface(final String owner, final String name, final String descriptor) {
+  public void invokeinterface(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, descriptor, true);
   }
 
@@ -1202,7 +1207,7 @@ public class InstructionAdapter extends MethodVisitor {
    */
   public void invokedynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object[] bootstrapMethodArguments) {
     mv.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -1285,7 +1290,7 @@ public class InstructionAdapter extends MethodVisitor {
     mv.visitInsn(Opcodes.MONITOREXIT);
   }
 
-  public void multianewarray(final String descriptor, final int numDimensions) {
+  public void multianewarray(final @FieldDescriptor String descriptor, final int numDimensions) {
     mv.visitMultiANewArrayInsn(descriptor, numDimensions);
   }
 

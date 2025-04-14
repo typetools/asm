@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -62,25 +64,25 @@ public final class TraceAnnotationVisitor extends AnnotationVisitor {
   }
 
   @Override
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     printer.visit(name, value);
     super.visit(name, value);
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     printer.visitEnum(name, descriptor, value);
     super.visitEnum(name, descriptor, value);
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+  public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
     Printer annotationPrinter = printer.visitAnnotation(name, descriptor);
     return new TraceAnnotationVisitor(super.visitAnnotation(name, descriptor), annotationPrinter);
   }
 
   @Override
-  public AnnotationVisitor visitArray(final String name) {
+  public AnnotationVisitor visitArray(final @Identifier String name) {
     Printer arrayPrinter = printer.visitArray(name);
     return new TraceAnnotationVisitor(super.visitArray(name), arrayPrinter);
   }

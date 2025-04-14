@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 /**
  * A visitor to visit a Java field. The methods of this class must be called in the following order:
  * ( {@code visitAnnotation} | {@code visitTypeAnnotation} | {@code visitAttribute} )* {@code
@@ -97,7 +99,7 @@ public abstract class FieldVisitor {
    * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
    *     interested in visiting this annotation.
    */
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (fv != null) {
       return fv.visitAnnotation(descriptor, visible);
     }
@@ -118,9 +120,9 @@ public abstract class FieldVisitor {
    *     interested in visiting this annotation.
    */
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (api < Opcodes.ASM5) {
-      throw new UnsupportedOperationException("This feature requires ASM5");
+      throw new UnsupportedOperationException("visitTypeAnnotation requires ASM5");
     }
     if (fv != null) {
       return fv.visitTypeAnnotation(typeRef, typePath, descriptor, visible);

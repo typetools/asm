@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import org.objectweb.asm.MethodVisitor;
 
 /**
@@ -37,10 +40,10 @@ import org.objectweb.asm.MethodVisitor;
 public class LocalVariableNode {
 
   /** The name of a local variable. */
-  public String name;
+  public @Identifier String name;
 
   /** The type descriptor of this local variable. */
-  public String desc;
+  public @FieldDescriptor String desc;
 
   /** The signature of this local variable. May be {@literal null}. */
   public String signature;
@@ -66,8 +69,8 @@ public class LocalVariableNode {
    * @param index the local variable's index.
    */
   public LocalVariableNode(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final LabelNode start,
       final LabelNode end,

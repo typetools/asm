@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -43,10 +46,10 @@ import org.objectweb.asm.TypePath;
 public class RecordComponentNode extends RecordComponentVisitor {
 
   /** The record component name. */
-  public String name;
+  public @Identifier String name;
 
   /** The record component descriptor (see {@link org.objectweb.asm.Type}). */
-  public String descriptor;
+  public @FieldDescriptor String descriptor;
 
   /** The record component signature. May be {@literal null}. */
   public String signature;
@@ -75,7 +78,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * @param signature the record component signature.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public RecordComponentNode(final String name, final String descriptor, final String signature) {
+  public RecordComponentNode(final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     this(/* latest api = */ Opcodes.ASM9, name, descriptor, signature);
     if (getClass() != RecordComponentNode.class) {
       throw new IllegalStateException();
@@ -92,7 +95,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * @param signature the record component signature.
    */
   public RecordComponentNode(
-      final int api, final String name, final String descriptor, final String signature) {
+      final int api, final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     super(api);
     this.name = name;
     this.descriptor = descriptor;
@@ -104,7 +107,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
       visibleAnnotations = Util.add(visibleAnnotations, annotation);
@@ -116,7 +119,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);

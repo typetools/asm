@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -104,7 +106,7 @@ class ClassRemapperTest extends AsmTest {
             classNode,
             new Remapper() {
               @Override
-              public String map(final String internalName) {
+              public String map(final @InternalForm String internalName) {
                 if ("pkg/C".equals(internalName)) {
                   return "a";
                 }
@@ -131,7 +133,7 @@ class ClassRemapperTest extends AsmTest {
             classNode,
             new Remapper() {
               @Override
-              public String map(final String internalName) {
+              public String map(final @InternalForm String internalName) {
                 if ("pkg/C".equals(internalName)) {
                   return "a";
                 }
@@ -158,7 +160,7 @@ class ClassRemapperTest extends AsmTest {
             classNode,
             new Remapper() {
               @Override
-              public String map(final String internalName) {
+              public String map(final @InternalForm String internalName) {
                 if ("pkg/C".equals(internalName)) {
                   return "pkg2/C";
                 }
@@ -213,7 +215,7 @@ class ClassRemapperTest extends AsmTest {
               }
 
               @Override
-              public String map(final String internalName) {
+              public @InternalForm String map(final @InternalForm String internalName) {
                 if (internalName.equals("java/lang/String")) {
                   return "java/lang/Integer";
                 }
@@ -250,7 +252,7 @@ class ClassRemapperTest extends AsmTest {
             new Remapper() {
               @Override
               public String mapFieldName(
-                  final String owner, final String name, final String descriptor) {
+                  final @InternalForm String owner, final String name, final String descriptor) {
                 if ("a".equals(name)) {
                   return "demo";
                 }
@@ -386,7 +388,7 @@ class ClassRemapperTest extends AsmTest {
     checkMethodAdapter.visitFieldInsn(Opcodes.GETFIELD, "Owner", "name", descriptor);
   }
 
-  private static void checkInternalName(final String internalName) {
+  private static void checkInternalName(final @InternalForm String internalName) {
     CheckMethodAdapter checkMethodAdapter = new CheckMethodAdapter(null);
     checkMethodAdapter.version = Opcodes.V1_5;
     checkMethodAdapter.visitCode();
@@ -418,13 +420,14 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapDesc(final String descriptor) {
+    public @FieldDescriptor String mapDesc(final @FieldDescriptor String descriptor) {
       checkDescriptor(descriptor);
       return super.mapDesc(descriptor);
     }
 
     @Override
-    public String mapType(final String type) {
+    // The argument may be "module-info" or an "ASM internal name".
+    public @InternalForm String mapType(final @InternalForm String type) {
       if (type != null && !type.equals("module-info")) {
         checkInternalName(type);
       }
@@ -432,7 +435,7 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapMethodName(final String owner, final String name, final String descriptor) {
+    public @Identifier String mapMethodName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
       if (name.equals("<init>") || name.equals("<clinit>")) {
         return name;
       }
@@ -445,7 +448,7 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapFieldName(final String owner, final String name, final String descriptor) {
+    public @Identifier String mapFieldName(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       return owner.equals(internalClassName) ? name.toUpperCase(LOCALE) : name;
     }
 
