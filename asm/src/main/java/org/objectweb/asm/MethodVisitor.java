@@ -717,7 +717,7 @@ public abstract class MethodVisitor {
    *     visitor (by the {@link #visitLabel} method).
    */
   public void visitLocalVariable(
-      final String name,
+      final @Identifier String name,
       final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,

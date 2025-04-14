@@ -951,7 +951,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
+      final @Identifier String name,
       final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,

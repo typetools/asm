@@ -263,7 +263,7 @@ class ClassVisitorTest extends AsmTest {
 
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             return new ModuleVisitor(api, super.visitModule(name, access, version)) {
 
               @Override
@@ -364,7 +364,7 @@ class ClassVisitorTest extends AsmTest {
     }
 
     @Override
-    public ModuleVisitor visitModule(final String name, final int access, final String version) {
+    public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
       return new ModuleVisitor(api, super.visitModule(name, access, version)) {};
     }
   }

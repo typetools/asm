@@ -59,7 +59,7 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   }
 
   @Override
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     checkVisitEndNotCalled();
     checkName(name);
     if (!(value instanceof Byte
@@ -89,7 +89,7 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   }
 
   @Override
-  public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     checkVisitEndNotCalled();
     checkName(name);
     // Annotations can only appear in V1_5 or more classes.
@@ -110,7 +110,7 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitArray(final String name) {
+  public AnnotationVisitor visitArray(final @Identifier String name) {
     checkVisitEndNotCalled();
     checkName(name);
     return new CheckAnnotationAdapter(super.visitArray(name), false);

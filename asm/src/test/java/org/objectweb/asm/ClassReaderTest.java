@@ -386,7 +386,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             return null;
           }
 
@@ -511,7 +511,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
           @Override
           public ModuleVisitor visitModule(
-              final String name, final int access, final String version) {
+              final @DotSeparatedIdentifiers String name, final int access, final String version) {
             super.visitModule(name, access, version);
             return new ModuleVisitor(api) {};
           }

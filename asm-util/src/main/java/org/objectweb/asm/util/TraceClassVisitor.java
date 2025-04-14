@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
@@ -148,7 +149,7 @@ public final class TraceClassVisitor extends ClassVisitor {
   }
 
   @Override
-  public ModuleVisitor visitModule(final String name, final int flags, final String version) {
+  public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int flags, final String version) {
     Printer modulePrinter = p.visitModule(name, flags, version);
     return new TraceModuleVisitor(super.visitModule(name, flags, version), modulePrinter);
   }
@@ -207,7 +208,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final @Identifier String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     Printer recordComponentPrinter = p.visitRecordComponent(name, descriptor, signature);
     return new TraceRecordComponentVisitor(
         super.visitRecordComponent(name, descriptor, signature), recordComponentPrinter);

@@ -194,7 +194,7 @@ public class TypeBenchmark extends AbstractBenchmark {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           methodDescriptors.add(descriptor);
@@ -227,8 +227,8 @@ public class TypeBenchmark extends AbstractBenchmark {
 
         @Override
         public void visitLocalVariable(
-            final String name,
-            final String descriptor,
+            final @Identifier String name,
+            final @FieldDescriptor String descriptor,
             final String signature,
             final Label start,
             final Label end,

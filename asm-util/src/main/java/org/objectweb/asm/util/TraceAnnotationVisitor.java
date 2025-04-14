@@ -64,13 +64,13 @@ public final class TraceAnnotationVisitor extends AnnotationVisitor {
   }
 
   @Override
-  public void visit(final String name, final Object value) {
+  public void visit(final @Identifier String name, final Object value) {
     printer.visit(name, value);
     super.visit(name, value);
   }
 
   @Override
-  public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
+  public void visitEnum(final @Identifier String name, final @FieldDescriptor String descriptor, final String value) {
     printer.visitEnum(name, descriptor, value);
     super.visitEnum(name, descriptor, value);
   }
@@ -82,7 +82,7 @@ public final class TraceAnnotationVisitor extends AnnotationVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitArray(final String name) {
+  public AnnotationVisitor visitArray(final @Identifier String name) {
     Printer arrayPrinter = printer.visitArray(name);
     return new TraceAnnotationVisitor(super.visitArray(name), arrayPrinter);
   }

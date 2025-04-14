@@ -276,7 +276,7 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public Printer visitModule(final String name, final int flags, final String version) {
+  public Printer visitModule(final @DotSeparatedIdentifiers String name, final int flags, final String version) {
     stringBuilder.setLength(0);
     stringBuilder.append("{\n");
     stringBuilder.append("ModuleVisitor moduleVisitor = classWriter.visitModule(");
@@ -657,7 +657,7 @@ public class ASMifier extends Printer {
 
   @Override
   public ASMifier visitFieldTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 
@@ -1055,7 +1055,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitLocalVariable(
-      final String name,
+      final @Identifier String name,
       final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,

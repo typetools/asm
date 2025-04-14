@@ -41,6 +41,7 @@ import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.NEW;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
@@ -344,7 +345,7 @@ public final class Retrofitter {
     ClassWriter classWriter = new ClassWriter(0);
     classWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, (@InternalForm String) "module-info", null, null, null);
     ArrayList<@InternalForm String> moduleNames = new ArrayList<>();
-    for (String exportName : exports) {
+    for (@InternalForm String exportName : exports) {
       if (isAsmModule(exportName)) {
         moduleNames.add(exportName);
       }
@@ -516,7 +517,7 @@ public final class Retrofitter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           // For simple recipe, (if there is no constant pool constants used), rewrite the
@@ -729,7 +730,7 @@ public final class Retrofitter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           throw new IllegalArgumentException(

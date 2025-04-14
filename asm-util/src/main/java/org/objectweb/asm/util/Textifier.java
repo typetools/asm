@@ -248,7 +248,7 @@ public class Textifier extends Printer {
   }
 
   @Override
-  public Printer visitModule(final String name, final int access, final String version) {
+  public Printer visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     stringBuilder.setLength(0);
     if ((access & Opcodes.ACC_OPEN) != 0) {
       stringBuilder.append("open ");
@@ -1088,7 +1088,7 @@ public class Textifier extends Printer {
 
   @Override
   public void visitLocalVariable(
-      final String name,
+      final @Identifier String name,
       final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,

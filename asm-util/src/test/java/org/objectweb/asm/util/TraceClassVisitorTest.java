@@ -102,7 +102,7 @@ class TraceClassVisitorTest extends AsmTest {
 
                   @Override
                   public ModuleVisitor visitModule(
-                      final String name, final int access, final String version) {
+                      final @DotSeparatedIdentifiers String name, final int access, final String version) {
                     return new TraceModuleVisitor(new Textifier());
                   }
 

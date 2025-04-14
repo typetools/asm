@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.checkerframework.checker.signature.qual.InternalForm;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
@@ -151,7 +152,7 @@ public class LocalVariablesSorter extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
+      final @Identifier String name,
       final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,

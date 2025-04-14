@@ -190,7 +190,7 @@ class ClassNodeTest extends AsmTest {
     }
 
     @Override
-    public ModuleVisitor visitModule(final String name, final int access, final String version) {
+    public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
       return null;
     }
 

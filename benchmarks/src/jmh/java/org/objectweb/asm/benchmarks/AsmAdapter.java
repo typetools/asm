@@ -175,7 +175,7 @@ public class AsmAdapter extends Adapter {
     }
 
     @Override
-    public ModuleVisitor visitModule(final String name, final int access, final String version) {
+    public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
       ++count;
       return null;
     }
@@ -339,7 +339,7 @@ public class AsmAdapter extends Adapter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           ++count;
@@ -410,8 +410,8 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public void visitLocalVariable(
-            final String name,
-            final String descriptor,
+            final @Identifier String name,
+            final @FieldDescriptor String descriptor,
             final String signature,
             final Label start,
             final Label end,

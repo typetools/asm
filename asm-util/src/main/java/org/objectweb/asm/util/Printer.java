@@ -1002,7 +1002,7 @@ public abstract class Printer {
    */
   public abstract void visitInvokeDynamicInsn(
       String name,
-      String descriptor,
+      @MethodDescriptor String descriptor,
       Handle bootstrapMethodHandle,
       Object... bootstrapMethodArguments);
 
@@ -1138,7 +1138,7 @@ public abstract class Printer {
    * @param index the local variable's index.
    */
   public abstract void visitLocalVariable(
-      String name, String descriptor, String signature, Label start, Label end, int index);
+      @Identifier String name, @FieldDescriptor String descriptor, String signature, Label start, Label end, int index);
 
   /**
    * Local variable type annotation. See {@link
