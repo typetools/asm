@@ -322,7 +322,7 @@ public class Textifier extends Printer {
       final String name, final String outerName, final String innerName, final int access) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab);
-    appendRawAccess(access & ~Opcodes.ACC_SUPER);
+    appendRawAccess(access);
     stringBuilder.append(tab);
     appendAccess(access);
     stringBuilder.append("INNERCLASS ");
