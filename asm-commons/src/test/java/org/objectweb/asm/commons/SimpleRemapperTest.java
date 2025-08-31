@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Unit tests for {@link SimpleRemapper}.
@@ -42,7 +43,9 @@ class SimpleRemapperTest {
   @Test
   void testMapSignature_remapParentOnly_nestedClassExtends() {
     String inputSignature = "LOuter<Ljava/lang/Object;>.Inner;";
-    Remapper remapper = new SimpleRemapper(Map.of("Outer", "RenamedOuter"));
+    Remapper remapper =
+        new SimpleRemapper(
+            /* latest */ Opcodes.ASM10_EXPERIMENTAL, Map.of("Outer", "RenamedOuter"));
 
     String remappedSignature = remapper.mapSignature(inputSignature, false);
 
@@ -52,7 +55,9 @@ class SimpleRemapperTest {
   @Test
   void testMapSignature_remapChildOnly_nestedClassExtends() {
     String inputSignature = "LOuter<Ljava/lang/Object;>.Inner;";
-    Remapper remapper = new SimpleRemapper(Map.of("Outer$Inner", "Outer$RenamedInner"));
+    Remapper remapper =
+        new SimpleRemapper(
+            /* latest */ Opcodes.ASM10_EXPERIMENTAL, Map.of("Outer$Inner", "Outer$RenamedInner"));
 
     String remappedSignature = remapper.mapSignature(inputSignature, false);
 
@@ -62,7 +67,10 @@ class SimpleRemapperTest {
   @Test
   void testMapSignature_remapChildOnly_nestedClassExtends_identifiersWithDollarSign() {
     String inputSignature = "LOuter<Ljava/lang/Object;>.Inner$1;";
-    Remapper remapper = new SimpleRemapper(Map.of("Outer$Inner$1", "Outer$RenamedInner$1"));
+    Remapper remapper =
+        new SimpleRemapper(
+            /* latest */ Opcodes.ASM10_EXPERIMENTAL,
+            Map.of("Outer$Inner$1", "Outer$RenamedInner$1"));
 
     String remappedSignature = remapper.mapSignature(inputSignature, false);
 
@@ -74,7 +82,7 @@ class SimpleRemapperTest {
     String inputSignature = "LOuter<Ljava/lang/Object;>.Inner;";
     Map<String, String> mapping =
         Map.of("Outer", "RenamedOuter", "Outer$Inner", "RenamedOuter$RenamedInner");
-    Remapper remapper = new SimpleRemapper(mapping);
+    Remapper remapper = new SimpleRemapper(/* latest */ Opcodes.ASM10_EXPERIMENTAL, mapping);
 
     String remappedSignature = remapper.mapSignature(inputSignature, false);
 
