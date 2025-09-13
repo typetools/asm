@@ -48,6 +48,14 @@ with [googleJavaFormat](https://github.com/google/google-java-format),
 [Checkstyle](https://checkstyle.sourceforge.io)
 and [PMD](https://pmd.github.io).
 
+To fix code formatting errors, you can run the reformat task:
+
+```shell
+./gradle/gradlew spotlessApply
+```
+
+For more details, see the [Developer Guide](https://asm.ow2.io/developer-guide.html)
+
 ## Reporting Issues
 
 If you encounter any issues with the ASM project, please create a new issue
