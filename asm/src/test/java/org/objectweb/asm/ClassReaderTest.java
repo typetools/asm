@@ -351,9 +351,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
     // jdk8.ArtificialStructures contains structures which require ASM5, but only inside the method
     // code. Here we skip the code, so this class can be read with ASM4. Likewise for
-    // jdk11.AllInstructions.
+    // jdk8.AllLambdas and jdk11.AllInstructions.
     if (classParameter.isMoreRecentThan(apiParameter)
         && classParameter != PrecompiledClass.JDK8_ARTIFICIAL_STRUCTURES
+        && classParameter != PrecompiledClass.JDK8_ALL_LAMBDAS
         && classParameter != PrecompiledClass.JDK11_ALL_INSTRUCTIONS) {
       Exception exception = assertThrows(UnsupportedOperationException.class, accept);
       assertTrue(exception.getMessage().matches(UNSUPPORTED_OPERATION_MESSAGE_PATTERN));
