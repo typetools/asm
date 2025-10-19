@@ -33,7 +33,7 @@ buildscript {
 
 plugins { id 'com.diffplug.spotless' version "6.23.3" apply false }
 plugins { id 'me.champeau.jmh' version '0.7.2' apply false }
-plugins { id 'org.sonarqube' version '6.2.0.5505' apply false }
+plugins { id 'org.sonarqube' version '7.0.0.6105' apply false }
 
 description = 'ASM, a very small and fast Java bytecode manipulation framework'
 
@@ -332,6 +332,7 @@ configure(subprojects.findAll{it.provides}) {
   apply plugin: 'org.sonarqube'
   sonar {
     properties { property 'sonar.projectKey', "ASM:${project.name}" }
+    properties { property 'sonar.inclusions', "**/*.java" }
   }
 
   // Add a task to generate a private javadoc and add it as a dependency of the
