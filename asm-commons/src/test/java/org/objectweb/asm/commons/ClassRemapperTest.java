@@ -252,7 +252,7 @@ class ClassRemapperTest extends AsmTest {
             classNode,
             new Remapper(/* latest */ Opcodes.ASM10_EXPERIMENTAL) {
               @Override
-              public String mapInvokeDynamicMethodName(
+              public String mapBasicInvokeDynamicMethodName(
                   final String name,
                   final String descriptor,
                   final Handle bootstrapMethodHandle,
@@ -335,7 +335,7 @@ class ClassRemapperTest extends AsmTest {
             classNode,
             new Remapper(/* latest */ Opcodes.ASM10_EXPERIMENTAL) {
               @Override
-              public String mapInvokeDynamicMethodName(
+              public String mapBasicInvokeDynamicMethodName(
                   final String name,
                   final String descriptor,
                   final Handle bootstrapMethodHandle,
@@ -542,7 +542,7 @@ class ClassRemapperTest extends AsmTest {
     }
 
     @Override
-    public String mapInvokeDynamicMethodName(
+    public String mapBasicInvokeDynamicMethodName(
         final String name,
         final String descriptor,
         final Handle bootstrapMethodHandle,

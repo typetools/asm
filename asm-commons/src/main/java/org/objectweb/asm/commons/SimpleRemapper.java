@@ -136,7 +136,7 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapInvokeDynamicMethodName(
+  public String mapBasicInvokeDynamicMethodName(
       final String name,
       final String descriptor,
       final Handle bootstrapMethodHandle,
