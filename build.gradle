@@ -237,6 +237,8 @@ configure(subprojects.findAll{it.provides}) {
     reports { xml.required = true }
     classDirectories.setFrom(sourceSets.main.output.classesDirs)
     dependsOn ':asm:jar'
+    dependsOn ':asm-tree:jar'
+    dependsOn ':asm-commons:jar'
   }
   jacocoTestCoverageVerification {
     classDirectories.setFrom(sourceSets.main.output.classesDirs)
