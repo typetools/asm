@@ -1443,7 +1443,7 @@ public class Textifier extends Printer {
     stringBuilder.append(name);
   }
 
-  @Deprecated
+  @Deprecated(forRemoval = false)
   protected void appendHandle(final Handle handle) {
     appendHandle(handle, tab3);
   }

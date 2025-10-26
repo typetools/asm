@@ -440,7 +440,7 @@ class MethodVisitorTest extends AsmTest {
       this.log = log;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = false)
     @Override
     public void visitMethodInsn(
         final int opcode, final String owner, final String name, final String descriptor) {

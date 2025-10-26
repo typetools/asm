@@ -100,7 +100,7 @@ public class ClassReader {
    * @deprecated Use {@link #readByte(int)} and the other read methods instead. This field will
    *     eventually be deleted.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   // DontCheck(MemberName): can't be renamed (for backward binary compatibility).
   public final byte[] b;
 

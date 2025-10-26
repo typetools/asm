@@ -63,7 +63,7 @@ public class SimpleRemapper extends Remapper {
    *
    * @deprecated use {@link #SimpleRemapper(int, Map)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public SimpleRemapper(final Map<String, String> mapping) {
     this.mapping = mapping;
   }
@@ -103,7 +103,7 @@ public class SimpleRemapper extends Remapper {
    *     org.objectweb.asm.Type#getInternalName()}).
    * @deprecated use {@link #SimpleRemapper(int, String, String)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public SimpleRemapper(final String oldName, final String newName) {
     this.mapping = Collections.singletonMap(oldName, newName);
   }

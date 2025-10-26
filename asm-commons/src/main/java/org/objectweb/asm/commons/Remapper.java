@@ -68,7 +68,7 @@ public abstract class Remapper {
    *
    * @deprecated use {@link #Remapper(int)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public Remapper() {
     this.api = 0;
   }
@@ -283,7 +283,7 @@ public abstract class Remapper {
    * @return the newly created remapper.
    * @deprecated use {@link #createSignatureRemapper} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   protected SignatureVisitor createRemappingSignatureAdapter(
       final SignatureVisitor signatureVisitor) {
     return createSignatureRemapper(signatureVisitor);
@@ -376,7 +376,7 @@ public abstract class Remapper {
    * @return the new name of the method.
    * @deprecated use {@link #mapInvokeDynamicMethodName(String, String, Handle, Object...)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public String mapInvokeDynamicMethodName(final String name, final String descriptor) {
     return name;
   }

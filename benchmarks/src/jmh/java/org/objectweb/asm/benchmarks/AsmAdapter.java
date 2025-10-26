@@ -320,7 +320,7 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        @Deprecated
+        @Deprecated(forRemoval = false)
         public void visitMethodInsn(
             final int opcode, final String owner, final String name, final String descriptor) {
           ++count;

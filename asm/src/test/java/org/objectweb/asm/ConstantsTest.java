@@ -62,7 +62,7 @@ class ConstantsTest {
     VERIFICATION_TYPE_INFO_TAG,
     OPCODE,
     OTHER
-  };
+  }
 
   @Test
   void testAsmVersions() {
