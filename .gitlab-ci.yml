@@ -32,4 +32,4 @@ sonar-job:
   stage: deploy
   allow_failure: true
   script:
-    - if [ $SONAR_LOGIN ]; then $GRADLE -Dorg.gradle.jvmargs='-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M' jacocoTestReport sonar -Dsonar.host.url=$SONAR -Dsonar.token=${SONAR_LOGIN}; fi
+    - if [ $SONAR_LOGIN ]; then $GRADLE --info -Dorg.gradle.jvmargs='-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M' jacocoTestCoverageVerification jacocoTestReport sonar -Dsonar.host.url=$SONAR -Dsonar.token=${SONAR_LOGIN}; fi
