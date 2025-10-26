@@ -23,7 +23,7 @@ build-job:
 test-job:
   stage: test
   script:
-    - $GRADLE test jacocoTestCoverageVerification jacocoTestReport
+    - $GRADLE --info test jacocoTestCoverageVerification jacocoTestReport
   artifacts:
     untracked: true
     expire_in: 1 hour
