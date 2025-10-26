@@ -333,6 +333,7 @@ configure(subprojects.findAll{it.provides}) {
   sonar {
     properties { property 'sonar.projectKey', "ASM:${project.name}" }
     properties { property 'sonar.inclusions', "**/*.java" }
+    properties { property 'sonar.verbose', "true" }
   }
 
   // Add a task to generate a private javadoc and add it as a dependency of the
