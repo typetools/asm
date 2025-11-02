@@ -418,13 +418,19 @@ class ClassReaderTest extends AsmTest implements Opcodes {
           }
 
           @Override
-          public void visitNestHost(final String nestHost) {}
+          public void visitNestHost(final String nestHost) {
+            // Skip nest host.
+          }
 
           @Override
-          public void visitNestMember(final String nestMember) {}
+          public void visitNestMember(final String nestMember) {
+            // Skip nest member.
+          }
 
           @Override
-          public void visitPermittedSubclass(final String permittedSubclass) {}
+          public void visitPermittedSubclass(final String permittedSubclass) {
+            // Skip permitted subclass.
+          }
         };
 
     Executable accept = () -> classReader.accept(classVisitor, 0);

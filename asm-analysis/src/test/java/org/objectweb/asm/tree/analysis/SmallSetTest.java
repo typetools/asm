@@ -149,7 +149,7 @@ class SmallSetTest {
     iterator.next();
     iterator.next();
 
-    Executable next = () -> iterator.next();
+    Executable next = iterator::next;
 
     assertThrows(NoSuchElementException.class, next);
   }
@@ -159,7 +159,7 @@ class SmallSetTest {
     Iterator<Object> iterator = newSmallSet(ELEMENT1, ELEMENT2).iterator();
     iterator.next();
 
-    assertThrows(UnsupportedOperationException.class, () -> iterator.remove());
+    assertThrows(UnsupportedOperationException.class, iterator::remove);
   }
 
   private static SmallSet<Object> newSmallSet(final Object element1, final Object element2) {

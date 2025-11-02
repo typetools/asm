@@ -634,7 +634,7 @@ class AdviceAdapterTest extends AsmTest {
   @ParameterizedTest
   @MethodSource(ALL_CLASSES_AND_ALL_APIS)
   void testAllMethods_precompiledClass(
-      final PrecompiledClass classParameter, final Api apiParameter) throws Exception {
+      final PrecompiledClass classParameter, final Api apiParameter) {
     ClassReader classReader = new ClassReader(classParameter.getBytes());
     ClassWriter classWriter = new ClassWriter(0);
     ClassVisitor adviceClassAdapter =
@@ -678,9 +678,6 @@ class AdviceAdapterTest extends AsmTest {
             // pop from an empty stack because the previous ICONST_1 was not simulated.
             visitJumpInsn(IFEQ, label);
           }
-
-          @Override
-          protected void onMethodExit(final int opcode) {}
         };
 
     adviceAdapter.visitCode();

@@ -172,7 +172,7 @@ class PrinterTest {
   void testVisitModuleEnd_unsupportedByDefault() {
     Printer printer = new EmptyPrinter(/* latest */ Opcodes.ASM10_EXPERIMENTAL);
 
-    Executable visitModuleEnd = () -> printer.visitModuleEnd();
+    Executable visitModuleEnd = printer::visitModuleEnd;
 
     Exception exception = assertThrows(UnsupportedOperationException.class, visitModuleEnd);
     assertEquals(UNSUPPORTED_OPERATION_MESSAGE, exception.getMessage());

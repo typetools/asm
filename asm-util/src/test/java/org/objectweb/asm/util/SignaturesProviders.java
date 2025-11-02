@@ -28,7 +28,7 @@ public final class SignaturesProviders {
     AsmTest.allClassesAndLatestApi()
         .map(argument -> (PrecompiledClass) argument.get()[0])
         .filter(precompiledClass -> !precompiledClass.isMoreRecentThan(AsmTest.Api.ASM7))
-        .forEach(precompiledClass -> collectSignatures(precompiledClass));
+        .forEach(SignaturesProviders::collectSignatures);
     assertFalse(CLASS_SIGNATURES.isEmpty());
     assertFalse(FIELD_SIGNATURES.isEmpty());
     assertFalse(METHOD_SIGNATURES.isEmpty());

@@ -1443,6 +1443,12 @@ public class Textifier extends Printer {
     stringBuilder.append(name);
   }
 
+  /**
+   * Appends a string representation of the given handle to {@link #stringBuilder}.
+   *
+   * @param handle a handle.
+   * @deprecated use {@link #appendHandle(Handle, String)} instead.
+   */
   @Deprecated(forRemoval = false)
   protected void appendHandle(final Handle handle) {
     appendHandle(handle, tab3);

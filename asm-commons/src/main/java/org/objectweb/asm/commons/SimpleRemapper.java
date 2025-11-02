@@ -129,7 +129,16 @@ public class SimpleRemapper extends Remapper {
     return remappedName == null ? name : remappedName;
   }
 
+  /**
+   * Maps an invokedynamic or a constant dynamic method name to its new name.
+   *
+   * @param name the name of the method.
+   * @param descriptor the descriptor of the method.
+   * @return the new name of the method.
+   * @deprecated use {@link #mapInvokeDynamicMethodName(String, String, Handle, Object...)} instead.
+   */
   @Override
+  @Deprecated(forRemoval = false)
   public String mapInvokeDynamicMethodName(final String name, final String descriptor) {
     String remappedName = map('.' + name + descriptor);
     return remappedName == null ? name : remappedName;

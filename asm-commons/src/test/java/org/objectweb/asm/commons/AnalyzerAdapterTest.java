@@ -95,7 +95,7 @@ class AnalyzerAdapterTest extends AsmTest {
   @ParameterizedTest
   @MethodSource(ALL_CLASSES_AND_ALL_APIS)
   void testAllMethods_precompiledClass(
-      final PrecompiledClass classParameter, final Api apiParameter) throws Exception {
+      final PrecompiledClass classParameter, final Api apiParameter) {
     byte[] classFile = classParameter.getBytes();
     ClassReader classReader = new ClassReader(classFile);
     ClassWriter classWriter = new ClassWriter(0);
@@ -201,13 +201,11 @@ class AnalyzerAdapterTest extends AsmTest {
 
     private void maybeInsertFrame() {
       // Don't insert a frame if we already have one for this instruction, from the original class.
-      if (!hasOriginalFrame) {
-        if (analyzerAdapter.locals != null && analyzerAdapter.stack != null) {
-          ArrayList<Object> local = toFrameTypes(analyzerAdapter.locals);
-          ArrayList<Object> stack = toFrameTypes(analyzerAdapter.stack);
-          super.visitFrame(
-              Opcodes.F_NEW, local.size(), local.toArray(), stack.size(), stack.toArray());
-        }
+      if (!hasOriginalFrame && analyzerAdapter.locals != null && analyzerAdapter.stack != null) {
+        ArrayList<Object> local = toFrameTypes(analyzerAdapter.locals);
+        ArrayList<Object> stack = toFrameTypes(analyzerAdapter.stack);
+        super.visitFrame(
+            Opcodes.F_NEW, local.size(), local.toArray(), stack.size(), stack.toArray());
       }
       hasOriginalFrame = false;
     }

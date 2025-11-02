@@ -83,7 +83,9 @@ public class Comment extends Attribute implements ASMifierSupport, TextifierSupp
   }
 
   @Override
-  public void textify(final StringBuilder stringBuilder, final Map<Label, String> labelNames) {}
+  public void textify(final StringBuilder stringBuilder, final Map<Label, String> labelNames) {
+    stringBuilder.append("(empty)");
+  }
 
   @Override
   public String toString() {

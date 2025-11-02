@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -215,7 +214,7 @@ class LocalVariablesSorterTest extends AsmTest {
   }
 
   @Test
-  void testAllMethods_issue317586() throws FileNotFoundException, IOException {
+  void testAllMethods_issue317586() throws IOException {
     ClassReader classReader =
         new ClassReader(Files.newInputStream(Paths.get("src/test/resources/Issue317586.class")));
     ClassWriter classWriter = new ClassWriter(0);

@@ -1042,8 +1042,7 @@ class ClassWriterComputeMaxsTest {
     }
 
     TestCaseBuilder push() {
-      methodVisitor.visitInsn(Opcodes.ICONST_0);
-      return this;
+      return iconst_0();
     }
 
     TestCaseBuilder push2() {

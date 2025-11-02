@@ -267,10 +267,14 @@ class ClassVisitorTest extends AsmTest {
             return new ModuleVisitor(api, super.visitModule(name, access, version)) {
 
               @Override
-              public void visitMainClass(final String mainClass) {}
+              public void visitMainClass(final String mainClass) {
+                // Remove main class.
+              }
 
               @Override
-              public void visitPackage(final String packaze) {}
+              public void visitPackage(final String packaze) {
+                // Remove package.
+              }
 
               @Override
               public void visitRequire(

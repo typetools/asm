@@ -32,25 +32,27 @@ class LambdaRemapTest extends AsmTest implements Opcodes {
           + "[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;";
 
   /*
-  public class LambdaTest {
-      public interface TestInterface {
-          default void helloWorld() {
-          }
-      }
+   * The 3 following methods correspond to the following Java code:
+   *
+   *  public class LambdaTest {
+   *    public interface TestInterface {
+   *      default void helloWorld() {}
+   *    }
+   *
+   *    public static void normalLambda() {
+   *      Runnable runnable = Thread::dumpStack;
+   *    }
+   *
+   *    public static void serializableLambda() {
+   *      Runnable runnable = (Runnable & Serializable) Thread::dumpStack;
+   *    }
+   *
+   *    public static void advancedLambda() {
+   *      Runnable runnable = (Runnable & Serializable & TestInterface) Thread::dumpStack;
+   *    }
+   *  }
+   */
 
-      public static void normalLambda() {
-          Runnable runnable = Thread::dumpStack;
-      }
-
-      public static void serializableLambda() {
-          Runnable runnable = (Runnable & Serializable) Thread::dumpStack;
-      }
-
-      public static void advancedLambda() {
-          Runnable runnable = (Runnable & Serializable & TestInterface) Thread::dumpStack;
-      }
-  }
-  */
   void func_normalLambda(final MethodVisitor methodVisitor) {
     methodVisitor.visitInvokeDynamicInsn(
         "run",
@@ -135,6 +137,7 @@ class LambdaRemapTest extends AsmTest implements Opcodes {
                 "java/lang/Runnable.run()V", "call")));
   }
 
+  @SuppressWarnings("deprecation")
   public static Stream<Remapper> remappersDeprecated() {
     return Stream.of(
         new Remapper() {

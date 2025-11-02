@@ -195,13 +195,19 @@ class ClassNodeTest extends AsmTest {
     }
 
     @Override
-    public void visitNestHost(final String nestHost) {}
+    public void visitNestHost(final String nestHost) {
+      // Remove nest host.
+    }
 
     @Override
-    public void visitNestMember(final String nestMember) {}
+    public void visitNestMember(final String nestMember) {
+      // Remove nest member.
+    }
 
     @Override
-    public void visitPermittedSubclass(final String permittedSubclass) {}
+    public void visitPermittedSubclass(final String permittedSubclass) {
+      // Remove permitted subclass.
+    }
 
     @Override
     public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
@@ -218,7 +224,9 @@ class ClassNodeTest extends AsmTest {
     }
 
     @Override
-    public void visitAttribute(final Attribute attribute) {}
+    public void visitAttribute(final Attribute attribute) {
+      // Remove attribute.
+    }
 
     @Override
     public RecordComponentVisitor visitRecordComponent(

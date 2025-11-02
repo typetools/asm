@@ -291,12 +291,14 @@ class ClassRemapperTest extends AsmTest {
   @Test
   void testInvokeDynamicInsn_field_deprecated() {
     ClassNode classNode = new ClassNode();
+    @SuppressWarnings("deprecation")
     ClassRemapper classRemapper =
         new ClassRemapper(
             /* latest api */ Opcodes.ASM9,
             classNode,
             new Remapper() {
               @Override
+              @Deprecated
               public String mapInvokeDynamicMethodName(final String name, final String descriptor) {
                 return "new." + name;
               }

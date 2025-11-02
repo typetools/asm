@@ -46,7 +46,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.test.AsmTest;
-import org.objectweb.asm.test.AsmTest.PrecompiledClass;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 

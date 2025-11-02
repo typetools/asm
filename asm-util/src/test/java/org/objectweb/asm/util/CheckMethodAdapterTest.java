@@ -125,7 +125,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     CheckMethodAdapter checkAbstractMethodAdapter =
         new CheckMethodAdapter(Opcodes.ACC_ABSTRACT, "m", "()V", null, Map.of());
 
-    Executable visitCode = () -> checkAbstractMethodAdapter.visitCode();
+    Executable visitCode = checkAbstractMethodAdapter::visitCode;
 
     Exception exception = assertThrows(UnsupportedOperationException.class, visitCode);
     assertEquals("Abstract methods cannot have code", exception.getMessage());
@@ -1109,7 +1109,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(0, 0);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(
@@ -1136,7 +1136,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(0, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     assertDoesNotThrow(visitEnd);
   }
@@ -1157,7 +1157,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(0, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     assertDoesNotThrow(visitEnd);
   }
@@ -1178,7 +1178,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(0, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(
@@ -1207,7 +1207,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(1, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     assertDoesNotThrow(visitEnd);
   }
@@ -1232,7 +1232,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(1, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(
@@ -1250,7 +1250,7 @@ class CheckMethodAdapterTest extends AsmTest implements Opcodes {
     dataFlowCheckMethodAdapter.visitInsn(IRETURN);
     dataFlowCheckMethodAdapter.visitMaxs(1, 2);
 
-    Executable visitEnd = () -> dataFlowCheckMethodAdapter.visitEnd();
+    Executable visitEnd = dataFlowCheckMethodAdapter::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(

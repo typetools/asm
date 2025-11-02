@@ -69,7 +69,7 @@ public abstract class Remapper {
    * @deprecated use {@link #Remapper(int)} instead.
    */
   @Deprecated(forRemoval = false)
-  public Remapper() {
+  protected Remapper() {
     this.api = 0;
   }
 
@@ -79,7 +79,7 @@ public abstract class Remapper {
    * @param api the ASM API version supported by this remapper. Must be one of the {@code
    *     ASM}<i>x</i> values in {@link Opcodes}.
    */
-  public Remapper(final int api) {
+  protected Remapper(final int api) {
     if (api != Opcodes.ASM9
         && api != Opcodes.ASM8
         && api != Opcodes.ASM7
@@ -333,11 +333,11 @@ public abstract class Remapper {
     } else {
       int originSplit = name.lastIndexOf('/');
       int remappedSplit = remappedInnerName.lastIndexOf('/');
-      if (originSplit != -1 && remappedSplit != -1) {
-        if (name.substring(originSplit).equals(remappedInnerName.substring(remappedSplit))) {
-          // class name not changed
-          return innerName;
-        }
+      if (originSplit != -1
+          && remappedSplit != -1
+          && name.substring(originSplit).equals(remappedInnerName.substring(remappedSplit))) {
+        // class name not changed
+        return innerName;
       }
     }
 
