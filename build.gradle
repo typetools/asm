@@ -48,6 +48,7 @@ dependencies {
 allprojects {
   group = 'org.ow2.asm'
   version = '9.10' + (rootProject.hasProperty('release') ? '' : '-SNAPSHOT')
+  ext.osgi_version_upper_bound = '9.11'
 }
 
 subprojects {
@@ -324,7 +325,7 @@ configure(subprojects.findAll{it.provides}) {
     if (imports) {
       jar.manifest.attributes(
         'Import-Package':
-            imports.collect{"${it};version=\"${version}\""}.join(','),
+            imports.collect{"${it};version=\"[${version},${ext.osgi_version_upper_bound})\""}.join(','),
         'Module-Requires': 
             transitiveRequires().collect{"${it};transitive=true"}.join(','))
     }
