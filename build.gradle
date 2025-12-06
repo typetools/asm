@@ -47,8 +47,8 @@ dependencies {
 
 allprojects {
   group = 'org.ow2.asm'
-  version = '9.9.1' + (rootProject.hasProperty('release') ? '' : '-SNAPSHOT')
-  ext.osgi_version_upper_bound = '9.10'
+  version = '9.10' + (rootProject.hasProperty('release') ? '' : '-SNAPSHOT')
+  ext.osgi_version_upper_bound = '9.11'
 }
 
 subprojects {
