@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -476,6 +477,25 @@ public final class Retrofitter {
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
         @Override
+        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+          AnnotationVisitor av = super.visitAnnotation(descriptor, visible);
+          if (!descriptor.equals("Ljava/lang/Deprecated;")) {
+            return av;
+          }
+          // We use @Deprecated(forRemoval = false) instead of a plain @Deprecated
+          // but forRemoval was introduced in Java 9, so we need to remove it
+          return new AnnotationVisitor(api, av) {
+            @Override
+            public void visit(final String name, final Object value) {
+              if (name.equals("forRemoval")) {
+                return;
+              }
+              super.visit(name, value);
+            }
+          };
+        }
+
+        @Override
         public void visitParameter(final String name, final int access) {
           // Javac 21 generates a Parameter attribute for the synthetic/mandated parameters.
           // Remove the Parameter attribute.
@@ -684,6 +704,31 @@ public final class Retrofitter {
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
       return new MethodVisitor(Opcodes.ASM4, methodVisitor) {
+        @Override
+        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+          var av = super.visitAnnotation(descriptor, visible);
+          if (!descriptor.equals("Ljava/lang/Deprecated;")) {
+            return av;
+          }
+          return new AnnotationVisitor(Opcodes.ASM4, av) {
+            @Override
+            public void visit(final String name, final Object value) {
+              throw new IllegalArgumentException(
+                  format(
+                      "ERROR: @Deprecated name %s in %s %s is not available in JDK 1.5",
+                      name, className, currentMethodName));
+            }
+          };
+        }
+
+        @Override
+        public void visitParameter(final String name, final int access) {
+          throw new IllegalArgumentException(
+              format(
+                  "ERROR: parameter %s in %s %s is not available in JDK 1.5",
+                  name, className, currentMethodName));
+        }
+
         @Override
         public void visitFieldInsn(
             final int opcode, final String owner, final String name, final String descriptor) {
