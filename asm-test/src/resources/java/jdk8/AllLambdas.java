@@ -25,70 +25,30 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-package org.objectweb.asm.util;
+package jdk8;
 
-import java.util.Map;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ByteVector;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
+import java.io.Serializable;
 
-/**
- * A non standard attribute used for testing purposes.
- *
- * @author Eric Bruneton
- */
-public class Comment extends Attribute implements ASMifierSupport, TextifierSupport {
+public class AllLambdas {
+    public interface InnerClass {
+        default void inner() {
+        }
+    }
 
-  public Comment() {
-    super("Comment");
-  }
+    public static void normalLambda() {
+        Runnable runnable = Thread::dumpStack;
+    }
 
-  @Override
-  public boolean isUnknown() {
-    return false;
-  }
+    public static void advancedLambda() {
+        Runnable runnable = (Runnable & InnerClass) Thread::dumpStack;
+    }
 
-  @Override
-  protected Attribute read(
-      final ClassReader classReader,
-      final int offset,
-      final int length,
-      final char[] charBuffer,
-      final int codeAttributeOffset,
-      final Label[] labels) {
-    return new Comment();
-  }
+    public static void serializableLambda() {
+        Runnable runnable = (Runnable & Serializable) Thread::dumpStack;
+    }
 
-  @Override
-  protected ByteVector write(
-      final ClassWriter classWriter,
-      final byte[] code,
-      final int codeLength,
-      final int maxStack,
-      final int maxLocals) {
-    return new ByteVector();
-  }
-
-  @Override
-  public void asmify(
-      final StringBuilder stringBuilder,
-      final String varName,
-      final Map<Label, String> labelNames) {
-    stringBuilder
-        .append("Attribute ")
-        .append(varName)
-        .append(" = new org.objectweb.asm.util.Comment();");
-  }
-
-  @Override
-  public void textify(final StringBuilder stringBuilder, final Map<Label, String> labelNames) {
-    stringBuilder.append("(empty)");
-  }
-
-  @Override
-  public String toString() {
-    return "CommentAttribute";
-  }
+    public static void serializableAdvancedLambda() {
+        Runnable runnable = (Runnable & Serializable & InnerClass) Thread::dumpStack;
+    }
 }
+

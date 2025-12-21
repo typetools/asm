@@ -94,8 +94,7 @@ final class MethodNodeBuilder {
   }
 
   MethodNodeBuilder push() {
-    methodNode.visitInsn(Opcodes.ICONST_0);
-    return this;
+    return iconst_0();
   }
 
   MethodNodeBuilder pop() {

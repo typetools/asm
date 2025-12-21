@@ -381,7 +381,7 @@ class TypeTest implements Opcodes {
   }
 
   @Test
-  void testGetOpcode() {
+  void testGetOpcode_ialoadOrStore() {
     assertEquals(BALOAD, Type.BOOLEAN_TYPE.getOpcode(IALOAD));
     assertEquals(BALOAD, Type.BYTE_TYPE.getOpcode(IALOAD));
     assertEquals(CALOAD, Type.CHAR_TYPE.getOpcode(IALOAD));
@@ -395,6 +395,10 @@ class TypeTest implements Opcodes {
     assertEquals(AASTORE, Type.getType("Ljava/lang/Object;").getOpcode(IASTORE));
     assertEquals(AASTORE, Type.getObjectType("java/lang/Object").getOpcode(IASTORE));
     assertEquals(AASTORE, Type.getType("[I").getOpcode(IASTORE));
+  }
+
+  @Test
+  void testGetOpcode_return() {
     assertEquals(RETURN, Type.VOID_TYPE.getOpcode(Opcodes.IRETURN));
     assertEquals(IRETURN, Type.BOOLEAN_TYPE.getOpcode(Opcodes.IRETURN));
     assertEquals(IRETURN, Type.BYTE_TYPE.getOpcode(Opcodes.IRETURN));
@@ -409,6 +413,10 @@ class TypeTest implements Opcodes {
     assertEquals(ARETURN, Type.getType("Ljava/lang/Object;").getOpcode(Opcodes.IRETURN));
     assertEquals(ARETURN, Type.getObjectType("java/lang/Object").getOpcode(Opcodes.IRETURN));
     assertEquals(ARETURN, Type.getType("[I").getOpcode(Opcodes.IRETURN));
+  }
+
+  @Test
+  void testGetOpcode_iadd() {
     assertEquals(IADD, Type.BOOLEAN_TYPE.getOpcode(IADD));
     assertEquals(IADD, Type.BYTE_TYPE.getOpcode(IADD));
     assertEquals(IADD, Type.CHAR_TYPE.getOpcode(IADD));
@@ -417,6 +425,10 @@ class TypeTest implements Opcodes {
     assertEquals(FADD, Type.FLOAT_TYPE.getOpcode(IADD));
     assertEquals(LADD, Type.LONG_TYPE.getOpcode(IADD));
     assertEquals(DADD, Type.DOUBLE_TYPE.getOpcode(IADD));
+  }
+
+  @Test
+  void testGetOpcode_unsupported() {
     Class<UnsupportedOperationException> expectedException = UnsupportedOperationException.class;
     assertThrows(expectedException, () -> Type.VOID_TYPE.getOpcode(IADD));
     assertThrows(expectedException, () -> Type.VOID_TYPE.getOpcode(ILOAD));

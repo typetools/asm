@@ -126,7 +126,7 @@ class InsnListTest {
   void testIteratorNext_noSuchElement() {
     ListIterator<AbstractInsnNode> iterator = newInsnList().iterator();
 
-    Executable next = () -> iterator.next();
+    Executable next = iterator::next;
 
     assertThrows(NoSuchElementException.class, next);
   }
@@ -149,7 +149,7 @@ class InsnListTest {
   void testIteratorPrevious_noSuchElement() {
     ListIterator<AbstractInsnNode> iterator = newInsnList().iterator();
 
-    Executable previous = () -> iterator.previous();
+    Executable previous = iterator::previous;
 
     assertThrows(NoSuchElementException.class, previous);
   }
@@ -194,7 +194,7 @@ class InsnListTest {
     InsnList insnList = newInsnList(insn1, insn2);
     ListIterator<AbstractInsnNode> iterator = insnList.iterator(1);
 
-    Executable remove = () -> iterator.remove();
+    Executable remove = iterator::remove;
 
     assertThrows(IllegalStateException.class, remove);
   }

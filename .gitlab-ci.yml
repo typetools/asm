@@ -16,11 +16,17 @@ build-job:
   stage: build
   script:
     - $GRADLE build
+  artifacts:
+    untracked: true
+    expire_in: 1 hour
 
 test-job:
   stage: test
   script:
-    - $GRADLE test jacocoTestCoverageVerification
+    - $GRADLE --info test jacocoTestCoverageVerification jacocoTestReport
+  artifacts:
+    untracked: true
+    expire_in: 1 hour
 
 deploy-job:
   stage: deploy
@@ -32,4 +38,4 @@ sonar-job:
   stage: deploy
   allow_failure: true
   script:
-    - if [ $SONAR_LOGIN ]; then $GRADLE -Dorg.gradle.jvmargs='-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M' jacocoTestReport sonar -Dsonar.host.url=$SONAR -Dsonar.login=${SONAR_LOGIN}; fi
+    - if [ $SONAR_LOGIN ]; then $GRADLE --info -Dorg.gradle.jvmargs='-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M' sonar -Dsonar.host.url=$SONAR -Dsonar.token=${SONAR_LOGIN}; fi

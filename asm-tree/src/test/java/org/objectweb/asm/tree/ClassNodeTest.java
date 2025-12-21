@@ -218,7 +218,9 @@ class ClassNodeTest extends AsmTest {
     }
 
     @Override
-    public void visitAttribute(final Attribute attribute) {}
+    public void visitAttribute(final Attribute attribute) {
+      // Remove attribute.
+    }
 
     @Override
     public RecordComponentVisitor visitRecordComponent(

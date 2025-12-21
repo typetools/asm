@@ -28,10 +28,10 @@
 
 package org.objectweb.asm.commons;
 
-import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
@@ -549,6 +549,9 @@ public class InstructionAdapter extends MethodVisitor {
       final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
+    if (api < Opcodes.ASM5) {
+      throw new UnsupportedOperationException("This feature requires ASM5");
+    }
     invokedynamic(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
   }
 
@@ -1074,7 +1077,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param descriptor the method's descriptor (see {@link Type}).
    * @deprecated use {@link #invokevirtual(String, String, String, boolean)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public void invokevirtual(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokevirtual(owner, name, descriptor, false);
@@ -1113,7 +1116,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param descriptor the method's descriptor (see {@link Type}).
    * @deprecated use {@link #invokespecial(String, String, String, boolean)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public void invokespecial(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokespecial(owner, name, descriptor, false);
@@ -1152,7 +1155,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @param descriptor the method's descriptor (see {@link Type}).
    * @deprecated use {@link #invokestatic(String, String, String, boolean)} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = false)
   public void invokestatic(final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
     if (api >= Opcodes.ASM5) {
       invokestatic(owner, name, descriptor, false);

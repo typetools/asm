@@ -86,9 +86,9 @@ class TryCatchBlockSorterTest extends AsmTest {
 
     ClassFile classFile = new ClassFile(classWriter.toByteArray());
     if (classParameter.isNotCompatibleWithCurrentJdk()) {
-      assertThrows(UnsupportedClassVersionError.class, () -> classFile.newInstance());
+      assertThrows(UnsupportedClassVersionError.class, classFile::newInstance);
     } else {
-      assertDoesNotThrow(() -> classFile.newInstance());
+      assertDoesNotThrow(classFile::newInstance);
     }
   }
 }

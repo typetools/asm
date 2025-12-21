@@ -154,6 +154,7 @@ public abstract class AsmTest {
     JDK8_ALL_FRAMES("jdk8.AllFrames", JdkVersion.JDK8),
     JDK8_ALL_INSTRUCTIONS("jdk8.AllInstructions", JdkVersion.JDK8),
     JDK8_ALL_STRUCTURES("jdk8.AllStructures", JdkVersion.JDK8),
+    JDK8_ALL_LAMBDAS("jdk8.AllLambdas", JdkVersion.JDK8),
     JDK8_ANONYMOUS_INNER_CLASS("jdk8.AllStructures$1", JdkVersion.JDK8),
     JDK8_ARTIFICIAL_STRUCTURES("jdk8.Artificial$()$Structures", JdkVersion.JDK8),
     JDK8_INNER_CLASS("jdk8.AllStructures$InnerClass", JdkVersion.JDK8),

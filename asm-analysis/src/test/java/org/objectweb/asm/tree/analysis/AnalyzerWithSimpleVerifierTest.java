@@ -193,7 +193,7 @@ class AnalyzerWithSimpleVerifierTest extends AsmTest {
   }
 
   @Test
-  void testAnalyze_mergeStackFrames() throws AnalyzerException {
+  void testAnalyze_mergeStackFrames() {
     Label loopLabel = new Label();
     MethodNode methodNode =
         new MethodNodeBuilder(1, 4)
@@ -223,7 +223,7 @@ class AnalyzerWithSimpleVerifierTest extends AsmTest {
   }
 
   @Test
-  void testAnalyze_mergeStackFramesWithExceptionHandlers() throws AnalyzerException {
+  void testAnalyze_mergeStackFramesWithExceptionHandlers() {
     Label startTry0Label = new Label();
     Label endTry0Label = new Label();
     Label catch0Label = new Label();

@@ -380,7 +380,7 @@ class CheckClassAdapterTest extends AsmTest implements Opcodes {
     methodVisitor.visitInsn(IRETURN);
     methodVisitor.visitMaxs(0, 0);
 
-    Executable visitEnd = () -> methodVisitor.visitEnd();
+    Executable visitEnd = methodVisitor::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(
@@ -403,7 +403,7 @@ class CheckClassAdapterTest extends AsmTest implements Opcodes {
     methodVisitor.visitInsn(IRETURN);
     methodVisitor.visitMaxs(0, 2);
 
-    Executable visitEnd = () -> methodVisitor.visitEnd();
+    Executable visitEnd = methodVisitor::visitEnd;
 
     Exception exception = assertThrows(IllegalArgumentException.class, visitEnd);
     assertTrue(
@@ -423,7 +423,7 @@ class CheckClassAdapterTest extends AsmTest implements Opcodes {
     methodVisitor.visitInsn(IRETURN);
     methodVisitor.visitMaxs(0, 0);
 
-    Executable visitEnd = () -> methodVisitor.visitEnd();
+    Executable visitEnd = methodVisitor::visitEnd;
 
     assertDoesNotThrow(visitEnd);
   }

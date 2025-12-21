@@ -88,5 +88,7 @@ public class CodeComment extends Attribute implements ASMifierSupport, Textifier
   }
 
   @Override
-  public void textify(final StringBuilder stringBuilder, final Map<Label, String> labelNames) {}
+  public void textify(final StringBuilder stringBuilder, final Map<Label, String> labelNames) {
+    stringBuilder.append("(empty)");
+  }
 }

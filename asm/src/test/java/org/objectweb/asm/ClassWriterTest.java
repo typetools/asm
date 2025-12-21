@@ -325,7 +325,7 @@ class ClassWriterTest extends AsmTest {
       classWriter.newConst(Integer.valueOf(i));
     }
 
-    Executable toByteArray = () -> classWriter.toByteArray();
+    Executable toByteArray = classWriter::toByteArray;
 
     if (constantPoolCount > 65535) {
       ClassTooLargeException exception = assertThrows(ClassTooLargeException.class, toByteArray);
@@ -353,7 +353,7 @@ class ClassWriterTest extends AsmTest {
     methodVisitor.visitMaxs(0, 0);
     methodVisitor.visitEnd();
 
-    Executable toByteArray = () -> classWriter.toByteArray();
+    Executable toByteArray = classWriter::toByteArray;
 
     if (methodCodeSize > 65535) {
       MethodTooLargeException exception = assertThrows(MethodTooLargeException.class, toByteArray);
@@ -391,7 +391,7 @@ class ClassWriterTest extends AsmTest {
     ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
     classReader.accept(classWriter, attributes(), 0);
 
-    Executable toByteArray = () -> classWriter.toByteArray();
+    Executable toByteArray = classWriter::toByteArray;
 
     assertDoesNotThrow(toByteArray);
   }
@@ -651,7 +651,7 @@ class ClassWriterTest extends AsmTest {
   @ParameterizedTest
   @MethodSource(ALL_CLASSES_AND_ALL_APIS)
   void testReadAndWrite_computeMaxs_newInstance(
-      final PrecompiledClass classParameter, final Api apiParameter) throws Exception {
+      final PrecompiledClass classParameter, final Api apiParameter) {
     byte[] classFile = classParameter.getBytes();
     ClassReader classReader = new ClassReader(classFile);
     ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);

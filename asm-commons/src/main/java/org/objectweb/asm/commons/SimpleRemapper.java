@@ -28,13 +28,15 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.checkerframework.checker.signature.qual.Identifier;
-import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.checkerframework.checker.signature.qual.InternalForm;
 
 import java.util.Collections;
 import java.util.Map;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Opcodes;
 
 /**
  * A {@link Remapper} using a {@link Map} to define its mapping.
@@ -63,8 +65,37 @@ public class SimpleRemapper extends Remapper {
    *       <li>for internal names, the key is the old internal name, and the value is the new
    *           internal name (see {@link org.objectweb.asm.Type#getInternalName()}).
    *     </ul>
+   *
+   * @deprecated use {@link #SimpleRemapper(int, Map)} instead.
    */
+  @Deprecated(forRemoval = false)
   public SimpleRemapper(final Map<String, String> mapping) {
+    this.mapping = mapping;
+  }
+
+  /**
+   * Constructs a new {@link SimpleRemapper} with the given mapping.
+   *
+   * @param api the ASM API version supported by this remapper. Must be one of the {@code
+   *     ASM}<i>x</i> values in {@link Opcodes}.
+   * @param mapping a map specifying a remapping as follows:
+   *     <ul>
+   *       <li>for method names, the key is the owner, name and descriptor of the method (in the
+   *           form &lt;owner&gt;.&lt;name&gt;&lt;descriptor&gt;), and the value is the new method
+   *           name.
+   *       <li>for invokedynamic method names, the key is the name and descriptor of the method (in
+   *           the form .&lt;name&gt;&lt;descriptor&gt;), and the value is the new method name.
+   *       <li>for field names, the key is the owner and name of the field or attribute (in the form
+   *           &lt;owner&gt;.&lt;name&gt;), and the value is the new field name.
+   *       <li>for attribute names, the key is the annotation descriptor and the name of the
+   *           attribute (in the form &lt;descriptor&gt;.&lt;name&gt;), and the value is the new
+   *           attribute name.
+   *       <li>for internal names, the key is the old internal name, and the value is the new
+   *           internal name (see {@link org.objectweb.asm.Type#getInternalName()}).
+   *     </ul>
+   */
+  public SimpleRemapper(final int api, final Map<String, String> mapping) {
+    super(api);
     this.mapping = mapping;
   }
 
@@ -75,8 +106,25 @@ public class SimpleRemapper extends Remapper {
    *     #SimpleRemapper(Map)} for the format of these keys).
    * @param newName the new method, field or internal name (see {@link
    *     org.objectweb.asm.Type#getInternalName()}).
+   * @deprecated use {@link #SimpleRemapper(int, String, String)} instead.
    */
+  @Deprecated(forRemoval = false)
   public SimpleRemapper(final String oldName, final String newName) {
+    this.mapping = Collections.singletonMap(oldName, newName);
+  }
+
+  /**
+   * Constructs a new {@link SimpleRemapper} with the given mapping.
+   *
+   * @param api the ASM API version supported by this remapper. Must be one of the {@code
+   *     ASM}<i>x</i> values in {@link Opcodes}.
+   * @param oldName the key corresponding to a method, field or internal name (see {@link
+   *     #SimpleRemapper(Map)} for the format of these keys).
+   * @param newName the new method, field or internal name (see {@link
+   *     org.objectweb.asm.Type#getInternalName()}).
+   */
+  public SimpleRemapper(final int api, final String oldName, final String newName) {
+    super(api);
     this.mapping = Collections.singletonMap(oldName, newName);
   }
 
@@ -87,8 +135,27 @@ public class SimpleRemapper extends Remapper {
     return remappedName == null ? name : remappedName;
   }
 
+  /**
+   * Maps an invokedynamic or a constant dynamic method name to its new name.
+   *
+   * @param name the name of the method.
+   * @param descriptor the descriptor of the method.
+   * @return the new name of the method.
+   * @deprecated use {@link #mapInvokeDynamicMethodName(String, String, Handle, Object...)} instead.
+   */
   @Override
+  @Deprecated(forRemoval = false)
   public String mapInvokeDynamicMethodName(final String name, final String descriptor) {
+    String remappedName = map('.' + name + descriptor);
+    return remappedName == null ? name : remappedName;
+  }
+
+  @Override
+  public String mapBasicInvokeDynamicMethodName(
+      final String name,
+      final String descriptor,
+      final Handle bootstrapMethodHandle,
+      final Object... bootstrapMethodArguments) {
     String remappedName = map('.' + name + descriptor);
     return remappedName == null ? name : remappedName;
   }

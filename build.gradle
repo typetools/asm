@@ -31,10 +31,11 @@ buildscript {
   dependencies { classpath 'org.netbeans.tools:sigtest-maven-plugin:1.5' }
 }
 
+plugins { id 'org.checkerframework' version '0.6.61' apply false }
+
 plugins { id 'com.diffplug.spotless' version "6.23.3" apply false }
 plugins { id 'me.champeau.jmh' version '0.7.2' apply false }
-plugins { id 'org.sonarqube' version '4.3.1.3277' apply false }
-plugins { id 'org.checkerframework' version '0.6.45' apply false }
+plugins { id 'org.sonarqube' version '7.0.0.6105' apply false }
 
 description = 'ASM, a very small and fast Java bytecode manipulation framework'
 
@@ -48,7 +49,8 @@ dependencies {
 
 allprojects {
   group = 'org.ow2.asm'
-  version = '9.8' + (rootProject.hasProperty('release') ? '' : '-SNAPSHOT')
+  version = '9.10' + (rootProject.hasProperty('release') ? '' : '-SNAPSHOT')
+  ext.osgi_version_upper_bound = '9.11'
 }
 
 subprojects {
@@ -102,8 +104,8 @@ project(':asm-commons') {
 project(':asm-test') {
   description = "Utilities for testing ${parent.description}"
   provides = ['org.objectweb.asm.test']
-  depends = ['org.junit.jupiter:junit-jupiter-api:5.10.1',
-      'org.junit.jupiter:junit-jupiter-params:5.10.1']
+  depends = ['org.junit.jupiter:junit-jupiter-api:5.13.4',
+      'org.junit.jupiter:junit-jupiter-params:5.13.4']
 }
 
 project(':asm-tree') {
@@ -234,9 +236,10 @@ subprojects {
   dependencies {
     requires.each { projectName -> api project(projectName) }
     depends.each { artifactName -> api artifactName }
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1',
-        'org.junit.jupiter:junit-jupiter-params:5.10.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4',
+        'org.junit.jupiter:junit-jupiter-params:5.13.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation project(':asm-test')
   }
 
@@ -258,6 +261,9 @@ configure(subprojects.findAll{it.provides}) {
   jacocoTestReport {
     reports { xml.required = true }
     classDirectories.setFrom(sourceSets.main.output.classesDirs)
+    dependsOn ':asm:jar'
+    dependsOn ':asm-tree:jar'
+    dependsOn ':asm-commons:jar'
   }
   jacocoTestCoverageVerification {
     classDirectories.setFrom(sourceSets.main.output.classesDirs)
@@ -343,7 +349,7 @@ configure(subprojects.findAll{it.provides}) {
     if (imports) {
       jar.manifest.attributes(
         'Import-Package':
-            imports.collect{"${it};version=\"${version}\""}.join(','),
+            imports.collect{"${it};version=\"[${version},${ext.osgi_version_upper_bound})\""}.join(','),
         'Module-Requires': 
             transitiveRequires().collect{"${it};transitive=true"}.join(','))
     }
@@ -354,6 +360,8 @@ configure(subprojects.findAll{it.provides}) {
   apply plugin: 'org.sonarqube'
   sonar {
     properties { property 'sonar.projectKey', "ASM:${project.name}" }
+    properties { property 'sonar.inclusions', "**/*.java" }
+    properties { property 'sonar.verbose', "true" }
   }
 
   // Add a task to generate a private javadoc and add it as a dependency of the
