@@ -2,6 +2,11 @@ package org.objectweb.asm.signature;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
