@@ -27,6 +27,15 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
+import org.plumelib.reflection.Signatures;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A {@link ClassVisitor} that generates a corresponding ClassFile structure, as defined in the Java
  * Virtual Machine Specification (JVMS). It can be used alone, to generate a Java class "from
@@ -290,10 +299,10 @@ public class ClassWriter extends ClassVisitor {
   public final void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     this.version = version;
     this.accessFlags = access;
     this.thisClass = symbolTable.setMajorVersionAndClassName(version & 0xFFFF, name);
@@ -325,7 +334,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final ModuleVisitor visitModule(
-      final String name, final int access, final String version) {
+      final @DotSeparatedIdentifiers String name, final int access, final String version) {
     return moduleWriter =
         new ModuleWriter(
             symbolTable,
@@ -335,13 +344,13 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final void visitNestHost(final String nestHost) {
+  public final void visitNestHost(final @InternalForm String nestHost) {
     nestHostClassIndex = symbolTable.addConstantClass(nestHost).index;
   }
 
   @Override
   public final void visitOuterClass(
-      final String owner, final String name, final String descriptor) {
+      final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     enclosingClassIndex = symbolTable.addConstantClass(owner).index;
     if (name != null && descriptor != null) {
       enclosingMethodIndex = symbolTable.addConstantNameAndType(name, descriptor);
@@ -349,7 +358,7 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public final AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleAnnotation =
           AnnotationWriter.create(symbolTable, descriptor, lastRuntimeVisibleAnnotation);
@@ -361,7 +370,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -381,7 +390,7 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final void visitNestMember(final String nestMember) {
+  public final void visitNestMember(final @InternalForm String nestMember) {
     if (nestMemberClasses == null) {
       nestMemberClasses = new ByteVector();
     }
@@ -390,7 +399,7 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final void visitPermittedSubclass(final String permittedSubclass) {
+  public final void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     if (permittedSubclasses == null) {
       permittedSubclasses = new ByteVector();
     }
@@ -400,7 +409,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     if (innerClasses == null) {
       innerClasses = new ByteVector();
     }
@@ -425,7 +434,7 @@ public class ClassWriter extends ClassVisitor {
 
   @Override
   public final RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     RecordComponentWriter recordComponentWriter =
         new RecordComponentWriter(symbolTable, name, descriptor, signature);
     if (firstRecordComponent == null) {
@@ -439,8 +448,8 @@ public class ClassWriter extends ClassVisitor {
   @Override
   public final FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     FieldWriter fieldWriter =
@@ -456,10 +465,10 @@ public class ClassWriter extends ClassVisitor {
   @Override
   public final MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     MethodWriter methodWriter =
         new MethodWriter(symbolTable, access, name, descriptor, signature, exceptions, compute);
     if (firstMethod == null) {
@@ -840,7 +849,7 @@ public class ClassWriter extends ClassVisitor {
    * @param value the internal name of the class (see {@link Type#getInternalName()}).
    * @return the index of a new or already existing class reference item.
    */
-  public int newClass(final String value) {
+  public int newClass(final @InternalForm String value) {
     return symbolTable.addConstantClass(value).index;
   }
 
@@ -864,7 +873,7 @@ public class ClassWriter extends ClassVisitor {
    * @param moduleName name of the module.
    * @return the index of a new or already existing module reference item.
    */
-  public int newModule(final String moduleName) {
+  public int newModule(final @DotSeparatedIdentifiers String moduleName) {
     return symbolTable.addConstantModule(moduleName).index;
   }
 
@@ -876,7 +885,7 @@ public class ClassWriter extends ClassVisitor {
    * @param packageName name of the package in its internal form.
    * @return the index of a new or already existing module reference item.
    */
-  public int newPackage(final String packageName) {
+  public int newPackage(final @DotSeparatedIdentifiers String packageName) {
     return symbolTable.addConstantPackage(packageName).index;
   }
 
@@ -899,7 +908,7 @@ public class ClassWriter extends ClassVisitor {
    */
   @Deprecated(forRemoval = false)
   public int newHandle(
-      final int tag, final String owner, final String name, final String descriptor) {
+      final int tag, final @InternalForm String owner, final String name, final String descriptor) {
     return newHandle(tag, owner, name, descriptor, tag == Opcodes.H_INVOKEINTERFACE);
   }
 
@@ -921,7 +930,7 @@ public class ClassWriter extends ClassVisitor {
    */
   public int newHandle(
       final int tag,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
@@ -941,7 +950,7 @@ public class ClassWriter extends ClassVisitor {
    */
   public int newConstantDynamic(
       final String name,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     return symbolTable.addConstantDynamic(
@@ -962,7 +971,7 @@ public class ClassWriter extends ClassVisitor {
    */
   public int newInvokeDynamic(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     return symbolTable.addConstantInvokeDynamic(
@@ -980,7 +989,7 @@ public class ClassWriter extends ClassVisitor {
    * @param descriptor the field's descriptor.
    * @return the index of a new or already existing field reference item.
    */
-  public int newField(final String owner, final String name, final String descriptor) {
+  public int newField(final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     return symbolTable.addConstantFieldref(owner, name, descriptor).index;
   }
 
@@ -997,7 +1006,7 @@ public class ClassWriter extends ClassVisitor {
    * @return the index of a new or already existing method reference item.
    */
   public int newMethod(
-      final String owner, final String name, final String descriptor, final boolean isInterface) {
+      final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor, final boolean isInterface) {
     return symbolTable.addConstantMethodref(owner, name, descriptor, isInterface).index;
   }
 
@@ -1010,7 +1019,7 @@ public class ClassWriter extends ClassVisitor {
    * @param descriptor a type descriptor.
    * @return the index of a new or already existing name and type item.
    */
-  public int newNameType(final String name, final String descriptor) {
+  public int newNameType(final String name, final @FieldDescriptor String descriptor) {
     return symbolTable.addConstantNameAndType(name, descriptor);
   }
 
@@ -1053,19 +1062,19 @@ public class ClassWriter extends ClassVisitor {
    * @return the internal name of the common super class of the two given classes (see {@link
    *     Type#getInternalName()}).
    */
-  protected String getCommonSuperClass(final String type1, final String type2) {
+  protected @InternalForm String getCommonSuperClass(final @InternalForm String type1, final @InternalForm String type2) {
     ClassLoader classLoader = getClassLoader();
     Class<?> class1;
     try {
       class1 = Class.forName(type1.replace('/', '.'), false, classLoader);
     } catch (ClassNotFoundException e) {
-      throw new TypeNotPresentException(type1, e);
+      throw new TypeNotPresentException(Signatures.internalFormToFullyQualified(type1), e); // bug fix
     }
     Class<?> class2;
     try {
       class2 = Class.forName(type2.replace('/', '.'), false, classLoader);
     } catch (ClassNotFoundException e) {
-      throw new TypeNotPresentException(type2, e);
+      throw new TypeNotPresentException(Signatures.internalFormToFullyQualified(type2), e); // bug fix
     }
     if (class1.isAssignableFrom(class2)) {
       return type1;
@@ -1079,7 +1088,8 @@ public class ClassWriter extends ClassVisitor {
       do {
         class1 = class1.getSuperclass();
       } while (!class1.isAssignableFrom(class2));
-      return class1.getName().replace('.', '/');
+      // If not an array or primitives, this conversion works.
+      return (@InternalForm String) class1.getName().replace('.', '/');
     }
   }
 

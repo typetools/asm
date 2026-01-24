@@ -62,7 +62,7 @@ class SimpleVerifierTest {
     "java/util/Map, java/util/List, java/lang/Object"
   })
   void testMerge_objectTypes(
-      final String internalName1, final String internalName2, final String expectedInternalName) {
+      final @InternalForm String internalName1, final @InternalForm String internalName2, final @InternalForm String expectedInternalName) {
     BasicValue value1 = new BasicValue(Type.getObjectType(internalName1));
     BasicValue value2 = new BasicValue(Type.getObjectType(internalName2));
     SimpleVerifier verifier = new SimpleVerifier();

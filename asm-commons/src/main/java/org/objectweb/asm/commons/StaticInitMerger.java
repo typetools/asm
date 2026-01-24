@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -41,7 +46,7 @@ import org.objectweb.asm.Opcodes;
 public class StaticInitMerger extends ClassVisitor {
 
   /** The internal name of the visited class. */
-  private String owner;
+  private @InternalForm String owner;
 
   /** The prefix to use to rename the existing &lt;clinit&gt; methods. */
   private final String renamedClinitMethodPrefix;
@@ -82,10 +87,10 @@ public class StaticInitMerger extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
     this.owner = name;
   }
@@ -93,14 +98,14 @@ public class StaticInitMerger extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     MethodVisitor methodVisitor;
     if ("<clinit>".equals(name)) {
       int newAccess = Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC;
-      String newName = renamedClinitMethodPrefix + numClinitMethods++;
+      @Identifier String newName = renamedClinitMethodPrefix + numClinitMethods++;
       methodVisitor = super.visitMethod(newAccess, newName, descriptor, signature, exceptions);
 
       if (mergedClinitVisitor == null) {

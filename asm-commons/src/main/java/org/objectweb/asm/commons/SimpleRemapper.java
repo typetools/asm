@@ -28,6 +28,11 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.Collections;
 import java.util.Map;
 import org.objectweb.asm.Handle;
@@ -124,7 +129,8 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapMethodName(final String owner, final String name, final String descriptor) {
+  @SuppressWarnings("signature:return") // TODO: this does not necessarily return an identifier
+  public @Identifier String mapMethodName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     String remappedName = map(owner + '.' + name + descriptor);
     return remappedName == null ? name : remappedName;
   }
@@ -155,18 +161,21 @@ public class SimpleRemapper extends Remapper {
   }
 
   @Override
-  public String mapAnnotationAttributeName(final String descriptor, final String name) {
+  @SuppressWarnings("signature") // TODO: might not return a dot-separated-identifiers
+  public @DotSeparatedIdentifiers String mapAnnotationAttributeName(final @FieldDescriptor String descriptor, final String name) {
     String remappedName = map(descriptor + '.' + name);
     return remappedName == null ? name : remappedName;
   }
 
   @Override
-  public String mapFieldName(final String owner, final String name, final String descriptor) {
+  @SuppressWarnings("signature") // TODO: might not return an identifier
+  public @Identifier String mapFieldName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     String remappedName = map(owner + '.' + name);
     return remappedName == null ? name : remappedName;
   }
 
   @Override
+  @SuppressWarnings("signature") // TODO: unsure about argument and return types
   public String map(final String key) {
     return mapping.get(key);
   }

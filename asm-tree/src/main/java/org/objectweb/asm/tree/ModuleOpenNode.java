@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+
 import java.util.List;
 import org.objectweb.asm.ModuleVisitor;
 
@@ -40,7 +44,7 @@ public class ModuleOpenNode {
   /**
    * The internal name of the opened package (see {@link org.objectweb.asm.Type#getInternalName()}).
    */
-  public String packaze;
+  public @DotSeparatedIdentifiers String packaze;
 
   /**
    * The access flag of the opened package, valid values are among {@code ACC_SYNTHETIC} and {@code
@@ -52,7 +56,7 @@ public class ModuleOpenNode {
    * The fully qualified names (using dots) of the modules that can use deep reflection to the
    * classes of the open package, or {@literal null}.
    */
-  public List<String> modules;
+  public @Nullable List<@DotSeparatedIdentifiers String> modules;
 
   /**
    * Constructs a new {@link ModuleOpenNode}.
@@ -64,7 +68,7 @@ public class ModuleOpenNode {
    * @param modules the fully qualified names (using dots) of the modules that can use deep
    *     reflection to the classes of the open package, or {@literal null}.
    */
-  public ModuleOpenNode(final String packaze, final int access, final List<String> modules) {
+  public ModuleOpenNode(final @DotSeparatedIdentifiers String packaze, final int access, final List<@DotSeparatedIdentifiers String> modules) {
     this.packaze = packaze;
     this.access = access;
     this.modules = modules;
@@ -77,6 +81,6 @@ public class ModuleOpenNode {
    */
   public void accept(final ModuleVisitor moduleVisitor) {
     moduleVisitor.visitOpen(
-        packaze, access, modules == null ? null : modules.toArray(new String[0]));
+        packaze, access, modules == null ? null : modules.toArray(new @DotSeparatedIdentifiers String[0]));
   }
 }

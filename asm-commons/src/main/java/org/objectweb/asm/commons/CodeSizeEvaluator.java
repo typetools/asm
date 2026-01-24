@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
@@ -97,7 +102,7 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     minSize += 3;
     maxSize += 3;
     super.visitTypeInsn(opcode, type);
@@ -105,7 +110,7 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     minSize += 3;
     maxSize += 3;
     super.visitFieldInsn(opcode, owner, name, descriptor);
@@ -114,9 +119,9 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -138,7 +143,7 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     minSize += 5;
@@ -199,7 +204,7 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     minSize += 4;
     maxSize += 4;
     super.visitMultiANewArrayInsn(descriptor, numDimensions);

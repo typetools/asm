@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.objectweb.asm.Type;
@@ -41,10 +44,10 @@ import org.objectweb.asm.Type;
 public class Method {
 
   /** The method name. */
-  private final String name;
+  private final @Identifier String name;
 
   /** The method descriptor. */
-  private final String descriptor;
+  private final @MethodDescriptor String descriptor;
 
   /** The descriptors of the primitive Java types (plus void). */
   private static final Map<String, String> PRIMITIVE_TYPE_DESCRIPTORS;
@@ -69,7 +72,7 @@ public class Method {
    * @param name the method's name.
    * @param descriptor the method's descriptor.
    */
-  public Method(final String name, final String descriptor) {
+  public Method(final @Identifier String name, final @MethodDescriptor String descriptor) {
     this.name = name;
     this.descriptor = descriptor;
   }
@@ -81,7 +84,7 @@ public class Method {
    * @param returnType the method's return type.
    * @param argumentTypes the method's argument types.
    */
-  public Method(final String name, final Type returnType, final Type[] argumentTypes) {
+  public Method(final @Identifier String name, final Type returnType, final Type[] argumentTypes) {
     this(name, Type.getMethodDescriptor(returnType, argumentTypes));
   }
 
@@ -92,7 +95,7 @@ public class Method {
    * @return a {@link Method} corresponding to the given Java method declaration.
    */
   public static Method getMethod(final java.lang.reflect.Method method) {
-    return new Method(method.getName(), Type.getMethodDescriptor(method));
+    return new Method((@Identifier String) method.getName(), Type.getMethodDescriptor(method));
   }
 
   /**
@@ -102,7 +105,7 @@ public class Method {
    * @return a {@link Method} corresponding to the given Java constructor declaration.
    */
   public static Method getMethod(final java.lang.reflect.Constructor<?> constructor) {
-    return new Method("<init>", Type.getConstructorDescriptor(constructor));
+    return new Method((@Identifier String)"<init>", Type.getConstructorDescriptor(constructor));
   }
 
   /**
@@ -141,7 +144,7 @@ public class Method {
       throw new IllegalArgumentException();
     }
     final String returnType = method.substring(0, spaceIndex);
-    final String methodName =
+    final @Identifier String methodName =
         method.substring(spaceIndex + 1, currentArgumentStartIndex - 1).trim();
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('(');
@@ -163,7 +166,7 @@ public class Method {
       stringBuilder.append(argumentDescriptor);
     } while (currentArgumentEndIndex != -1);
     stringBuilder.append(')').append(getDescriptorInternal(returnType, defaultPackage));
-    return new Method(methodName, stringBuilder.toString());
+    return new Method(methodName, (@MethodDescriptor String) stringBuilder.toString());
   }
 
   /**
@@ -210,7 +213,7 @@ public class Method {
    *
    * @return the name of the method described by this object.
    */
-  public String getName() {
+  public @Identifier String getName() {
     return name;
   }
 
@@ -219,7 +222,7 @@ public class Method {
    *
    * @return the descriptor of the method described by this object.
    */
-  public String getDescriptor() {
+  public @MethodDescriptor String getDescriptor() {
     return descriptor;
   }
 

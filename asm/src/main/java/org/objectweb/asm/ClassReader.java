@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +46,7 @@ import java.io.InputStream;
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
+@SuppressWarnings("signature") // parsing and string manipulation
 public class ClassReader {
 
   /**
@@ -295,7 +301,7 @@ public class ClassReader {
    *     retrieved with the current class loader's {@link ClassLoader#getSystemResourceAsStream}.
    * @throws IOException if an exception occurs during reading.
    */
-  public ClassReader(final String className) throws IOException {
+  public ClassReader(final @FullyQualifiedName String className) throws IOException {
     this(
         readStream(
             ClassLoader.getSystemResourceAsStream(className.replace('.', '/') + ".class"), true));
@@ -370,9 +376,9 @@ public class ClassReader {
    * @return the internal class name.
    * @see ClassVisitor#visit(int, int, String, String, String, String[])
    */
-  public String getClassName() {
+  public @InternalForm String getClassName() {
     // this_class is just after the access_flags field (using 2 bytes).
-    return readClass(header + 2, new char[maxStringLength]);
+    return (@InternalForm String) readClass(header + 2, new char[maxStringLength]);
   }
 
   /**
@@ -382,9 +388,9 @@ public class ClassReader {
    * @return the internal name of the super class, or {@literal null} for {@link Object} class.
    * @see ClassVisitor#visit(int, int, String, String, String, String[])
    */
-  public String getSuperName() {
+  public @InternalForm String getSuperName() {
     // super_class is after the access_flags and this_class fields (2 bytes each).
-    return readClass(header + 4, new char[maxStringLength]);
+    return (@InternalForm String) readClass(header + 4, new char[maxStringLength]);
   }
 
   /**
@@ -394,11 +400,11 @@ public class ClassReader {
    *     interfaces are not returned.
    * @see ClassVisitor#visit(int, int, String, String, String, String[])
    */
-  public String[] getInterfaces() {
+  public @InternalForm String[] getInterfaces() {
     // interfaces_count is after the access_flags, this_class and super_class fields (2 bytes each).
     int currentOffset = header + 6;
     int interfacesCount = readUnsignedShort(currentOffset);
-    String[] interfaces = new String[interfacesCount];
+    @InternalForm String[] interfaces = new String[interfacesCount];
     if (interfacesCount > 0) {
       char[] charBuffer = new char[maxStringLength];
       for (int i = 0; i < interfacesCount; ++i) {
@@ -452,9 +458,9 @@ public class ClassReader {
     char[] charBuffer = context.charBuffer;
     int currentOffset = header;
     int accessFlags = readUnsignedShort(currentOffset);
-    String thisClass = readClass(currentOffset + 2, charBuffer);
-    String superClass = readClass(currentOffset + 4, charBuffer);
-    String[] interfaces = new String[readUnsignedShort(currentOffset + 6)];
+    @InternalForm String thisClass = readClass(currentOffset + 2, charBuffer);
+    @InternalForm String superClass = readClass(currentOffset + 4, charBuffer);
+    @InternalForm String[] interfaces = new String[readUnsignedShort(currentOffset + 6)];
     currentOffset += 8;
     for (int i = 0; i < interfaces.length; ++i) {
       interfaces[i] = readClass(currentOffset, charBuffer);
@@ -486,9 +492,9 @@ public class ClassReader {
     // - The offset of the ModulePackages attribute, or 0.
     int modulePackagesOffset = 0;
     // - The string corresponding to the ModuleMainClass attribute, or null.
-    String moduleMainClass = null;
+    @InternalForm String moduleMainClass = null;
     // - The string corresponding to the NestHost attribute, or null.
-    String nestHostClass = null;
+    @InternalForm String nestHostClass = null;
     // - The offset of the NestMembers attribute, or 0.
     int nestMembersOffset = 0;
     // - The offset of the PermittedSubclasses attribute, or 0
@@ -589,9 +595,9 @@ public class ClassReader {
 
     // Visit the EnclosingMethod attribute.
     if (enclosingMethodOffset != 0) {
-      String className = readClass(enclosingMethodOffset, charBuffer);
+      @InternalForm String className = readClass(enclosingMethodOffset, charBuffer);
       int methodIndex = readUnsignedShort(enclosingMethodOffset + 2);
-      String name = methodIndex == 0 ? null : readUTF8(cpInfoOffsets[methodIndex], charBuffer);
+      @Identifier String name = methodIndex == 0 ? null : (@Identifier String) readUTF8(cpInfoOffsets[methodIndex], charBuffer);
       String type = methodIndex == 0 ? null : readUTF8(cpInfoOffsets[methodIndex] + 2, charBuffer);
       classVisitor.visitOuterClass(className, name, type);
     }
@@ -602,7 +608,7 @@ public class ClassReader {
       int currentAnnotationOffset = runtimeVisibleAnnotationsOffset + 2;
       while (numAnnotations-- > 0) {
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -620,7 +626,7 @@ public class ClassReader {
       int currentAnnotationOffset = runtimeInvisibleAnnotationsOffset + 2;
       while (numAnnotations-- > 0) {
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -640,7 +646,7 @@ public class ClassReader {
         // Parse the target_type, target_info and target_path fields.
         currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -664,7 +670,7 @@ public class ClassReader {
         // Parse the target_type, target_info and target_path fields.
         currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
         // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
+        @FieldDescriptor String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
         currentAnnotationOffset += 2;
         // Parse num_element_value_pairs and element_value_pairs and visit these values.
         currentAnnotationOffset =
@@ -694,7 +700,7 @@ public class ClassReader {
       int numberOfNestMembers = readUnsignedShort(nestMembersOffset);
       int currentNestMemberOffset = nestMembersOffset + 2;
       while (numberOfNestMembers-- > 0) {
-        classVisitor.visitNestMember(readClass(currentNestMemberOffset, charBuffer));
+        classVisitor.visitNestMember((@InternalForm String) readClass(currentNestMemberOffset, charBuffer));
         currentNestMemberOffset += 2;
       }
     }
@@ -705,7 +711,7 @@ public class ClassReader {
       int currentPermittedSubclassesOffset = permittedSubclassesOffset + 2;
       while (numberOfPermittedSubclasses-- > 0) {
         classVisitor.visitPermittedSubclass(
-            readClass(currentPermittedSubclassesOffset, charBuffer));
+            (@InternalForm String) readClass(currentPermittedSubclassesOffset, charBuffer));
         currentPermittedSubclassesOffset += 2;
       }
     }
@@ -716,9 +722,9 @@ public class ClassReader {
       int currentClassesOffset = innerClassesOffset + 2;
       while (numberOfClasses-- > 0) {
         classVisitor.visitInnerClass(
-            readClass(currentClassesOffset, charBuffer),
-            readClass(currentClassesOffset + 2, charBuffer),
-            readUTF8(currentClassesOffset + 4, charBuffer),
+            (@InternalForm String) readClass(currentClassesOffset, charBuffer),
+            (@InternalForm String) readClass(currentClassesOffset + 2, charBuffer),
+            (@Identifier String) readUTF8(currentClassesOffset + 4, charBuffer),
             readUnsignedShort(currentClassesOffset + 6));
         currentClassesOffset += 8;
       }
@@ -770,12 +776,12 @@ public class ClassReader {
       final Context context,
       final int moduleOffset,
       final int modulePackagesOffset,
-      final String moduleMainClass) {
+      final @InternalForm String moduleMainClass) {
     char[] buffer = context.charBuffer;
 
     // Read the module_name_index, module_flags and module_version_index fields and visit them.
     int currentOffset = moduleOffset;
-    String moduleName = readModule(currentOffset, buffer);
+    @DotSeparatedIdentifiers String moduleName = readModule(currentOffset, buffer);
     int moduleFlags = readUnsignedShort(currentOffset + 2);
     String moduleVersion = readUTF8(currentOffset + 4, buffer);
     currentOffset += 6;
@@ -794,7 +800,7 @@ public class ClassReader {
       int packageCount = readUnsignedShort(modulePackagesOffset);
       int currentPackageOffset = modulePackagesOffset + 2;
       while (packageCount-- > 0) {
-        moduleVisitor.visitPackage(readPackage(currentPackageOffset, buffer));
+        moduleVisitor.visitPackage((@InternalForm String) readPackage(currentPackageOffset, buffer));
         currentPackageOffset += 2;
       }
     }
@@ -804,7 +810,7 @@ public class ClassReader {
     currentOffset += 2;
     while (requiresCount-- > 0) {
       // Read the requires_index, requires_flags and requires_version fields and visit them.
-      String requires = readModule(currentOffset, buffer);
+      @DotSeparatedIdentifiers String requires = readModule(currentOffset, buffer);
       int requiresFlags = readUnsignedShort(currentOffset + 2);
       String requiresVersion = readUTF8(currentOffset + 4, buffer);
       currentOffset += 6;
@@ -817,11 +823,11 @@ public class ClassReader {
     while (exportsCount-- > 0) {
       // Read the exports_index, exports_flags, exports_to_count and exports_to_index fields
       // and visit them.
-      String exports = readPackage(currentOffset, buffer);
+      @InternalForm String exports = readPackage(currentOffset, buffer);
       int exportsFlags = readUnsignedShort(currentOffset + 2);
       int exportsToCount = readUnsignedShort(currentOffset + 4);
       currentOffset += 6;
-      String[] exportsTo = null;
+      @DotSeparatedIdentifiers String[] exportsTo = null;
       if (exportsToCount != 0) {
         exportsTo = new String[exportsToCount];
         for (int i = 0; i < exportsToCount; ++i) {
@@ -837,11 +843,11 @@ public class ClassReader {
     currentOffset += 2;
     while (opensCount-- > 0) {
       // Read the opens_index, opens_flags, opens_to_count and opens_to_index fields and visit them.
-      String opens = readPackage(currentOffset, buffer);
+      @InternalForm String opens = readPackage(currentOffset, buffer);
       int opensFlags = readUnsignedShort(currentOffset + 2);
       int opensToCount = readUnsignedShort(currentOffset + 4);
       currentOffset += 6;
-      String[] opensTo = null;
+      @DotSeparatedIdentifiers String[] opensTo = null;
       if (opensToCount != 0) {
         opensTo = new String[opensToCount];
         for (int i = 0; i < opensToCount; ++i) {
@@ -856,7 +862,7 @@ public class ClassReader {
     int usesCount = readUnsignedShort(currentOffset);
     currentOffset += 2;
     while (usesCount-- > 0) {
-      moduleVisitor.visitUse(readClass(currentOffset, buffer));
+      moduleVisitor.visitUse((@InternalForm String) readClass(currentOffset, buffer));
       currentOffset += 2;
     }
 
@@ -865,10 +871,10 @@ public class ClassReader {
     currentOffset += 2;
     while (providesCount-- > 0) {
       // Read the provides_index, provides_with_count and provides_with_index fields and visit them.
-      String provides = readClass(currentOffset, buffer);
+      @InternalForm String provides = readClass(currentOffset, buffer);
       int providesWithCount = readUnsignedShort(currentOffset + 2);
       currentOffset += 4;
-      String[] providesWith = new String[providesWithCount];
+      @InternalForm String[] providesWith = new String[providesWithCount];
       for (int i = 0; i < providesWithCount; ++i) {
         providesWith[i] = readClass(currentOffset, buffer);
         currentOffset += 2;
@@ -1069,8 +1075,8 @@ public class ClassReader {
     // Read the access_flags, name_index and descriptor_index fields.
     int currentOffset = fieldInfoOffset;
     int accessFlags = readUnsignedShort(currentOffset);
-    String name = readUTF8(currentOffset + 2, charBuffer);
-    String descriptor = readUTF8(currentOffset + 4, charBuffer);
+    @Identifier String name = readUTF8(currentOffset + 2, charBuffer);
+    @FieldDescriptor String descriptor = readUTF8(currentOffset + 4, charBuffer);
     currentOffset += 6;
 
     // Read the field attributes (the variables are ordered as in Section 4.7 of the JVMS).
@@ -1264,7 +1270,7 @@ public class ClassReader {
     // - The offset of the Exceptions attribute, or 0.
     int exceptionsOffset = 0;
     // - The strings corresponding to the Exceptions attribute, or null.
-    String[] exceptions = null;
+    @InternalForm String[] exceptions = null;
     // - Whether the method has a Synthetic attribute.
     boolean synthetic = false;
     // - The constant pool index contained in the Signature attribute, or 0.
@@ -1850,7 +1856,7 @@ public class ClassReader {
       Label start = createLabel(readUnsignedShort(currentOffset), labels);
       Label end = createLabel(readUnsignedShort(currentOffset + 2), labels);
       Label handler = createLabel(readUnsignedShort(currentOffset + 4), labels);
-      String catchType = readUTF8(cpInfoOffsets[readUnsignedShort(currentOffset + 6)], charBuffer);
+      @InternalForm String catchType = (@InternalForm String) readUTF8(cpInfoOffsets[readUnsignedShort(currentOffset + 6)], charBuffer);
       currentOffset += 8;
       methodVisitor.visitTryCatchBlock(start, end, handler, catchType);
     }
@@ -2436,9 +2442,9 @@ public class ClassReader {
           {
             int cpInfoOffset = cpInfoOffsets[readUnsignedShort(currentOffset + 1)];
             int nameAndTypeCpInfoOffset = cpInfoOffsets[readUnsignedShort(cpInfoOffset + 2)];
-            String owner = readClass(cpInfoOffset, charBuffer);
-            String name = readUTF8(nameAndTypeCpInfoOffset, charBuffer);
-            String descriptor = readUTF8(nameAndTypeCpInfoOffset + 2, charBuffer);
+            @InternalForm String owner = readClass(cpInfoOffset, charBuffer);
+            @Identifier String name =  (@Identifier String) readUTF8(nameAndTypeCpInfoOffset, charBuffer);
+            @FieldDescriptor String descriptor = readUTF8(nameAndTypeCpInfoOffset + 2, charBuffer);
             if (opcode < Opcodes.INVOKEVIRTUAL) {
               methodVisitor.visitFieldInsn(opcode, owner, name, descriptor);
             } else {
@@ -2479,7 +2485,7 @@ public class ClassReader {
         case Opcodes.ANEWARRAY:
         case Opcodes.CHECKCAST:
         case Opcodes.INSTANCEOF:
-          methodVisitor.visitTypeInsn(opcode, readClass(currentOffset + 1, charBuffer));
+          methodVisitor.visitTypeInsn(opcode, (@InternalForm String) readClass(currentOffset + 1, charBuffer));
           currentOffset += 3;
           break;
         case Opcodes.IINC:
@@ -2489,7 +2495,7 @@ public class ClassReader {
           break;
         case Opcodes.MULTIANEWARRAY:
           methodVisitor.visitMultiANewArrayInsn(
-              readClass(currentOffset + 1, charBuffer), classBuffer[currentOffset + 3] & 0xFF);
+              (@FieldDescriptor String) readClass(currentOffset + 1, charBuffer), classBuffer[currentOffset + 3] & 0xFF);
           currentOffset += 4;
           break;
         default:
@@ -3031,7 +3037,7 @@ public class ClassReader {
   private int readElementValue(
       final AnnotationVisitor annotationVisitor,
       final int elementValueOffset,
-      final String elementName,
+      final @Identifier String elementName,
       final char[] charBuffer) {
     int currentOffset = elementValueOffset;
     if (annotationVisitor == null) {
@@ -3782,8 +3788,8 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Module entry.
    */
-  public String readModule(final int offset, final char[] charBuffer) {
-    return readStringish(offset, charBuffer);
+  public @DotSeparatedIdentifiers String readModule(final int offset, final char[] charBuffer) {
+    return (@DotSeparatedIdentifiers String) readStringish(offset, charBuffer);
   }
 
   /**
@@ -3797,8 +3803,8 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Package entry.
    */
-  public String readPackage(final int offset, final char[] charBuffer) {
-    return readStringish(offset, charBuffer);
+  public @InternalForm String readPackage(final int offset, final char[] charBuffer) {
+    return (@InternalForm String) readStringish(offset, charBuffer);
   }
 
   /**
@@ -3819,7 +3825,7 @@ public class ClassReader {
     int cpInfoOffset = cpInfoOffsets[constantPoolEntryIndex];
     int nameAndTypeCpInfoOffset = cpInfoOffsets[readUnsignedShort(cpInfoOffset + 2)];
     String name = readUTF8(nameAndTypeCpInfoOffset, charBuffer);
-    String descriptor = readUTF8(nameAndTypeCpInfoOffset + 2, charBuffer);
+    @FieldDescriptor String descriptor = readUTF8(nameAndTypeCpInfoOffset + 2, charBuffer);
     int bootstrapMethodOffset = bootstrapMethodOffsets[readUnsignedShort(cpInfoOffset)];
     Handle handle = (Handle) readConst(readUnsignedShort(bootstrapMethodOffset), charBuffer);
     Object[] bootstrapMethodArguments = new Object[readUnsignedShort(bootstrapMethodOffset + 2)];
@@ -3858,7 +3864,7 @@ public class ClassReader {
       case Symbol.CONSTANT_DOUBLE_TAG:
         return Double.longBitsToDouble(readLong(cpInfoOffset));
       case Symbol.CONSTANT_CLASS_TAG:
-        return Type.getObjectType(readUTF8(cpInfoOffset, charBuffer));
+        return Type.getObjectType((@InternalForm String) readUTF8(cpInfoOffset, charBuffer));
       case Symbol.CONSTANT_STRING_TAG:
         return readUTF8(cpInfoOffset, charBuffer);
       case Symbol.CONSTANT_METHOD_TYPE_TAG:
@@ -3867,7 +3873,7 @@ public class ClassReader {
         int referenceKind = readByte(cpInfoOffset);
         int referenceCpInfoOffset = cpInfoOffsets[readUnsignedShort(cpInfoOffset + 1)];
         int nameAndTypeCpInfoOffset = cpInfoOffsets[readUnsignedShort(referenceCpInfoOffset + 2)];
-        String owner = readClass(referenceCpInfoOffset, charBuffer);
+        @InternalForm String owner = readClass(referenceCpInfoOffset, charBuffer);
         String name = readUTF8(nameAndTypeCpInfoOffset, charBuffer);
         String descriptor = readUTF8(nameAndTypeCpInfoOffset + 2, charBuffer);
         boolean isInterface =

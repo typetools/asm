@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Handle;
@@ -73,7 +77,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitMethodAnnotation(descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitAnnotation(descriptor, visible), annotationPrinter);
@@ -81,7 +85,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitMethodTypeAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -107,7 +111,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitParameterAnnotation(parameter, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitParameterAnnotation(parameter, descriptor, visible), annotationPrinter);
@@ -149,14 +153,14 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     p.visitTypeInsn(opcode, type);
     super.visitTypeInsn(opcode, type);
   }
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     p.visitFieldInsn(opcode, owner, name, descriptor);
     super.visitFieldInsn(opcode, owner, name, descriptor);
   }
@@ -165,9 +169,9 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @SuppressWarnings("deprecation")
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     // Call the method that p is supposed to implement, depending on its api version.
     if (p.api < Opcodes.ASM5) {
@@ -190,7 +194,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     p.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -235,14 +239,14 @@ public final class TraceMethodVisitor extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     p.visitMultiANewArrayInsn(descriptor, numDimensions);
     super.visitMultiANewArrayInsn(descriptor, numDimensions);
   }
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitInsnAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitInsnAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -250,14 +254,14 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     p.visitTryCatchBlock(start, end, handler, type);
     super.visitTryCatchBlock(start, end, handler, type);
   }
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     Printer annotationPrinter = p.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible);
     return new TraceAnnotationVisitor(
         super.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible), annotationPrinter);
@@ -265,8 +269,8 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -282,7 +286,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     Printer annotationPrinter =
         p.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, descriptor, visible);

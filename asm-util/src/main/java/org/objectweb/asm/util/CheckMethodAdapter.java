@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -410,8 +415,8 @@ public class CheckMethodAdapter extends MethodVisitor {
    */
   public CheckMethodAdapter(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
     this(
@@ -438,8 +443,8 @@ public class CheckMethodAdapter extends MethodVisitor {
   protected CheckMethodAdapter(
       final int api,
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
     this(
@@ -505,7 +510,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     checkDescriptor(version, descriptor, false);
     return new CheckAnnotationAdapter(super.visitAnnotation(descriptor, visible));
@@ -513,7 +518,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     int sort = new TypeReference(typeRef).getSort();
     if (sort != TypeReference.METHOD_TYPE_PARAMETER
@@ -549,7 +554,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String descriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     if ((visible
             && visibleAnnotableParameterCount > 0
@@ -701,7 +706,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkOpcodeMethod(opcode, Method.VISIT_TYPE_INSN);
@@ -715,7 +720,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkOpcodeMethod(opcode, Method.VISIT_FIELD_INSN);
@@ -729,9 +734,9 @@ public class CheckMethodAdapter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -765,7 +770,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     checkVisitCodeCalled();
@@ -865,7 +870,7 @@ public class CheckMethodAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkDescriptor(version, descriptor, false);
@@ -888,7 +893,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     int sort = new TypeReference(typeRef).getSort();
@@ -911,7 +916,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkLabel(start, /* checkVisited= */ false, START_LABEL);
@@ -932,7 +937,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     int sort = new TypeReference(typeRef).getSort();
@@ -947,8 +952,8 @@ public class CheckMethodAdapter extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -979,7 +984,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
@@ -1092,7 +1097,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       return;
     }
     if (value instanceof String) {
-      checkInternalName(version, (String) value, "Invalid stack frame value");
+      checkInternalName(version, (@InternalForm String) value, "Invalid stack frame value");
     } else if (value instanceof Label) {
       checkLabel((Label) value, /* checkVisited= */ false, LABEL);
     } else {
@@ -1311,7 +1316,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    * @param name the string to be checked.
    * @param message the message to use in case of error.
    */
-  static void checkInternalName(final int version, final String name, final String message) {
+  static void checkInternalName(final int version, final @InternalForm String name, final String message) {
     if (name == null || name.length() == 0) {
       throw new IllegalArgumentException(INVALID + message + MUST_NOT_BE_NULL_OR_EMPTY);
     }
@@ -1330,7 +1335,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    * @param message the message to use in case of error.
    */
   private static void checkInternalClassName(
-      final int version, final String name, final String message) {
+      final int version, final @InternalForm String name, final String message) {
     try {
       int startIndex = 0;
       int slashIndex;
@@ -1405,7 +1410,7 @@ public class CheckMethodAdapter extends MethodVisitor {
           throw new IllegalArgumentException(INVALID_DESCRIPTOR + descriptor);
         }
         try {
-          checkInternalClassName(version, descriptor.substring(startPos + 1, endPos), null);
+          checkInternalClassName(version, (@InternalForm String) descriptor.substring(startPos + 1, endPos), null);
         } catch (IllegalArgumentException e) {
           throw new IllegalArgumentException(INVALID_DESCRIPTOR + descriptor, e);
         }

@@ -123,18 +123,18 @@ public abstract class Adapter {
     int access;
     String name;
     String superClass;
-    String[] interfaces;
+    @InternalForm String @Nullable [] interfaces;
 
     /**
      * Constructs a new {@link ClassInfo}.
      *
      * @param access the class's access flags.
      * @param name the internal name of the class.
-     * @param superClass the internal of name of the super class.
+     * @param superClass the internal name of the super class.
      * @param interfaces the internal names of the class's interfaces
      */
     public ClassInfo(
-        final int access, final String name, final String superClass, final String[] interfaces) {
+        final int access, final @InternalForm String name, final @InternalForm String superClass, final @InternalForm @InternalForm String @Nullable [] interfaces) {
       this.access = access;
       this.name = name;
       this.superClass = superClass;

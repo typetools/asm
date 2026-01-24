@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.Identifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +123,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   }
 
   @Override
-  public void visitFormalTypeParameter(final String name) {
+  public void visitFormalTypeParameter(final @Identifier String name) {
     declaration.append(formalTypeParameterVisited ? COMMA_SEPARATOR : "<").append(name);
     formalTypeParameterVisited = true;
     interfaceBoundVisited = false;
@@ -209,7 +211,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   }
 
   @Override
-  public void visitTypeVariable(final String name) {
+  public void visitTypeVariable(final @Identifier String name) {
     declaration.append(separator).append(name);
     separator = "";
     endType();
@@ -223,7 +225,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   }
 
   @Override
-  public void visitClassType(final String name) {
+  public void visitClassType(final @InternalForm String name) {
     if ("java/lang/Object".equals(name)) {
       // 'Map<java.lang.Object,java.util.List>' or 'abstract public V get(Object key);' should have
       // Object 'but java.lang.String extends java.lang.Object' is unnecessary.

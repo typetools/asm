@@ -2,6 +2,11 @@ package org.objectweb.asm.signature;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -47,10 +52,10 @@ public final class SignaturesProviders {
           public void visit(
               final int version,
               final int access,
-              final String name,
+              final @InternalForm String name,
               final String signature,
-              final String superName,
-              final String[] interfaces) {
+              final @InternalForm String superName,
+              final @InternalForm String @Nullable [] interfaces) {
             if (signature != null) {
               CLASS_SIGNATURES.add(signature);
             }
@@ -59,8 +64,8 @@ public final class SignaturesProviders {
           @Override
           public FieldVisitor visitField(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @FieldDescriptor String descriptor,
               final String signature,
               final Object value) {
             if (signature != null) {
@@ -72,10 +77,10 @@ public final class SignaturesProviders {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             if (signature != null) {
               METHOD_SIGNATURES.add(signature);
             }

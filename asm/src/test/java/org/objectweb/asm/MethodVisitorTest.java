@@ -33,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import java.io.StringWriter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -443,7 +446,7 @@ class MethodVisitorTest extends AsmTest {
     @Deprecated(forRemoval = false)
     @Override
     public void visitMethodInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
       super.visitMethodInsn(opcode, owner, name + "4", descriptor);
       log.append("MethodVisitor4:" + name + descriptor + ";");
     }
@@ -469,9 +472,9 @@ class MethodVisitorTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcode,
-        final String owner,
-        final String name,
-        final String descriptor,
+        final @InternalForm String owner,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       super.visitMethodInsn(opcode, owner, name + "5", descriptor, isInterface);
       log.append("MethodVisitor5:" + name + descriptor + ";");
@@ -494,9 +497,9 @@ class MethodVisitorTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcodeAndSource,
-        final String owner,
-        final String name,
-        final String descriptor,
+        final @InternalForm String owner,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
         // Redirect the call to the deprecated version of this method.
@@ -519,7 +522,7 @@ class MethodVisitorTest extends AsmTest {
     @Override
     @SuppressWarnings("deprecation")
     public void visitMethodInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
       super.visitMethodInsn(opcode, owner, name, descriptor);
       log.append("UserTraceMethodVisitor4:" + name + descriptor + ";");
     }
@@ -535,9 +538,9 @@ class MethodVisitorTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcode,
-        final String owner,
-        final String name,
-        final String descriptor,
+        final @InternalForm String owner,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
       log.append("UserTraceMethodVisitor5:" + name + descriptor + ";");
@@ -557,9 +560,9 @@ class MethodVisitorTest extends AsmTest {
     @Override
     public void visitMethodInsn(
         final int opcode,
-        final String owner,
-        final String name,
-        final String descriptor,
+        final @InternalForm String owner,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final boolean isInterface) {
       log.append("LogMethodVisitor:" + name + descriptor + ";");
     }

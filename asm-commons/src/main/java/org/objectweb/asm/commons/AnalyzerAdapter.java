@@ -27,6 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +102,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   private int maxLocals;
 
   /** The owner's class name. */
-  private String owner;
+  private @InternalForm String owner;
 
   /**
    * Constructs a new {@link AnalyzerAdapter}. <i>Subclasses must not use this constructor</i>.
@@ -113,7 +118,7 @@ public class AnalyzerAdapter extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public AnalyzerAdapter(
-      final String owner,
+      final @InternalForm String owner,
       final int access,
       final String name,
       final String descriptor,
@@ -138,7 +143,7 @@ public class AnalyzerAdapter extends MethodVisitor {
    */
   protected AnalyzerAdapter(
       final int api,
-      final String owner,
+      final @InternalForm String owner,
       final int access,
       final String name,
       final String descriptor,
@@ -256,7 +261,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     if (opcode == Opcodes.NEW) {
       if (labels == null) {
         Label label = new Label();
@@ -276,7 +281,7 @@ public class AnalyzerAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     super.visitFieldInsn(opcode, owner, name, descriptor);
     execute(opcode, 0, descriptor);
   }
@@ -284,9 +289,9 @@ public class AnalyzerAdapter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcodeAndSource,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
       // Redirect the call to the deprecated version of this method.
@@ -329,7 +334,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
@@ -424,15 +429,15 @@ public class AnalyzerAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     super.visitMultiANewArrayInsn(descriptor, numDimensions);
     execute(Opcodes.MULTIANEWARRAY, numDimensions, descriptor);
   }
 
   @Override
   public void visitLocalVariable(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -892,11 +897,11 @@ public class AnalyzerAdapter extends MethodVisitor {
         break;
       case Opcodes.ANEWARRAY:
         pop();
-        pushDescriptor("[" + Type.getObjectType(stringArg));
+        pushDescriptor((@InternalForm String)("[" + Type.getObjectType((@InternalForm String) stringArg)));
         break;
       case Opcodes.CHECKCAST:
         pop();
-        pushDescriptor(Type.getObjectType(stringArg).getDescriptor());
+        pushDescriptor(Type.getObjectType((@InternalForm String) stringArg).getDescriptor());
         break;
       case Opcodes.MULTIANEWARRAY:
         pop(intArg);

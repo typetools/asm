@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.Identifier;
 import java.util.EnumSet;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -147,7 +149,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
   // class and method signatures
 
   @Override
-  public void visitFormalTypeParameter(final String name) {
+  public void visitFormalTypeParameter(final @Identifier String name) {
     if (type == TYPE_SIGNATURE || !VISIT_FORMAL_TYPE_PARAMETER_STATES.contains(state)) {
       throw new IllegalStateException();
     }
@@ -255,7 +257,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
   }
 
   @Override
-  public void visitTypeVariable(final String name) {
+  public void visitTypeVariable(final @Identifier String name) {
     if (type != TYPE_SIGNATURE || state != State.EMPTY) {
       throw new IllegalStateException();
     }
@@ -277,7 +279,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
   }
 
   @Override
-  public void visitClassType(final String name) {
+  public void visitClassType(final @InternalForm String name) {
     if (type != TYPE_SIGNATURE || state != State.EMPTY) {
       throw new IllegalStateException();
     }

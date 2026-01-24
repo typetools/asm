@@ -300,10 +300,10 @@ class PrinterTest {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       // Do nothing.
     }
 
@@ -313,12 +313,12 @@ class PrinterTest {
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
       // Do nothing.
     }
 
     @Override
-    public Printer visitClassAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitClassAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -329,7 +329,7 @@ class PrinterTest {
 
     @Override
     public void visitInnerClass(
-        final String name, final String outerName, final String innerName, final int access) {
+        final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
       // Do nothing.
     }
 
@@ -346,10 +346,10 @@ class PrinterTest {
     @Override
     public Printer visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return null;
     }
 
@@ -365,12 +365,12 @@ class PrinterTest {
     }
 
     @Override
-    public void visitEnum(final String name, final String descriptor, final String value) {
+    public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
       // Do nothing.
     }
 
     @Override
-    public Printer visitAnnotation(final String name, final String descriptor) {
+    public Printer visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
       return null;
     }
 
@@ -385,7 +385,7 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitFieldAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitFieldAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -405,13 +405,13 @@ class PrinterTest {
     }
 
     @Override
-    public Printer visitMethodAnnotation(final String descriptor, final boolean visible) {
+    public Printer visitMethodAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
     @Override
     public Printer visitParameterAnnotation(
-        final int parameter, final String descriptor, final boolean visible) {
+        final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
       return null;
     }
 
@@ -451,20 +451,20 @@ class PrinterTest {
     }
 
     @Override
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode, final @InternalForm String type) {
       // Do nothing.
     }
 
     @Override
     public void visitFieldInsn(
-        final int opcode, final String owner, final String name, final String descriptor) {
+        final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
       // Do nothing.
     }
 
     @Override
     public void visitInvokeDynamicInsn(
         final String name,
-        final String descriptor,
+        final @MethodDescriptor String descriptor,
         final Handle bootstrapMethodHandle,
         final Object... bootstrapMethodArguments) {
       // Do nothing.
@@ -502,20 +502,20 @@ class PrinterTest {
     }
 
     @Override
-    public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+    public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
       // Do nothing.
     }
 
     @Override
     public void visitTryCatchBlock(
-        final Label start, final Label end, final Label handler, final String type) {
+        final Label start, final Label end, final Label handler, final @InternalForm String type) {
       // Do nothing.
     }
 
     @Override
     public void visitLocalVariable(
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Label start,
         final Label end,

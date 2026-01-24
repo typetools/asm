@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * The input and output stack map frames of a basic block.
  *
@@ -285,14 +288,14 @@ class Frame {
     if (type instanceof Integer) {
       return CONSTANT_KIND | ((Integer) type).intValue();
     } else if (type instanceof String) {
-      String descriptor = Type.getObjectType((String) type).getDescriptor();
+      String descriptor = Type.getObjectType((@InternalForm String) type).getDescriptor();
       return getAbstractTypeFromDescriptor(symbolTable, descriptor, 0);
     } else {
       Label label = (Label) type;
       if ((label.flags & Label.FLAG_RESOLVED) != 0) {
-        return UNINITIALIZED_KIND | symbolTable.addUninitializedType("", label.bytecodeOffset);
+        return UNINITIALIZED_KIND | symbolTable.addUninitializedType((@InternalForm String) "", label.bytecodeOffset);
       } else {
-        return FORWARD_UNINITIALIZED_KIND | symbolTable.addForwardUninitializedType("", label);
+        return FORWARD_UNINITIALIZED_KIND | symbolTable.addForwardUninitializedType((@InternalForm String) "", label);
       }
     }
   }
@@ -306,7 +309,7 @@ class Frame {
    * @return the abstract type value corresponding to the given internal name.
    */
   static int getAbstractTypeFromInternalName(
-      final SymbolTable symbolTable, final String internalName) {
+      final SymbolTable symbolTable, final @InternalForm String internalName) {
     return REFERENCE_KIND | symbolTable.addType(internalName);
   }
 
@@ -320,7 +323,7 @@ class Frame {
    */
   private static int getAbstractTypeFromDescriptor(
       final SymbolTable symbolTable, final String buffer, final int offset) {
-    String internalName;
+    @InternalForm String internalName;
     switch (buffer.charAt(offset)) {
       case 'V':
         return 0;
@@ -337,7 +340,7 @@ class Frame {
       case 'D':
         return DOUBLE;
       case 'L':
-        internalName = buffer.substring(offset + 1, buffer.length() - 1);
+        internalName = (@InternalForm String) buffer.substring(offset + 1, buffer.length() - 1);
         return REFERENCE_KIND | symbolTable.addType(internalName);
       case '[':
         int elementDescriptorOffset = offset + 1;
@@ -371,7 +374,7 @@ class Frame {
             typeValue = DOUBLE;
             break;
           case 'L':
-            internalName = buffer.substring(elementDescriptorOffset + 1, buffer.length() - 1);
+            internalName = (@InternalForm String) buffer.substring(elementDescriptorOffset + 1, buffer.length() - 1);
             typeValue = REFERENCE_KIND | symbolTable.addType(internalName);
             break;
           default:
@@ -401,7 +404,7 @@ class Frame {
   final void setInputFrameFromDescriptor(
       final SymbolTable symbolTable,
       final int access,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final int maxLocals) {
     inputLocals = new int[maxLocals];
     inputStack = new int[0];
@@ -668,7 +671,7 @@ class Frame {
             return REFERENCE_KIND | symbolTable.addType(symbolTable.getClassName());
           } else {
             return REFERENCE_KIND
-                | symbolTable.addType(symbolTable.getType(abstractType & VALUE_MASK).value);
+                | symbolTable.addType((@InternalForm String) symbolTable.getType(abstractType & VALUE_MASK).value);
           }
         }
       }
@@ -1058,7 +1061,7 @@ class Frame {
         push(symbolTable, argSymbol.value);
         break;
       case Opcodes.NEW:
-        push(UNINITIALIZED_KIND | symbolTable.addUninitializedType(argSymbol.value, arg));
+        push(UNINITIALIZED_KIND | symbolTable.addUninitializedType((@InternalForm String) argSymbol.value, arg));
         break;
       case Opcodes.NEWARRAY:
         pop();
@@ -1092,7 +1095,7 @@ class Frame {
         }
         break;
       case Opcodes.ANEWARRAY:
-        String arrayElementType = argSymbol.value;
+        @InternalForm String arrayElementType = argSymbol.value;
         pop();
         if (arrayElementType.charAt(0) == '[') {
           push(symbolTable, '[' + arrayElementType);
@@ -1101,7 +1104,7 @@ class Frame {
         }
         break;
       case Opcodes.CHECKCAST:
-        String castType = argSymbol.value;
+        @InternalForm String castType = argSymbol.value;
         pop();
         if (castType.charAt(0) == '[') {
           push(symbolTable, castType);
@@ -1429,7 +1432,7 @@ class Frame {
         case REFERENCE_KIND:
           output
               .putByte(ITEM_OBJECT)
-              .putShort(symbolTable.addConstantClass(symbolTable.getType(typeValue).value).index);
+              .putShort(symbolTable.addConstantClass((@InternalForm String) symbolTable.getType(typeValue).value).index);
           break;
         case UNINITIALIZED_KIND:
           output.putByte(ITEM_UNINITIALIZED).putShort((int) symbolTable.getType(typeValue).data);
@@ -1484,7 +1487,7 @@ class Frame {
       }
       output
           .putByte(ITEM_OBJECT)
-          .putShort(symbolTable.addConstantClass(typeDescriptor.toString()).index);
+          .putShort(symbolTable.addConstantClass((@InternalForm String) typeDescriptor.toString()).index);
     }
   }
 }

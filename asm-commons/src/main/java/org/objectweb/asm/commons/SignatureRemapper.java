@@ -28,6 +28,8 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.Identifier;
 import java.util.ArrayList;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -72,13 +74,14 @@ public class SignatureRemapper extends SignatureVisitor {
   }
 
   @Override
-  public void visitClassType(final String name) {
+  public void visitClassType(final @InternalForm String name) {
     classNames.add(name);
     signatureVisitor.visitClassType(remapper.mapType(name));
   }
 
   @Override
-  public void visitInnerClassType(final String name) {
+  @SuppressWarnings("signature") // string manipulation
+  public void visitInnerClassType(final @Identifier String name) {
     String outerClassName = classNames.remove(classNames.size() - 1);
     String className = outerClassName + '$' + name;
     classNames.add(className);
@@ -92,12 +95,12 @@ public class SignatureRemapper extends SignatureVisitor {
   }
 
   @Override
-  public void visitFormalTypeParameter(final String name) {
+  public void visitFormalTypeParameter(final @Identifier String name) {
     signatureVisitor.visitFormalTypeParameter(name);
   }
 
   @Override
-  public void visitTypeVariable(final String name) {
+  public void visitTypeVariable(final @Identifier String name) {
     signatureVisitor.visitTypeVariable(name);
   }
 

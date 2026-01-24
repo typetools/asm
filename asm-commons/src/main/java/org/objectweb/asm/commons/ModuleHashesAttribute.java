@@ -28,6 +28,7 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.Attribute;
@@ -47,7 +48,7 @@ public final class ModuleHashesAttribute extends Attribute {
   public String algorithm;
 
   /** A list of module names. */
-  public List<String> modules;
+  public List<@DotSeparatedIdentifiers String> modules;
 
   /** The hash of the modules in {@link #modules}. The two lists must have the same size. */
   public List<byte[]> hashes;

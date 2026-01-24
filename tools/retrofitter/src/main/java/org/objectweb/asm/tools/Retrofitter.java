@@ -41,6 +41,11 @@ import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.NEW;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,10 +113,10 @@ public final class Retrofitter {
   private final HashMap<String, String> jdkHierarchy = new HashMap<>();
 
   /** The internal names of the packages exported by the retrofitted classes. */
-  private final HashSet<String> exports = new HashSet<>();
+  private final HashSet<@InternalForm String> exports = new HashSet<>();
 
   /** The internal names of the packages imported by the retrofitted classes. */
-  private final HashSet<String> imports = new HashSet<>();
+  private final HashSet<@InternalForm String> imports = new HashSet<>();
 
   /**
    * Transforms the class files in the given directory, in place, in order to make them compatible
@@ -219,18 +224,18 @@ public final class Retrofitter {
             public void visit(
                 final int version,
                 final int access,
-                final String name,
+                final @InternalForm String name,
                 final String signature,
-                final String superName,
-                final String[] interfaces) {
+                final @InternalForm String superName,
+                final @InternalForm String @Nullable [] interfaces) {
               privateMemberMap.put(name, privateMembers);
             }
 
             @Override
             public FieldVisitor visitField(
                 final int access,
-                final String name,
-                final String descriptor,
+                final @Identifier String name,
+                final @FieldDescriptor String descriptor,
                 final String signature,
                 final Object value) {
               if ((access & ACC_PRIVATE) != 0) {
@@ -242,10 +247,10 @@ public final class Retrofitter {
             @Override
             public MethodVisitor visitMethod(
                 final int access,
-                final String name,
-                final String descriptor,
+                final @Identifier String name,
+                final @MethodDescriptor String descriptor,
                 final String signature,
-                final String[] exceptions) {
+                final @InternalForm String @Nullable [] exceptions) {
               if ((access & ACC_PRIVATE) != 0) {
                 privateMembers.add(name + '/' + descriptor);
               }
@@ -260,7 +265,7 @@ public final class Retrofitter {
       reader.accept(
           new ClassVisitor(/* latest api =*/ Opcodes.ASM9) {
             /** The internal name of the visited class. */
-            String className;
+            @InternalForm String className;
 
             /** The name and descriptor of the currently visited method. */
             String currentMethodName;
@@ -269,25 +274,25 @@ public final class Retrofitter {
             public void visit(
                 final int version,
                 final int access,
-                final String name,
+                final @InternalForm String name,
                 final String signature,
-                final String superName,
-                final String[] interfaces) {
+                final @InternalForm String superName,
+                final @InternalForm String @Nullable [] interfaces) {
               className = name;
             }
 
             @Override
             public MethodVisitor visitMethod(
                 final int access,
-                final String name,
-                final String descriptor,
+                final @Identifier String name,
+                final @MethodDescriptor String descriptor,
                 final String signature,
-                final String[] exceptions) {
+                final @InternalForm String @Nullable [] exceptions) {
               currentMethodName = name + descriptor;
               return new MethodVisitor(/* latest api =*/ Opcodes.ASM9) {
 
                 private void checkAccess(
-                    final String owner, final String name, final String descriptor) {
+                    final @InternalForm String owner, final String name, final String descriptor) {
                   if (owner.equals(className)) { // same class access
                     return;
                   }
@@ -306,18 +311,18 @@ public final class Retrofitter {
                 @Override
                 public void visitFieldInsn(
                     final int opcode,
-                    final String owner,
-                    final String name,
-                    final String descriptor) {
+                    final @InternalForm String owner,
+                    final @Identifier String name,
+                    final @FieldDescriptor String descriptor) {
                   checkAccess(owner, name, descriptor);
                 }
 
                 @Override
                 public void visitMethodInsn(
                     final int opcode,
-                    final String owner,
-                    final String name,
-                    final String descriptor,
+                    final @InternalForm String owner,
+                    final @Identifier String name,
+                    final @MethodDescriptor String descriptor,
                     final boolean isInterface) {
                   checkAccess(owner, name, descriptor);
                 }
@@ -336,11 +341,12 @@ public final class Retrofitter {
     }
   }
 
+  @SuppressWarnings("signature:cast.unsafe")  // "module-info" as an internal form
   private void generateModuleInfoClass(final Path dstDir, final String version) throws IOException {
     ClassWriter classWriter = new ClassWriter(0);
-    classWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, "module-info", null, null, null);
-    ArrayList<String> moduleNames = new ArrayList<>();
-    for (String exportName : exports) {
+    classWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, (@InternalForm String) "module-info", null, null, null);
+    ArrayList<@InternalForm String> moduleNames = new ArrayList<>();
+    for (@InternalForm String exportName : exports) {
       if (isAsmModule(exportName)) {
         moduleNames.add(exportName);
       }
@@ -421,7 +427,7 @@ public final class Retrofitter {
   /** A ClassVisitor that retrofits classes to 1.5 version. */
   final class ClassRetrofitter extends ClassVisitor {
     /** The internal name of the visited class. */
-    String owner;
+    @InternalForm String owner;
 
     /** An id used to generate the name of the synthetic string concatenation methods. */
     int concatMethodId;
@@ -434,10 +440,10 @@ public final class Retrofitter {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       owner = name;
       concatMethodId = 0;
       addPackageReferences(Type.getObjectType(name), /* export= */ true);
@@ -445,20 +451,20 @@ public final class Retrofitter {
     }
 
     @Override
-    public void visitNestHost(final String nestHost) {
+    public void visitNestHost(final @InternalForm String nestHost) {
       // Remove the NestHost attribute.
     }
 
     @Override
-    public void visitNestMember(final String nestMember) {
+    public void visitNestMember(final @InternalForm String nestMember) {
       // Remove the NestMembers attribute.
     }
 
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       addPackageReferences(Type.getType(descriptor), /* export= */ false);
@@ -468,11 +474,12 @@ public final class Retrofitter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       addPackageReferences(Type.getType(descriptor), /* export= */ false);
+      System.out.printf("visitMethod: api = %d = %d%n", api, api>>16);
       return new MethodVisitor(
           api, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
@@ -503,7 +510,7 @@ public final class Retrofitter {
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           addPackageReferences(Type.getType(descriptor), /* export= */ false);
           super.visitFieldInsn(opcode, owner, name, descriptor);
         }
@@ -511,9 +518,9 @@ public final class Retrofitter {
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
-            final String descriptor,
+            final @InternalForm String owner,
+            final @Identifier String name,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           addPackageReferences(Type.getType(descriptor), /* export= */ false);
           // Remove the addSuppressed() method calls generated for try-with-resources statements.
@@ -530,7 +537,7 @@ public final class Retrofitter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           // For simple recipe, (if there is no constant pool constants used), rewrite the
@@ -538,7 +545,7 @@ public final class Retrofitter {
           if (STRING_CONCAT_FACTORY_HANDLE.equals(bootstrapMethodHandle)
               && bootstrapMethodArguments.length == 1) {
             String recipe = (String) bootstrapMethodArguments[0];
-            String methodName = "stringConcat$" + concatMethodId++;
+            @Identifier String methodName = "stringConcat$" + concatMethodId++;
             generateConcatMethod(methodName, descriptor, recipe);
             super.visitMethodInsn(INVOKESTATIC, owner, methodName, descriptor, false);
             return;
@@ -548,14 +555,16 @@ public final class Retrofitter {
         }
 
         private void generateConcatMethod(
-            final String methodName, final String descriptor, final String recipe) {
+            final @Identifier String methodName, final String descriptor, final String recipe) {
           MethodVisitor mv =
               visitMethod(
                   ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC, methodName, descriptor, null, null);
           mv.visitCode();
           mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
           mv.visitInsn(DUP);
-          mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+          @SuppressWarnings("signature:assignment")  // constructor name as identifier method name
+          @Identifier String init = "<init>";
+          mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", init, "()V", false);
           int nexLocal = 0;
           int typeIndex = 0;
           int maxStack = 2;
@@ -614,20 +623,20 @@ public final class Retrofitter {
         }
 
         @Override
-        public void visitTypeInsn(final int opcode, final String type) {
+        public void visitTypeInsn(final int opcode, final @InternalForm String type) {
           addPackageReferences(Type.getObjectType(type), /* export= */ false);
           super.visitTypeInsn(opcode, type);
         }
 
         @Override
-        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+        public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
           addPackageReferences(Type.getType(descriptor), /* export= */ false);
           super.visitMultiANewArrayInsn(descriptor, numDimensions);
         }
 
         @Override
         public void visitTryCatchBlock(
-            final Label start, final Label end, final Label handler, final String type) {
+            final Label start, final Label end, final Label handler, final @InternalForm String type) {
           if (type != null) {
             addPackageReferences(Type.getObjectType(type), /* export= */ false);
           }
@@ -648,10 +657,10 @@ public final class Retrofitter {
           addPackageReferences(type.getReturnType(), export);
           break;
         case Type.OBJECT:
-          String internalName = type.getInternalName();
+          @InternalForm String internalName = type.getInternalName();
           int lastSlashIndex = internalName.lastIndexOf('/');
           if (lastSlashIndex != -1) {
-            (export ? exports : imports).add(internalName.substring(0, lastSlashIndex));
+            (export ? exports : imports).add((@InternalForm String) internalName.substring(0, lastSlashIndex));
           }
           break;
         default:
@@ -666,7 +675,7 @@ public final class Retrofitter {
   final class ClassVerifier extends ClassVisitor {
 
     /** The internal name of the visited class. */
-    String className;
+    @InternalForm String className;
 
     /** The name and descriptor of the currently visited method. */
     String currentMethodName;
@@ -683,10 +692,10 @@ public final class Retrofitter {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       if ((version & 0xFFFF) > Opcodes.V1_5) {
         throw new IllegalArgumentException(format("ERROR: %d version is newer than 1.5", version));
       }
@@ -696,10 +705,10 @@ public final class Retrofitter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       currentMethodName = name + descriptor;
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
@@ -731,16 +740,16 @@ public final class Retrofitter {
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           check(owner, name);
         }
 
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
-            final String descriptor,
+            final @InternalForm String owner,
+            final @Identifier String name,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           check(owner, name + descriptor);
         }
@@ -766,7 +775,7 @@ public final class Retrofitter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           throw new IllegalArgumentException(
@@ -783,7 +792,7 @@ public final class Retrofitter {
      * @param owner A class name.
      * @param member A field name or a method name and descriptor.
      */
-    private void check(final String owner, final String member) {
+    private void check(final @InternalForm String owner, final String member) {
       if (owner.startsWith("java/")) {
         String currentOwner = owner;
         while (currentOwner != null) {

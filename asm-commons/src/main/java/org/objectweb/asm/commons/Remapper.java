@@ -28,6 +28,12 @@
 
 package org.objectweb.asm.commons;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
@@ -100,7 +106,7 @@ public abstract class Remapper {
    *     #map(String)} (if the descriptor corresponds to an array or object type, otherwise the
    *     descriptor is returned as is). See {@link Type#getInternalName()}.
    */
-  public String mapDesc(final String descriptor) {
+  public @FieldDescriptor String mapDesc(final @FieldDescriptor String descriptor) {
     return mapType(Type.getType(descriptor)).getDescriptor();
   }
 
@@ -127,7 +133,9 @@ public abstract class Remapper {
         String remappedInternalName = map(type.getInternalName());
         return remappedInternalName != null ? Type.getObjectType(remappedInternalName) : type;
       case Type.METHOD:
-        return Type.getMethodType(mapMethodDesc(type.getDescriptor()));
+        @SuppressWarnings("signature") // BUG? passing a field descriptor to mapMethodDesc
+        Type result = Type.getMethodType(mapMethodDesc(type.getDescriptor()));
+        return result;
       default:
         return type;
     }
@@ -141,7 +149,7 @@ public abstract class Remapper {
    * @return the given internal name, remapped with {@link #map(String)} (see {@link
    *     Type#getInternalName()}).
    */
-  public String mapType(final String internalName) {
+  public @InternalForm String mapType(final @InternalForm String internalName) {
     if (internalName == null) {
       return null;
     }
@@ -156,10 +164,10 @@ public abstract class Remapper {
    * @return the given internal name, remapped with {@link #map(String)} (see {@link
    *     Type#getInternalName()}).
    */
-  public String[] mapTypes(final String[] internalNames) {
-    String[] remappedInternalNames = null;
+  public @InternalForm String[] mapTypes(final @InternalForm String[] internalNames) {
+    @InternalForm String[] remappedInternalNames = null;
     for (int i = 0; i < internalNames.length; ++i) {
-      String internalName = internalNames[i];
+      @InternalForm String internalName = internalNames[i];
       String remappedInternalName = mapType(internalName);
       if (remappedInternalName != null) {
         if (remappedInternalNames == null) {
@@ -179,7 +187,7 @@ public abstract class Remapper {
    * @return the given method descriptor, with its argument and return type descriptors remapped
    *     with {@link #mapDesc(String)}.
    */
-  public String mapMethodDesc(final String methodDescriptor) {
+  public @MethodDescriptor String mapMethodDesc(final @MethodDescriptor String methodDescriptor) {
     if ("()V".equals(methodDescriptor)) {
       return methodDescriptor;
     }
@@ -194,7 +202,9 @@ public abstract class Remapper {
     } else {
       stringBuilder.append(')').append(mapType(returnType).getDescriptor());
     }
-    return stringBuilder.toString();
+    @SuppressWarnings("signature:return") // string concatenation
+    @MethodDescriptor String result = stringBuilder.toString();
+    return result;
   }
 
   /**
@@ -207,6 +217,7 @@ public abstract class Remapper {
    *     are remapped.
    * @return the given value, remapped with this remapper.
    */
+  @SuppressWarnings("signature") // generics
   public Object mapValue(final Object value) {
     if (value instanceof Type) {
       return mapType((Type) value);
@@ -308,7 +319,7 @@ public abstract class Remapper {
    * @param name the name of the annotation attribute.
    * @return the new name of the annotation attribute.
    */
-  public String mapAnnotationAttributeName(final String descriptor, final String name) {
+  public @Identifier String mapAnnotationAttributeName(final @FieldDescriptor String descriptor, final @Identifier String name) {
     return name;
   }
 
@@ -317,15 +328,17 @@ public abstract class Remapper {
    * strategy that will work for inner classes produced by Java, but not necessarily other
    * languages. Subclasses can override.
    *
-   * @param name the fully-qualified internal name of the inner class (see {@link
+   * @param name the internal name of the inner class (see {@link
    *     Type#getInternalName()}).
    * @param ownerName the internal name of the owner class of the inner class (see {@link
    *     Type#getInternalName()}).
    * @param innerName the internal name of the inner class (see {@link Type#getInternalName()}).
    * @return the new inner name of the inner class.
    */
-  public String mapInnerClassName(
-      final String name, final String ownerName, final String innerName) {
+  @SuppressWarnings("signature:return") // does this return an @Identifier or an @InternalForm?
+  // and, should "innerName" be an Identifier or an @InternalForm?
+  public @Identifier String mapInnerClassName(
+      final @InternalForm String name, final @InternalForm String ownerName, final @InternalForm String innerName) {
     final String remappedInnerName = this.mapType(name);
 
     if (remappedInnerName.equals(name)) {
@@ -363,7 +376,7 @@ public abstract class Remapper {
    * @param descriptor the descriptor of the method.
    * @return the new name of the method.
    */
-  public String mapMethodName(final String owner, final String name, final String descriptor) {
+  public @Identifier String mapMethodName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     return name;
   }
 
@@ -504,8 +517,8 @@ public abstract class Remapper {
    * @param descriptor the descriptor of the field.
    * @return the new name of the field.
    */
-  public String mapRecordComponentName(
-      final String owner, final String name, final String descriptor) {
+  public @Identifier String mapRecordComponentName(
+      final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     return name;
   }
 
@@ -519,7 +532,7 @@ public abstract class Remapper {
    * @param descriptor the descriptor of the field.
    * @return the new name of the field.
    */
-  public String mapFieldName(final String owner, final String name, final String descriptor) {
+  public @Identifier String mapFieldName(final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     return name;
   }
 
@@ -530,7 +543,7 @@ public abstract class Remapper {
    * @param name the fully qualified name of the package (using dots).
    * @return the new name of the package.
    */
-  public String mapPackageName(final String name) {
+  public @DotSeparatedIdentifiers String mapPackageName(final @DotSeparatedIdentifiers String name) {
     return name;
   }
 
@@ -541,7 +554,7 @@ public abstract class Remapper {
    * @param name the fully qualified name (using dots) of a module.
    * @return the new name of the module.
    */
-  public String mapModuleName(final String name) {
+  public @DotSeparatedIdentifiers String mapModuleName(final @DotSeparatedIdentifiers String name) {
     return name;
   }
 
@@ -552,7 +565,7 @@ public abstract class Remapper {
    * @param internalName the internal name of a class (see {@link Type#getInternalName()}).
    * @return the new internal name (see {@link Type#getInternalName()}).
    */
-  public String map(final String internalName) {
+  public @InternalForm String map(final @InternalForm String internalName) {
     return internalName;
   }
 }

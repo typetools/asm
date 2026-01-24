@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 
@@ -58,7 +59,7 @@ public class TypeAnnotationNode extends AnnotationNode {
    * @param descriptor the class descriptor of the annotation class.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public TypeAnnotationNode(final int typeRef, final TypePath typePath, final String descriptor) {
+  public TypeAnnotationNode(final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor) {
     this(/* latest api = */ Opcodes.ASM9, typeRef, typePath, descriptor);
     if (getClass() != TypeAnnotationNode.class) {
       throw new IllegalStateException();
@@ -77,7 +78,7 @@ public class TypeAnnotationNode extends AnnotationNode {
    * @param descriptor the class descriptor of the annotation class.
    */
   public TypeAnnotationNode(
-      final int api, final int typeRef, final TypePath typePath, final String descriptor) {
+      final int api, final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor) {
     super(api, descriptor);
     this.typeRef = typeRef;
     this.typePath = typePath;

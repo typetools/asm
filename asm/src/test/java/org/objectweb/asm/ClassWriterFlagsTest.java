@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -113,10 +117,10 @@ class ClassWriterFlagsTest {
                 @Override
                 public MethodVisitor visitMethod(
                     final int access,
-                    final String name,
-                    final String descriptor,
+                    final @Identifier String name,
+                    final @MethodDescriptor String descriptor,
                     final String signature,
-                    final String[] exceptions) {
+                    final @InternalForm String @Nullable [] exceptions) {
                   if (name.equals(method)) {
                     return new MethodVisitor(Opcodes.ASM5) {
                       @Override

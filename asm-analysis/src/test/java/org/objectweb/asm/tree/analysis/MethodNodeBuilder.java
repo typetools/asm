@@ -75,7 +75,7 @@ final class MethodNodeBuilder {
 
   MethodNodeBuilder methodInsn(
       final int opcode,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {

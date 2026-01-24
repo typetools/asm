@@ -137,12 +137,12 @@ public class AsmAdapter extends Adapter {
           }
 
           @Override
-          public void visitEnum(final String name, final String descriptor, final String value) {
+          public void visitEnum(final String name, final @FieldDescriptor String descriptor, final String value) {
             ++count;
           }
 
           @Override
-          public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
+          public AnnotationVisitor visitAnnotation(final @Identifier String name, final @FieldDescriptor String descriptor) {
             ++count;
             return this;
           }
@@ -162,10 +162,10 @@ public class AsmAdapter extends Adapter {
     public void visit(
         final int version,
         final int access,
-        final String name,
+        final @InternalForm String name,
         final String signature,
-        final String superName,
-        final String[] interfaces) {
+        final @InternalForm String superName,
+        final @InternalForm String @Nullable [] interfaces) {
       ++count;
     }
 
@@ -175,18 +175,18 @@ public class AsmAdapter extends Adapter {
     }
 
     @Override
-    public ModuleVisitor visitModule(final String name, final int access, final String version) {
+    public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
       ++count;
       return null;
     }
 
     @Override
-    public void visitOuterClass(final String owner, final String name, final String descriptor) {
+    public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
       ++count;
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
       ++count;
       return annotationVisitor;
     }
@@ -195,7 +195,7 @@ public class AsmAdapter extends Adapter {
     public AnnotationVisitor visitTypeAnnotation(
         final int typeRef,
         final TypePath typePath,
-        final String descriptor,
+        final @FieldDescriptor String descriptor,
         final boolean visible) {
       ++count;
       return annotationVisitor;
@@ -203,22 +203,22 @@ public class AsmAdapter extends Adapter {
 
     @Override
     public void visitInnerClass(
-        final String name, final String outerName, final String innerName, final int access) {
+        final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
       ++count;
     }
 
     @Override
     public FieldVisitor visitField(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @FieldDescriptor String descriptor,
         final String signature,
         final Object value) {
       ++count;
       return new FieldVisitor(api) {
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -227,7 +227,7 @@ public class AsmAdapter extends Adapter {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           ++count;
           return annotationVisitor;
@@ -238,10 +238,10 @@ public class AsmAdapter extends Adapter {
     @Override
     public MethodVisitor visitMethod(
         final int access,
-        final String name,
-        final String descriptor,
+        final @Identifier String name,
+        final @MethodDescriptor String descriptor,
         final String signature,
-        final String[] exceptions) {
+        final @InternalForm String @Nullable [] exceptions) {
       return new MethodVisitor(api) {
 
         @Override
@@ -256,7 +256,7 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+        public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -265,7 +265,7 @@ public class AsmAdapter extends Adapter {
         public AnnotationVisitor visitTypeAnnotation(
             final int typeRef,
             final TypePath typePath,
-            final String descriptor,
+            final @FieldDescriptor String descriptor,
             final boolean visible) {
           ++count;
           return annotationVisitor;
@@ -278,7 +278,7 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public AnnotationVisitor visitParameterAnnotation(
-            final int parameter, final String descriptor, final boolean visible) {
+            final int parameter, final @FieldDescriptor String descriptor, final boolean visible) {
           ++count;
           return annotationVisitor;
         }
@@ -309,29 +309,29 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public void visitTypeInsn(final int opcode, final String type) {
+        public void visitTypeInsn(final int opcode, final @InternalForm String type) {
           ++count;
         }
 
         @Override
         public void visitFieldInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
           ++count;
         }
 
         @Override
         @Deprecated(forRemoval = false)
         public void visitMethodInsn(
-            final int opcode, final String owner, final String name, final String descriptor) {
+            final int opcode, final @InternalForm String owner, final @Identifier String name, final @MethodDescriptor String descriptor) {
           ++count;
         }
 
         @Override
         public void visitMethodInsn(
             final int opcode,
-            final String owner,
-            final String name,
-            final String descriptor,
+            final @InternalForm String owner,
+            final @Identifier String name,
+            final @MethodDescriptor String descriptor,
             final boolean isInterface) {
           ++count;
         }
@@ -339,7 +339,7 @@ public class AsmAdapter extends Adapter {
         @Override
         public void visitInvokeDynamicInsn(
             final String name,
-            final String descriptor,
+            final @MethodDescriptor String descriptor,
             final Handle bootstrapMethodHandle,
             final Object... bootstrapMethodArguments) {
           ++count;
@@ -378,7 +378,7 @@ public class AsmAdapter extends Adapter {
         }
 
         @Override
-        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+        public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
           ++count;
         }
 
@@ -394,7 +394,7 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public void visitTryCatchBlock(
-            final Label start, final Label end, final Label handler, final String type) {
+            final Label start, final Label end, final Label handler, final @InternalForm String type) {
           ++count;
         }
 
@@ -410,8 +410,8 @@ public class AsmAdapter extends Adapter {
 
         @Override
         public void visitLocalVariable(
-            final String name,
-            final String descriptor,
+            final @Identifier String name,
+            final @FieldDescriptor String descriptor,
             final String signature,
             final Label start,
             final Label end,

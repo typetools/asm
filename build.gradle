@@ -31,6 +31,8 @@ buildscript {
   dependencies { classpath 'org.netbeans.tools:sigtest-maven-plugin:1.5' }
 }
 
+plugins { id 'org.checkerframework' version '0.6.61' apply false }
+
 plugins { id 'com.diffplug.spotless' version "6.23.3" apply false }
 plugins { id 'me.champeau.jmh' version '0.7.2' apply false }
 plugins { id 'org.sonarqube' version '7.0.0.6105' apply false }
@@ -209,6 +211,28 @@ subprojects {
   pmdMain.dependsOn ':asm:jar'
   pmdTest.dependsOn ':asm:jar'
 
+  apply plugin: 'org.checkerframework'
+  checkerFramework {
+    checkers = [
+      'org.checkerframework.checker.signature.SignatureChecker',
+    ]
+    extraJavacArgs = [
+      '-AsuppressWarnings=signature:cast.unsafe,signature:assignment'
+    ]
+  }
+  // To use a locally-built Checker Framework, run gradle with "-PcfLocal".
+  if (project.hasProperty("cfLocal")) {
+    def cfHome = String.valueOf(System.getenv("CHECKERFRAMEWORK"))
+    dependencies {
+      compileOnly files(cfHome + "/checker/dist/checker-qual.jar")
+      testCompileOnly files(cfHome + "/checker/dist/checker-qual.jar")
+      checkerFramework files(cfHome + "/checker/dist/checker.jar")
+    }
+  }
+  dependencies {
+    implementation 'org.plumelib:reflection-util:1.1.4'
+  }
+
   dependencies {
     requires.each { projectName -> api project(projectName) }
     depends.each { artifactName -> api artifactName }
@@ -252,7 +276,7 @@ configure(subprojects.findAll{it.provides}) {
 
   // Retrofit the code in-place to Java 1.5 and generate a module-info class
   // from the code content, in compileJava.doLast.
-  if (name != 'asm-test') {
+  if (false) { // was: name != 'asm-test'
     compileJava.dependsOn ':tools:retrofitter:classes'
     compileJava.doLast {
       def path = project(':tools:retrofitter').sourceSets.main.runtimeClasspath

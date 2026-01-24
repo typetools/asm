@@ -27,6 +27,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 /**
  * A {@link MethodVisitor} that generates a corresponding 'method_info' structure, as defined in the
  * Java Virtual Machine Specification (JVMS).
@@ -300,13 +306,13 @@ final class MethodWriter extends MethodVisitor {
   private final int nameIndex;
 
   /** The name of this method. */
-  private final String name;
+  private final @Identifier String name;
 
   /** The descriptor_index field of the method_info JVMS structure. */
   private final int descriptorIndex;
 
   /** The descriptor of this method. */
-  private final String descriptor;
+  private final @MethodDescriptor String descriptor;
 
   // Code attribute fields and sub attributes:
 
@@ -590,9 +596,9 @@ final class MethodWriter extends MethodVisitor {
       final SymbolTable symbolTable,
       final int access,
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions,
+      final @InternalForm String @Nullable [] exceptions,
       final int compute) {
     super(/* latest api = */ Opcodes.ASM9);
     this.symbolTable = symbolTable;
@@ -655,7 +661,7 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleAnnotation =
           AnnotationWriter.create(symbolTable, descriptor, lastRuntimeVisibleAnnotation);
@@ -667,7 +673,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -690,7 +696,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(
-      final int parameter, final String annotationDescriptor, final boolean visible) {
+      final int parameter, final @FieldDescriptor String annotationDescriptor, final boolean visible) {
     if (visible) {
       if (lastRuntimeVisibleParameterAnnotations == null) {
         lastRuntimeVisibleParameterAnnotations =
@@ -968,7 +974,7 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public void visitTypeInsn(final int opcode, final String type) {
+  public void visitTypeInsn(final int opcode, final @InternalForm String type) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
     Symbol typeSymbol = symbolTable.addConstantClass(type);
@@ -990,7 +996,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final @FieldDescriptor String descriptor) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
     Symbol fieldrefSymbol = symbolTable.addConstantFieldref(owner, name, descriptor);
@@ -1028,9 +1034,9 @@ final class MethodWriter extends MethodVisitor {
   @Override
   public void visitMethodInsn(
       final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
+      final @InternalForm String owner,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final boolean isInterface) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
@@ -1065,7 +1071,7 @@ final class MethodWriter extends MethodVisitor {
   @Override
   public void visitInvokeDynamicInsn(
       final String name,
-      final String descriptor,
+      final @MethodDescriptor String descriptor,
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     lastBytecodeOffset = code.length;
@@ -1386,9 +1392,10 @@ final class MethodWriter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+  public void visitMultiANewArrayInsn(final @FieldDescriptor String descriptor, final int numDimensions) {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
+    @SuppressWarnings("signature:argument") // BUG??
     Symbol descSymbol = symbolTable.addConstantClass(descriptor);
     code.put12(Opcodes.MULTIANEWARRAY, descSymbol.index).putByte(numDimensions);
     // If needed, update the maximum stack size and number of locals, and stack map frames.
@@ -1405,7 +1412,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitInsnAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastCodeRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -1427,7 +1434,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitTryCatchBlock(
-      final Label start, final Label end, final Label handler, final String type) {
+      final Label start, final Label end, final Label handler, final @InternalForm String type) {
     Handler newHandler =
         new Handler(
             start, end, handler, type != null ? symbolTable.addConstantClass(type).index : 0, type);
@@ -1441,7 +1448,7 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitTryCatchAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     if (visible) {
       return lastCodeRuntimeVisibleTypeAnnotation =
           AnnotationWriter.create(
@@ -1455,8 +1462,8 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitLocalVariable(
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Label start,
       final Label end,
@@ -1499,7 +1506,7 @@ final class MethodWriter extends MethodVisitor {
       final Label[] start,
       final Label[] end,
       final int[] index,
-      final String descriptor,
+      final @FieldDescriptor String descriptor,
       final boolean visible) {
     // Create a ByteVector to hold a 'type_annotation' JVMS structure.
     // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.20.
@@ -1978,7 +1985,7 @@ final class MethodWriter extends MethodVisitor {
     } else if (type instanceof String) {
       stackMapTableEntries
           .putByte(Frame.ITEM_OBJECT)
-          .putShort(symbolTable.addConstantClass((String) type).index);
+          .putShort(symbolTable.addConstantClass((@InternalForm String) type).index);
     } else {
       stackMapTableEntries.putByte(Frame.ITEM_UNINITIALIZED);
       ((Label) type).put(stackMapTableEntries);

@@ -31,6 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -963,10 +967,10 @@ class ClassWriterComputeMaxsTest {
           @Override
           public MethodVisitor visitMethod(
               final int access,
-              final String name,
-              final String descriptor,
+              final @Identifier String name,
+              final @MethodDescriptor String descriptor,
               final String signature,
-              final String[] exceptions) {
+              final @InternalForm String @Nullable [] exceptions) {
             if (name.equals("m")) {
               return new MethodVisitor(Opcodes.ASM5) {
                 @Override

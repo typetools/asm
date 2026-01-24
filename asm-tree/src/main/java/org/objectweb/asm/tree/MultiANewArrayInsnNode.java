@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+
 import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -39,7 +41,7 @@ import org.objectweb.asm.Opcodes;
 public class MultiANewArrayInsnNode extends AbstractInsnNode {
 
   /** An array type descriptor (see {@link org.objectweb.asm.Type}). */
-  public String desc;
+  public @FieldDescriptor String desc;
 
   /** Number of dimensions of the array to allocate. */
   public int dims;

@@ -27,6 +27,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.util;
 
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
+import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.signature.qual.MethodDescriptor;
+import org.checkerframework.checker.signature.qual.Identifier;
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
+import org.checkerframework.checker.signature.qual.InternalForm;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -143,7 +151,7 @@ public class CheckClassAdapter extends ClassVisitor {
    * The common package of all the nest members. Not {@literal null} if the visitNestMember method
    * has been called.
    */
-  private String nestMemberPackageName;
+  private @MonotonicNonNull String nestMemberPackageName;
 
   /** Whether the {@link #visitEnd} method has been called. */
   private boolean visitEndCalled;
@@ -204,10 +212,10 @@ public class CheckClassAdapter extends ClassVisitor {
   public void visit(
       final int version,
       final int access,
-      final String name,
+      final @InternalForm String name,  // may end with "package-info" or "module-info"
       final String signature,
-      final String superName,
-      final String[] interfaces) {
+      final @InternalForm String superName,
+      final @InternalForm String @Nullable [] interfaces) {
     if (visitCalled) {
       throw new IllegalStateException("visit must be called only once");
     }
@@ -273,7 +281,7 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public ModuleVisitor visitModule(final String name, final int access, final String version) {
+  public ModuleVisitor visitModule(final @DotSeparatedIdentifiers String name, final int access, final String version) {
     checkState();
     if (visitModuleCalled) {
       throw new IllegalStateException("visitModule can be called only once.");
@@ -289,7 +297,7 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public void visitNestHost(final String nestHost) {
+  public void visitNestHost(final @InternalForm String nestHost) {
     checkState();
     CheckMethodAdapter.checkInternalName(version, nestHost, "nestHost");
     if (visitNestHostCalled) {
@@ -303,7 +311,7 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public void visitNestMember(final String nestMember) {
+  public void visitNestMember(final @InternalForm String nestMember) {
     checkState();
     CheckMethodAdapter.checkInternalName(version, nestMember, "nestMember");
     if (visitNestHostCalled) {
@@ -321,14 +329,14 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public void visitPermittedSubclass(final String permittedSubclass) {
+  public void visitPermittedSubclass(final @InternalForm String permittedSubclass) {
     checkState();
     CheckMethodAdapter.checkInternalName(version, permittedSubclass, "permittedSubclass");
     super.visitPermittedSubclass(permittedSubclass);
   }
 
   @Override
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {
+  public void visitOuterClass(final @InternalForm String owner, final @Nullable @Identifier String name, final @MethodDescriptor String descriptor) {
     checkState();
     if (visitOuterClassCalled) {
       throw new IllegalStateException("visitOuterClass can be called only once.");
@@ -345,7 +353,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
   @Override
   public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {
+      final @InternalForm String name, final @InternalForm String outerName, final @Identifier String innerName, final int access) {
     checkState();
     CheckMethodAdapter.checkInternalName(version, name, "class name");
     if (outerName != null) {
@@ -377,7 +385,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
   @Override
   public RecordComponentVisitor visitRecordComponent(
-      final String name, final String descriptor, final String signature) {
+      final @Identifier String name, final @FieldDescriptor String descriptor, final String signature) {
     checkState();
     CheckMethodAdapter.checkUnqualifiedName(version, name, "record component name");
     CheckMethodAdapter.checkDescriptor(version, descriptor, /* canBeVoid= */ false);
@@ -391,8 +399,8 @@ public class CheckClassAdapter extends ClassVisitor {
   @Override
   public FieldVisitor visitField(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @FieldDescriptor String descriptor,
       final String signature,
       final Object value) {
     checkState();
@@ -423,10 +431,10 @@ public class CheckClassAdapter extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(
       final int access,
-      final String name,
-      final String descriptor,
+      final @Identifier String name,
+      final @MethodDescriptor String descriptor,
       final String signature,
-      final String[] exceptions) {
+      final @InternalForm String @Nullable [] exceptions) {
     checkState();
     checkMethodAccess(
         version,
@@ -477,7 +485,7 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final @FieldDescriptor String descriptor, final boolean visible) {
     checkState();
     CheckMethodAdapter.checkDescriptor(version, descriptor, false);
     return new CheckAnnotationAdapter(super.visitAnnotation(descriptor, visible));
@@ -485,7 +493,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+      final int typeRef, final TypePath typePath, final @FieldDescriptor String descriptor, final boolean visible) {
     checkState();
     int sort = new TypeReference(typeRef).getSort();
     if (sort != TypeReference.CLASS_TYPE_PARAMETER
@@ -575,7 +583,7 @@ public class CheckClassAdapter extends ClassVisitor {
    * @param name the name to be checked.
    * @param source the source of 'name' (e.g 'module' for a module name).
    */
-  static void checkFullyQualifiedName(final int version, final String name, final String source) {
+  static void checkFullyQualifiedName(final int version, final @DotSeparatedIdentifiers String name, final String source) {
     try {
       int startIndex = 0;
       int dotIndex;
@@ -970,7 +978,7 @@ public class CheckClassAdapter extends ClassVisitor {
    * @param name an internal name.
    * @return the package name or "" if there is no package.
    */
-  private static String packageName(final String name) {
+  private static String packageName(final @InternalForm String name) {
     int index = name.lastIndexOf('/');
     if (index == -1) {
       return "";
@@ -1014,7 +1022,7 @@ public class CheckClassAdapter extends ClassVisitor {
         classReader = new ClassReader(inputStream);
       }
     } else {
-      classReader = new ClassReader(args[0]);
+      classReader = new ClassReader((@FullyQualifiedName String) args[0]);
     }
 
     verify(classReader, false, logger);

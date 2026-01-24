@@ -78,14 +78,14 @@ final class MethodNodeBuilder {
   }
 
   MethodNodeBuilder fieldInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
+      final int opcode, final @InternalForm String owner, final @Identifier String name, final String descriptor) {
     methodNode.visitFieldInsn(opcode, owner, name, descriptor);
     return this;
   }
 
   MethodNodeBuilder methodInsn(
       final int opcode,
-      final String owner,
+      final @InternalForm String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {

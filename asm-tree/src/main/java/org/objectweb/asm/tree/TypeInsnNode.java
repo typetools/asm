@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
+import org.checkerframework.checker.signature.qual.InternalForm;
+
 import java.util.Map;
 import org.objectweb.asm.MethodVisitor;
 
@@ -42,7 +44,7 @@ public class TypeInsnNode extends AbstractInsnNode {
    * The operand of this instruction. Despite its name (due to historical reasons), this operand is
    * an internal name (see {@link org.objectweb.asm.Type#getInternalName()}).
    */
-  public String desc;
+  public @InternalForm String desc;
 
   /**
    * Constructs a new {@link TypeInsnNode}.
@@ -52,7 +54,7 @@ public class TypeInsnNode extends AbstractInsnNode {
    * @param type the operand of the instruction to be constructed. This operand is an internal name
    *     (see {@link org.objectweb.asm.Type#getInternalName()}).
    */
-  public TypeInsnNode(final int opcode, final String type) {
+  public TypeInsnNode(final int opcode, final @InternalForm String type) {
     super(opcode);
     this.desc = type;
   }
