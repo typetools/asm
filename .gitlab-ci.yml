@@ -19,7 +19,6 @@ build-job:
   artifacts:
     paths:
       - '**/build/'
-    untracked: true
     expire_in: 1 hour
 
 test-job:
@@ -29,7 +28,6 @@ test-job:
   artifacts:
     paths:
       - '**/build/'
-    untracked: true
     expire_in: 1 hour
 
 deploy-job:
