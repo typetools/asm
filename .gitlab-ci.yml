@@ -17,6 +17,8 @@ build-job:
   script:
     - $GRADLE build
   artifacts:
+    paths:
+      - '**/build/'
     untracked: true
     expire_in: 1 hour
 
@@ -25,6 +27,8 @@ test-job:
   script:
     - $GRADLE --info test jacocoTestCoverageVerification jacocoTestReport
   artifacts:
+    paths:
+      - '**/build/'
     untracked: true
     expire_in: 1 hour
 
