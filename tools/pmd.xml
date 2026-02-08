@@ -20,17 +20,11 @@
     <exclude name="CheckResultSet" />
     <!-- Already covered with Checkstyle 'InterfaceIsType' rule. -->   
     <exclude name="ConstantsInInterface" />
-    <!-- Already covered with Checkstyle 'DefaultComesLast' rule. -->   
-    <exclude name="DefaultLabelNotLastInSwitchStmt" />
-    <!-- Not relevant for ASM (no logging and using JUnit 5). -->
+    <!-- Not relevant for ASM (no logging). -->
     <exclude name="GuardLogStatement" />
-    <exclude name="JUnit4SuitesShouldUseSuiteAnnotation" />
-    <exclude name="JUnit4TestShouldUseAfterAnnotation" />
-    <exclude name="JUnit4TestShouldUseBeforeAnnotation" />
-    <exclude name="JUnit4TestShouldUseTestAnnotation" />
     <!-- Would give too verbose code. -->
-    <exclude name="JUnitAssertionsShouldIncludeMessage" />
-    <exclude name="JUnitTestContainsTooManyAsserts" />
+    <exclude name="UnitTestAssertionsShouldIncludeMessage" />
+    <exclude name="UnitTestContainsTooManyAsserts" />
     <!-- Not relevant for ASM (using JUnit 5). -->
     <exclude name="JUnitUseExpected" />
     <!-- Already covered with Checkstyle 'IllegalType' rule. -->   
@@ -40,24 +34,20 @@
     <!-- Actually not a best practice. -->   
     <exclude name="LiteralsFirstInComparisons" />
     <!-- Already covered with Checkstyle 'MissingSwitchDefault' rule. -->   
-    <exclude name="SwitchStmtsShouldHaveDefault" />
     <!-- Already covered with google-java-format. -->
-    <exclude name="UnusedImports" />
     <!-- Too many false positives. -->
     <exclude name="UseVarargs" />
   </rule>
   <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly">
     <properties>
       <property name="violationSuppressXPath"
-          value="//MethodDeclaration[@Private='true' or 
-              @PackagePrivate='true']" />
+          value="//MethodDeclaration[@Visibility!='public']" />
     </properties>
   </rule>
   <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray">
     <properties>
       <property name="violationSuppressXPath"
-          value="//MethodDeclaration[@Private='true' or 
-              @PackagePrivate='true']" />
+          value="//MethodDeclaration[@Visibility!='public']" />
     </properties>
   </rule>
   <rule ref="category/java/bestpractices.xml/ForLoopVariableCount">
@@ -77,8 +67,6 @@
     <exclude name="AvoidLiteralsInIfCondition" />
     <!-- Too many false positives. -->
     <exclude name="CompareObjectsWithEquals" />
-    <!-- Does not work, too  many false positives. -->
-    <exclude name="DataflowAnomalyAnalysis" />
     <!-- Not relevant for ASM. -->
     <exclude name="DoNotHardCodeSDCard" />
     <exclude name="DontImportSun" />
@@ -87,11 +75,6 @@
     <exclude name="FinalizeOnlyCallsSuperFinalize" />
     <exclude name="FinalizeOverloaded" />
     <exclude name="FinalizeShouldBeProtected" />
-    <!-- Not relevant for ASM (no logging and using JUnit 5). -->
-    <exclude name="JUnitSpelling" />
-    <exclude name="JUnitStaticSuite" />
-    <exclude name="LoggerIsNotStaticFinal" />
-    <exclude name="MoreThanOneLogger" />
     <!-- Needed to implement custom data structures such as linked lists. -->
     <exclude name="NullAssignment" />
     <!-- Not relevant for ASM (no logging, no dates, no EJB). -->
@@ -103,15 +86,13 @@
   <rule ref="category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull">
     <properties>
       <property name="violationSuppressXPath"
-          value="//MethodDeclaration[@Private='true']"/>
+          value="//MethodDeclaration[@Visibility!='public']"/>
     </properties>
   </rule>
 
   <rule ref="category/java/performance.xml">
     <!-- Too many false positives. -->
     <exclude name="AvoidInstantiatingObjectsInLoops" />
-    <!-- Shorts can be decrease memory use, without decreasing performance. -->
-    <exclude name="AvoidUsingShortType" />
     <!-- Not relevant for ASM (no BigInteger). -->
     <exclude name="BigIntegerInstantiation" />
     <!-- Does not work, too many false positives. -->

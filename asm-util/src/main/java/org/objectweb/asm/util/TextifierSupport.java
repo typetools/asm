@@ -29,6 +29,7 @@ import org.objectweb.asm.Label;
  *
  * @author Eugene Kuleshov
  */
+@FunctionalInterface
 public interface TextifierSupport {
 
   /**

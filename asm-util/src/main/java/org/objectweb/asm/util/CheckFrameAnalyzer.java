@@ -158,8 +158,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
             LookupSwitchInsnNode lookupSwitchInsn = (LookupSwitchInsnNode) insnNode;
             int targetInsnIndex = insnList.indexOf(lookupSwitchInsn.dflt);
             checkFrame(targetInsnIndex, currentFrame, /* requireFrame= */ true);
-            for (int i = 0; i < lookupSwitchInsn.labels.size(); ++i) {
-              LabelNode label = lookupSwitchInsn.labels.get(i);
+            for (LabelNode label : lookupSwitchInsn.labels) {
               targetInsnIndex = insnList.indexOf(label);
               currentFrame.initJumpTarget(insnOpcode, label);
               checkFrame(targetInsnIndex, currentFrame, /* requireFrame= */ true);
@@ -171,8 +170,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
             currentFrame.initJumpTarget(insnOpcode, tableSwitchInsn.dflt);
             checkFrame(targetInsnIndex, currentFrame, /* requireFrame= */ true);
             newControlFlowEdge(insnIndex, targetInsnIndex);
-            for (int i = 0; i < tableSwitchInsn.labels.size(); ++i) {
-              LabelNode label = tableSwitchInsn.labels.get(i);
+            for (LabelNode label : tableSwitchInsn.labels) {
               currentFrame.initJumpTarget(insnOpcode, label);
               targetInsnIndex = insnList.indexOf(label);
               checkFrame(targetInsnIndex, currentFrame, /* requireFrame= */ true);

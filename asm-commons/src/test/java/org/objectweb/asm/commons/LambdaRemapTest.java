@@ -63,11 +63,9 @@ class LambdaRemapTest extends AsmTest implements Opcodes {
             "metafactory",
             LAMBDA_FACTORY_METAFACTORY,
             false),
-        new Object[] {
-          Type.getType("()V"),
-          new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
-          Type.getType("()V")
-        });
+        Type.getType("()V"),
+        new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
+        Type.getType("()V"));
   }
 
   void func_serializableLambda(final MethodVisitor methodVisitor) {
@@ -80,13 +78,11 @@ class LambdaRemapTest extends AsmTest implements Opcodes {
             "altMetafactory",
             LAMBDA_FACTORY_ALTMETAFACTORY,
             false),
-        new Object[] {
-          Type.getType("()V"),
-          new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
-          Type.getType("()V"),
-          Integer.valueOf(5),
-          Integer.valueOf(0)
-        });
+        Type.getType("()V"),
+        new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
+        Type.getType("()V"),
+        Integer.valueOf(5),
+        Integer.valueOf(0));
   }
 
   void func_advancedLambda(final MethodVisitor methodVisitor) {
@@ -99,15 +95,13 @@ class LambdaRemapTest extends AsmTest implements Opcodes {
             "altMetafactory",
             LAMBDA_FACTORY_ALTMETAFACTORY,
             false),
-        new Object[] {
-          Type.getType("()V"),
-          new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
-          Type.getType("()V"),
-          Integer.valueOf(7),
-          Integer.valueOf(1),
-          Type.getType("Lpkg/LambdaTest$TestInterface;"),
-          Integer.valueOf(0)
-        });
+        Type.getType("()V"),
+        new Handle(Opcodes.H_INVOKESTATIC, "java/lang/Thread", "dumpStack", "()V", false),
+        Type.getType("()V"),
+        Integer.valueOf(7),
+        Integer.valueOf(1),
+        Type.getType("Lpkg/LambdaTest$TestInterface;"),
+        Integer.valueOf(0));
   }
 
   public static Stream<Remapper> remappersLatest() {

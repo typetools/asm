@@ -81,6 +81,7 @@ public abstract class AbstractBenchmark {
   ArrayList<byte[]> java8classFiles;
 
   /** The ASM versions that can be benchmarked. */
+  @SuppressWarnings("PMD.ExhaustiveSwitchHasDefault") // Checkstyle complains if default is missing!
   public enum AsmVersion {
     V4_0,
     V5_0,

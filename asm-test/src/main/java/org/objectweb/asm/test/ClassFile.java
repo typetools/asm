@@ -2356,11 +2356,13 @@ public class ClassFile {
   }
 
   /** A context to lookup constant pool items from their index. */
+  @FunctionalInterface
   private interface ClassContext {
     <C extends CpInfo> C getCpInfo(int cpIndex, Class<C> cpInfoType);
   }
 
   /** A context to lookup instruction indices from their bytecode offset. */
+  @FunctionalInterface
   private interface MethodContext {
     int getInsnIndex(int bytecodeOffset);
   }
@@ -2526,6 +2528,7 @@ public class ClassFile {
      * @param opcode a bytecode instruction opcode.
      * @param arguments the bytecode instruction arguments.
      */
+    @SuppressWarnings("PMD.UseArraysAsList") // false positive
     void addInsn(final int insnIndex, final int opcode, final Object... arguments) {
       children.add(insnIndex);
       children.add(": ");

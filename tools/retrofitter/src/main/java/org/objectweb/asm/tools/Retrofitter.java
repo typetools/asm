@@ -479,6 +479,9 @@ public final class Retrofitter {
         @Override
         public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
           AnnotationVisitor av = super.visitAnnotation(descriptor, visible);
+          if (descriptor.equals("Ljava/lang/FunctionalInterface;")) {
+            return null;
+          }
           if (!descriptor.equals("Ljava/lang/Deprecated;")) {
             return av;
           }
@@ -707,6 +710,12 @@ public final class Retrofitter {
         @Override
         public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
           var av = super.visitAnnotation(descriptor, visible);
+          if (descriptor.equals("Ljava/lang/FunctionalInterface;")) {
+            throw new IllegalArgumentException(
+                format(
+                    "ERROR: @FunctionalInterface in %s %s is not available in JDK 1.5",
+                    className, currentMethodName));
+          }
           if (!descriptor.equals("Ljava/lang/Deprecated;")) {
             return av;
           }

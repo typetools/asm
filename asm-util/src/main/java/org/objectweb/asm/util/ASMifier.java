@@ -274,8 +274,7 @@ public class ASMifier extends Printer {
   @Override
   public Printer visitModule(final String name, final int flags, final String version) {
     stringBuilder.setLength(0);
-    stringBuilder.append("{\n");
-    stringBuilder.append("ModuleVisitor moduleVisitor = classWriter.visitModule(");
+    stringBuilder.append("{\nModuleVisitor moduleVisitor = classWriter.visitModule(");
     appendConstant(name);
     stringBuilder.append(", ");
     appendAccessFlags(flags | ACCESS_MODULE);
@@ -365,8 +364,7 @@ public class ASMifier extends Printer {
   public ASMifier visitRecordComponent(
       final String name, final String descriptor, final String signature) {
     stringBuilder.setLength(0);
-    stringBuilder.append("{\n");
-    stringBuilder.append("recordComponentVisitor = classWriter.visitRecordComponent(");
+    stringBuilder.append("{\nrecordComponentVisitor = classWriter.visitRecordComponent(");
     appendConstant(name);
     stringBuilder.append(", ");
     appendConstant(descriptor);
@@ -388,8 +386,7 @@ public class ASMifier extends Printer {
       final String signature,
       final Object value) {
     stringBuilder.setLength(0);
-    stringBuilder.append("{\n");
-    stringBuilder.append("fieldVisitor = classWriter.visitField(");
+    stringBuilder.append("{\nfieldVisitor = classWriter.visitField(");
     appendAccessFlags(access | ACCESS_FIELD);
     stringBuilder.append(", ");
     appendConstant(name);
@@ -415,8 +412,7 @@ public class ASMifier extends Printer {
       final String signature,
       final String[] exceptions) {
     stringBuilder.setLength(0);
-    stringBuilder.append("{\n");
-    stringBuilder.append("methodVisitor = classWriter.visitMethod(");
+    stringBuilder.append("{\nmethodVisitor = classWriter.visitMethod(");
     appendAccessFlags(access);
     stringBuilder.append(", ");
     appendConstant(name);
@@ -576,11 +572,11 @@ public class ASMifier extends Printer {
   public ASMifier visitAnnotation(final String name, final String descriptor) {
     stringBuilder.setLength(0);
     stringBuilder
-        .append("{\n")
-        .append("AnnotationVisitor annotationVisitor")
+        .append("{\nAnnotationVisitor annotationVisitor")
         .append(id + 1)
-        .append(" = annotationVisitor");
-    stringBuilder.append(id).append(".visitAnnotation(");
+        .append(" = annotationVisitor")
+        .append(id)
+        .append(".visitAnnotation(");
     appendConstant(name);
     stringBuilder.append(", ");
     appendConstant(descriptor);
@@ -595,12 +591,12 @@ public class ASMifier extends Printer {
   @Override
   public ASMifier visitArray(final String name) {
     stringBuilder.setLength(0);
-    stringBuilder.append("{\n");
     stringBuilder
-        .append("AnnotationVisitor annotationVisitor")
+        .append("{\nAnnotationVisitor annotationVisitor")
         .append(id + 1)
-        .append(" = annotationVisitor");
-    stringBuilder.append(id).append(".visitArray(");
+        .append(" = annotationVisitor")
+        .append(id)
+        .append(".visitArray(");
     appendConstant(name);
     stringBuilder.append(");\n");
     text.add(stringBuilder.toString());
@@ -888,9 +884,7 @@ public class ASMifier extends Printer {
     appendConstant(name);
     stringBuilder.append(", ");
     appendConstant(descriptor);
-    stringBuilder.append(", ");
-    stringBuilder.append(isInterface ? "true" : "false");
-    stringBuilder.append(");\n");
+    stringBuilder.append(", ").append(isInterface ? "true" : "false").append(");\n");
     text.add(stringBuilder.toString());
   }
 
@@ -1245,8 +1239,7 @@ public class ASMifier extends Printer {
       }
       stringBuilder.append("{\n");
       ((ASMifierSupport) attribute).asmify(stringBuilder, "attribute", labelNames);
-      stringBuilder.append(name).append(".visitAttribute(attribute);\n");
-      stringBuilder.append("}\n");
+      stringBuilder.append(name).append(".visitAttribute(attribute);\n}\n");
     }
     text.add(stringBuilder.toString());
   }
@@ -1450,22 +1443,30 @@ public class ASMifier extends Printer {
     } else if (value instanceof String) {
       appendString(stringBuilder, (String) value);
     } else if (value instanceof Type) {
-      stringBuilder.append("Type.getType(\"");
-      stringBuilder.append(((Type) value).getDescriptor());
-      stringBuilder.append("\")");
+      stringBuilder.append("Type.getType(\"").append(((Type) value).getDescriptor()).append("\")");
     } else if (value instanceof Handle) {
       stringBuilder.append("new Handle(");
       Handle handle = (Handle) value;
-      stringBuilder.append("Opcodes.").append(HANDLE_TAG[handle.getTag()]).append(", \"");
-      stringBuilder.append(handle.getOwner()).append(COMMA);
-      stringBuilder.append(handle.getName()).append(COMMA);
-      stringBuilder.append(handle.getDesc()).append("\", ");
-      stringBuilder.append(handle.isInterface()).append(')');
+      stringBuilder
+          .append("Opcodes.")
+          .append(HANDLE_TAG[handle.getTag()])
+          .append(", \"")
+          .append(handle.getOwner())
+          .append(COMMA)
+          .append(handle.getName())
+          .append(COMMA)
+          .append(handle.getDesc())
+          .append("\", ")
+          .append(handle.isInterface())
+          .append(')');
     } else if (value instanceof ConstantDynamic) {
       stringBuilder.append("new ConstantDynamic(\"");
       ConstantDynamic constantDynamic = (ConstantDynamic) value;
-      stringBuilder.append(constantDynamic.getName()).append(COMMA);
-      stringBuilder.append(constantDynamic.getDescriptor()).append("\", ");
+      stringBuilder
+          .append(constantDynamic.getName())
+          .append(COMMA)
+          .append(constantDynamic.getDescriptor())
+          .append("\", ");
       appendConstant(constantDynamic.getBootstrapMethod());
       stringBuilder.append(NEW_OBJECT_ARRAY);
       int bootstrapMethodArgumentCount = constantDynamic.getBootstrapMethodArgumentCount();
