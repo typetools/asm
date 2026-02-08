@@ -350,9 +350,7 @@ public class Textifier extends Printer {
     stringBuilder.append(tab);
 
     appendDescriptor(FIELD_DESCRIPTOR, descriptor);
-    stringBuilder.append(' ').append(name);
-
-    stringBuilder.append('\n');
+    stringBuilder.append(' ').append(name).append('\n');
     text.add(stringBuilder.toString());
     return addNewTextifier(null);
   }
@@ -500,8 +498,7 @@ public class Textifier extends Printer {
   private void visitExportOrOpen(
       final String method, final String packaze, final int access, final String... modules) {
     stringBuilder.setLength(0);
-    stringBuilder.append(tab).append(method);
-    stringBuilder.append(packaze);
+    stringBuilder.append(tab).append(method).append(packaze);
     if (modules != null && modules.length > 0) {
       stringBuilder.append(" to");
     } else {
@@ -510,8 +507,10 @@ public class Textifier extends Printer {
     appendRawAccess(access);
     if (modules != null && modules.length > 0) {
       for (int i = 0; i < modules.length; ++i) {
-        stringBuilder.append(tab2).append(modules[i]);
-        stringBuilder.append(i != modules.length - 1 ? ",\n" : ";\n");
+        stringBuilder
+            .append(tab2)
+            .append(modules[i])
+            .append(i != modules.length - 1 ? ",\n" : ";\n");
       }
     }
     text.add(stringBuilder.toString());
@@ -791,9 +790,11 @@ public class Textifier extends Printer {
   @Override
   public Textifier visitAnnotableParameterCount(final int parameterCount, final boolean visible) {
     stringBuilder.setLength(0);
-    stringBuilder.append(tab2).append("// annotable parameter count: ");
-    stringBuilder.append(parameterCount);
-    stringBuilder.append(visible ? " (visible)\n" : " (invisible)\n");
+    stringBuilder
+        .append(tab2)
+        .append("// annotable parameter count: ")
+        .append(parameterCount)
+        .append(visible ? " (visible)\n" : " (invisible)\n");
     text.add(stringBuilder.toString());
     return this;
   }
@@ -833,8 +834,7 @@ public class Textifier extends Printer {
       final int numStack,
       final Object[] stack) {
     stringBuilder.setLength(0);
-    stringBuilder.append(ltab);
-    stringBuilder.append("FRAME ");
+    stringBuilder.append(ltab).append("FRAME ");
     switch (type) {
       case Opcodes.F_NEW:
       case Opcodes.F_FULL:
@@ -939,17 +939,13 @@ public class Textifier extends Printer {
       final Handle bootstrapMethodHandle,
       final Object... bootstrapMethodArguments) {
     stringBuilder.setLength(0);
-    stringBuilder.append(tab2).append("INVOKEDYNAMIC").append(' ');
-    stringBuilder.append(name);
+    stringBuilder.append(tab2).append("INVOKEDYNAMIC").append(' ').append(name);
     appendDescriptor(METHOD_DESCRIPTOR, descriptor);
-    stringBuilder.append(" [");
-    stringBuilder.append('\n');
-    stringBuilder.append(tab3);
+    stringBuilder.append(" [").append('\n').append(tab3);
     appendHandle(bootstrapMethodHandle, tab3);
     stringBuilder.append('\n').append(tab3);
     appendBoostrapMethodArgs(bootstrapMethodArguments, tab3);
-    stringBuilder.append('\n');
-    stringBuilder.append(tab2).append("]\n");
+    stringBuilder.append('\n').append(tab2).append("]\n");
     text.add(stringBuilder.toString());
   }
 
@@ -1075,8 +1071,7 @@ public class Textifier extends Printer {
     stringBuilder.setLength(0);
     stringBuilder.append(") : ");
     appendTypeReference(typeRef);
-    stringBuilder.append(", ").append(typePath);
-    stringBuilder.append(visible ? "\n" : INVISIBLE);
+    stringBuilder.append(", ").append(typePath).append(visible ? "\n" : INVISIBLE);
     return addNewTextifier(stringBuilder.toString());
   }
 
@@ -1204,8 +1199,7 @@ public class Textifier extends Printer {
     stringBuilder.setLength(0);
     stringBuilder.append(") : ");
     appendTypeReference(typeRef);
-    stringBuilder.append(", ").append(typePath);
-    stringBuilder.append(visible ? "\n" : INVISIBLE);
+    stringBuilder.append(", ").append(typePath).append(visible ? "\n" : INVISIBLE);
     return addNewTextifier(stringBuilder.toString());
   }
 
@@ -1324,8 +1318,9 @@ public class Textifier extends Printer {
         .append(condy.getName())
         .append(" : ")
         .append(condy.getDescriptor())
-        .append(" [\n");
-    stringBuilder.append(condyIndent).append(tab);
+        .append(" [\n")
+        .append(condyIndent)
+        .append(tab);
     appendHandle(condy.getBootstrapMethod(), condyIndent + tab);
     stringBuilder.append('\n').append(condyIndent).append(tab);
     Object[] bsmArgs = new Object[condy.getBootstrapMethodArgumentCount()];
@@ -1414,11 +1409,9 @@ public class Textifier extends Printer {
     new SignatureReader(signature).accept(traceSignatureVisitor);
     stringBuilder.append("// declaration: ");
     if (traceSignatureVisitor.getReturnType() != null) {
-      stringBuilder.append(traceSignatureVisitor.getReturnType());
-      stringBuilder.append(' ');
+      stringBuilder.append(traceSignatureVisitor.getReturnType()).append(' ');
     }
-    stringBuilder.append(name);
-    stringBuilder.append(traceSignatureVisitor.getDeclaration());
+    stringBuilder.append(name).append(traceSignatureVisitor.getDeclaration());
     if (traceSignatureVisitor.getExceptions() != null) {
       stringBuilder.append(" throws ").append(traceSignatureVisitor.getExceptions());
     }
@@ -1500,11 +1493,9 @@ public class Textifier extends Printer {
       default:
         throw new IllegalArgumentException();
     }
-    stringBuilder.append('\n');
-    stringBuilder.append(afterComment);
+    stringBuilder.append('\n').append(afterComment);
     appendDescriptor(INTERNAL_NAME, handle.getOwner());
-    stringBuilder.append('.');
-    stringBuilder.append(handle.getName());
+    stringBuilder.append('.').append(handle.getName());
     if (!isMethodHandle) {
       stringBuilder.append('(');
     }

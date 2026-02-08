@@ -26,6 +26,7 @@ final class Util {
     return Integer.parseInt(javaMajorVersionText);
   }
 
+  @SuppressWarnings("PMD.PreserveStackTrace")
   static boolean previewFeatureEnabled() {
     try {
       Class<?> managementFactoryClass = Class.forName("java.lang.management.ManagementFactory");

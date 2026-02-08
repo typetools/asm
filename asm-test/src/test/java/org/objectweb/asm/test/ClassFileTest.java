@@ -62,6 +62,7 @@ class ClassFileTest extends AsmTest {
    */
   @ParameterizedTest
   @EnumSource(InvalidClass.class)
+  @SuppressWarnings("PMD.ExhaustiveSwitchHasDefault") // Checkstyle complains if default is missing!
   void testStaticNewInstance_invalidClass(final InvalidClass invalidClass) {
     String className = invalidClass.toString();
     byte[] classContent = invalidClass.getBytes();

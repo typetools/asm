@@ -244,8 +244,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
       declaration.append('>');
     }
     argumentStack /= 2;
-    declaration.append('.');
-    declaration.append(separator).append(name.replace('/', '.'));
+    declaration.append('.').append(separator).append(name.replace('/', '.'));
     separator = "";
     argumentStack *= 2;
   }

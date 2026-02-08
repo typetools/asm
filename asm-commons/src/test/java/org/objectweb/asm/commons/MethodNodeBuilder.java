@@ -191,7 +191,7 @@ final class MethodNodeBuilder {
   MethodNodeBuilder switchto(
       final Label defaultLabel, final int key, final Label target, final boolean useTableSwitch) {
     if (useTableSwitch) {
-      methodNode.visitTableSwitchInsn(key, key, defaultLabel, new Label[] {target});
+      methodNode.visitTableSwitchInsn(key, key, defaultLabel, target);
     } else {
       methodNode.visitLookupSwitchInsn(defaultLabel, new int[] {key}, new Label[] {target});
     }
@@ -200,7 +200,7 @@ final class MethodNodeBuilder {
 
   MethodNodeBuilder switchto(final Label label0, final Label label1, final boolean useTableSwitch) {
     if (useTableSwitch) {
-      methodNode.visitTableSwitchInsn(0, 1, label0, new Label[] {label0, label1});
+      methodNode.visitTableSwitchInsn(0, 1, label0, label0, label1);
     } else {
       methodNode.visitLookupSwitchInsn(label0, new int[] {1}, new Label[] {label1});
     }

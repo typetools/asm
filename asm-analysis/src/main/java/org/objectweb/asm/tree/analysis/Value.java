@@ -32,6 +32,7 @@ package org.objectweb.asm.tree.analysis;
  *
  * @author Eric Bruneton
  */
+@FunctionalInterface
 public interface Value {
 
   /**

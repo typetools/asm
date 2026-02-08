@@ -203,7 +203,6 @@ subprojects {
   
   // Check the code with PMD.
   apply plugin: 'pmd'
-  pmd.toolVersion = '6.55.0'
   pmd.ruleSets = []
   pmd.ruleSetFiles = files("${rootDir}/tools/pmd.xml")
   pmd.consoleOutput = true
