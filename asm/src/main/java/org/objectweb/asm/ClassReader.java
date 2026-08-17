@@ -3493,6 +3493,9 @@ public class ClassReader {
       int attributeLength = readInt(currentAttributeOffset + 2);
       currentAttributeOffset += 6;
       if (Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
+        if (attributeLength > classFileBuffer.length - currentAttributeOffset) {
+          throw new IllegalArgumentException();
+        }
         // Read the num_bootstrap_methods field and create an array of this size.
         int[] result = new int[readUnsignedShort(currentAttributeOffset)];
         // Compute and store the offset of each 'bootstrap_methods' array field entry.
