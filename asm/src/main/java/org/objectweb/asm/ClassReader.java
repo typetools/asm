@@ -1540,7 +1540,7 @@ public class ClassReader {
     final int maxLocals = readUnsignedShort(currentOffset + 2);
     final int codeLength = readInt(currentOffset + 4);
     currentOffset += 8;
-    if (codeLength > classFileBuffer.length - currentOffset) {
+    if (codeLength > 65535 || codeLength > classFileBuffer.length - currentOffset) {
       throw new IllegalArgumentException();
     }
 
