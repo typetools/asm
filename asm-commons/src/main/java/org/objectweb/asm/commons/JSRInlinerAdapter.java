@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.LimitExceededException;
+import org.objectweb.asm.MethodTooLargeException;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -59,6 +61,34 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 public class JSRInlinerAdapter extends MethodNode implements Opcodes {
 
   /**
+   * The default max memory limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final int DEFAULT_MAX_MEMORY_LIMIT = 20 * 1024 * 1024;
+
+  /**
+   * The default max operations limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final long DEFAULT_MAX_OPERATIONS_LIMIT = 100_000_000L;
+
+  /**
+   * The size of a LabelNode and of its nested Label, in bytes. Two object headers + (1 field + 6
+   * inherited fields + padding) for LabelNode + 12 "equivalent int" fields for Label.
+   */
+  private static final int LABEL_NODE_SIZE = (8 * 2) + ((1 + 6) * 4 + 4) + (12 * 4);
+
+  /**
+   * The size of a TryCatchBlockNode in bytes. One object header + (6 fields + 6 inherited fields).
+   */
+  private static final int TRY_CATCH_BLOCK_NODE_SIZE = 8 + ((6 + 6) * 4);
+
+  /**
+   * The size of a LocalVariableNode in bytes. One object header + (6 fields + 6 inherited fields).
+   */
+  private static final int LOCAL_VARIABLE_NODE_SIZE = 8 + ((6 + 6) * 4);
+
+  /**
    * The instructions that belong to the main "subroutine". Bit i is set iff instruction at index i
    * belongs to this main "subroutine".
    */
@@ -76,6 +106,15 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
    * i belongs to more than one subroutine.
    */
   final BitSet sharedSubroutineInsns = new BitSet();
+
+  /** The number of instructions after inlining. */
+  int numInlinedInstructions;
+
+  /** The number of bytes which can be allocated. */
+  int remainingBytes = DEFAULT_MAX_MEMORY_LIMIT;
+
+  /** The number of operations which can be performed. */
+  long remainingOperations = DEFAULT_MAX_OPERATIONS_LIMIT;
 
   /**
    * Constructs a new {@link JSRInlinerAdapter}. <i>Subclasses must not use this constructor</i>.
@@ -139,6 +178,25 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
     this.mv = methodVisitor;
   }
 
+  /**
+   * Sets the maximum number of bytes which can be allocated, and the maximum number of "operations"
+   * which can be performed, to inline the subroutines. Operations are not formally defined but
+   * their total number is deterministic and approximatively proportional to the computation time.
+   *
+   * <p>The default limits should be sufficient for any "normal" class. You only need to set new
+   * limits if {@link #visitEnd} throws a {@link LimitExceededException} on some of your classes.
+   *
+   * @param maxBytes the maximum number of bytes which can be allocated. Not all object
+   *     instantiations are tracked (and garbage collection is ignored), but the most important ones
+   *     are. The default value is 20MB.
+   * @param maxOperations the maximum number of "operations" that can be performed. The default
+   *     value is 100M.
+   */
+  public void setComputeLimits(final int maxBytes, final long maxOperations) {
+    remainingBytes = maxBytes;
+    remainingOperations = maxOperations;
+  }
+
   @Override
   public void visitJumpInsn(final int opcode, final Label label) {
     super.visitJumpInsn(opcode, label);
@@ -191,6 +249,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
 
     // Then find the instructions reachable via the applicable exception handlers.
     while (true) {
+      int numOperations = 0;
       boolean applicableHandlerFound = false;
       for (TryCatchBlockNode tryCatchBlockNode : tryCatchBlocks) {
         // If the handler has already been processed, skip it.
@@ -209,12 +268,14 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
           findReachableInsns(handlerIndex, subroutineInsns, visitedInsns);
           applicableHandlerFound = true;
         }
+        numOperations += 5;
       }
       // If an applicable exception handler has been found, other handlers may become applicable, so
       // we must examine them again.
       if (!applicableHandlerFound) {
         return;
       }
+      checkNewOperations(numOperations);
     }
   }
 
@@ -231,66 +292,71 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
    */
   private void findReachableInsns(
       final int insnIndex, final BitSet subroutineInsns, final BitSet visitedInsns) {
-    int currentInsnIndex = insnIndex;
-    // We implicitly assume below that execution can always fall through to the next instruction
-    // after a JSR. But a subroutine may never return, in which case the code after the JSR is
-    // unreachable and can be anything. In particular, it can seem to fall off the end of the
-    // method, so we must handle this case here (we could instead detect whether execution can
-    // return or not from a JSR, but this is more complicated).
-    while (currentInsnIndex < instructions.size()) {
-      // Visit each instruction at most once.
-      if (subroutineInsns.get(currentInsnIndex)) {
-        return;
-      }
-      subroutineInsns.set(currentInsnIndex);
-
-      // Check if this instruction has already been visited by another subroutine.
-      if (visitedInsns.get(currentInsnIndex)) {
-        sharedSubroutineInsns.set(currentInsnIndex);
-      }
-      visitedInsns.set(currentInsnIndex);
-
-      AbstractInsnNode currentInsnNode = instructions.get(currentInsnIndex);
-      if (currentInsnNode.getType() == AbstractInsnNode.JUMP_INSN
-          && currentInsnNode.getOpcode() != JSR) {
-        // Don't follow JSR instructions in the control flow graph.
-        JumpInsnNode jumpInsnNode = (JumpInsnNode) currentInsnNode;
-        findReachableInsns(instructions.indexOf(jumpInsnNode.label), subroutineInsns, visitedInsns);
-      } else if (currentInsnNode.getType() == AbstractInsnNode.TABLESWITCH_INSN) {
-        TableSwitchInsnNode tableSwitchInsnNode = (TableSwitchInsnNode) currentInsnNode;
-        findReachableInsns(
-            instructions.indexOf(tableSwitchInsnNode.dflt), subroutineInsns, visitedInsns);
-        for (LabelNode labelNode : tableSwitchInsnNode.labels) {
-          findReachableInsns(instructions.indexOf(labelNode), subroutineInsns, visitedInsns);
-        }
-      } else if (currentInsnNode.getType() == AbstractInsnNode.LOOKUPSWITCH_INSN) {
-        LookupSwitchInsnNode lookupSwitchInsnNode = (LookupSwitchInsnNode) currentInsnNode;
-        findReachableInsns(
-            instructions.indexOf(lookupSwitchInsnNode.dflt), subroutineInsns, visitedInsns);
-        for (LabelNode labelNode : lookupSwitchInsnNode.labels) {
-          findReachableInsns(instructions.indexOf(labelNode), subroutineInsns, visitedInsns);
-        }
-      }
-
-      // Check if this instruction falls through to the next instruction; if not, return.
-      switch (instructions.get(currentInsnIndex).getOpcode()) {
-        case GOTO:
-        case RET:
-        case TABLESWITCH:
-        case LOOKUPSWITCH:
-        case IRETURN:
-        case LRETURN:
-        case FRETURN:
-        case DRETURN:
-        case ARETURN:
-        case RETURN:
-        case ATHROW:
-          // Note: this either returns from this subroutine, or from a parent subroutine.
-          return;
-        default:
-          // Go to the next instruction.
-          currentInsnIndex++;
+    ArrayList<Integer> stack = new ArrayList<>();
+    stack.add(insnIndex);
+    while (!stack.isEmpty()) {
+      int currentInsnIndex = stack.remove(stack.size() - 1);
+      // We implicitly assume below that execution can always fall through to the next instruction
+      // after a JSR. But a subroutine may never return, in which case the code after the JSR is
+      // unreachable and can be anything. In particular, it can seem to fall off the end of the
+      // method, so we must handle this case here (we could instead detect whether execution can
+      // return or not from a JSR, but this is more complicated).
+      while (currentInsnIndex < instructions.size()) {
+        // Visit each instruction at most once within this subroutine.
+        if (subroutineInsns.get(currentInsnIndex)) {
           break;
+        }
+        subroutineInsns.set(currentInsnIndex);
+
+        // Check if this instruction has already been visited by another subroutine.
+        if (visitedInsns.get(currentInsnIndex)) {
+          sharedSubroutineInsns.set(currentInsnIndex);
+        }
+        visitedInsns.set(currentInsnIndex);
+
+        AbstractInsnNode currentInsnNode = instructions.get(currentInsnIndex);
+        int currentInsnType = currentInsnNode.getType();
+        if (currentInsnType == AbstractInsnNode.JUMP_INSN && currentInsnNode.getOpcode() != JSR) {
+          // Don't follow JSR instructions in the control flow graph.
+          JumpInsnNode jumpInsnNode = (JumpInsnNode) currentInsnNode;
+          stack.add(instructions.indexOf(jumpInsnNode.label));
+        } else if (currentInsnType == AbstractInsnNode.TABLESWITCH_INSN) {
+          TableSwitchInsnNode tableSwitchInsnNode = (TableSwitchInsnNode) currentInsnNode;
+          stack.add(instructions.indexOf(tableSwitchInsnNode.dflt));
+          for (LabelNode labelNode : tableSwitchInsnNode.labels) {
+            stack.add(instructions.indexOf(labelNode));
+          }
+        } else if (currentInsnType == AbstractInsnNode.LOOKUPSWITCH_INSN) {
+          LookupSwitchInsnNode lookupSwitchInsnNode = (LookupSwitchInsnNode) currentInsnNode;
+          stack.add(instructions.indexOf(lookupSwitchInsnNode.dflt));
+          for (LabelNode labelNode : lookupSwitchInsnNode.labels) {
+            stack.add(instructions.indexOf(labelNode));
+          }
+        }
+
+        // Check if this instruction falls through to the next instruction; if not, break path.
+        switch (instructions.get(currentInsnIndex).getOpcode()) {
+          case GOTO:
+          case RET:
+          case TABLESWITCH:
+          case LOOKUPSWITCH:
+          case IRETURN:
+          case LRETURN:
+          case FRETURN:
+          case DRETURN:
+          case ARETURN:
+          case RETURN:
+          case ATHROW:
+            // Note: this either returns from this subroutine, or from a parent subroutine.
+            // Terminate the inner while loop to process the next stack element.
+            currentInsnIndex = instructions.size();
+            break;
+          default:
+            // Go to the next instruction sequentially.
+            currentInsnIndex++;
+            break;
+        }
+        checkNewOperations(15);
       }
     }
   }
@@ -338,10 +404,12 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
       final List<TryCatchBlockNode> newTryCatchBlocks,
       final List<LocalVariableNode> newLocalVariables) {
     LabelNode previousLabelNode = null;
+    checkNewOperations(instructions.size());
     for (int i = 0; i < instructions.size(); ++i) {
       AbstractInsnNode insnNode = instructions.get(i);
       if (insnNode.getType() == AbstractInsnNode.LABEL) {
         // Always clone all labels, while avoiding to add the same label more than once.
+        checkNewOperations(5);
         LabelNode labelNode = (LabelNode) insnNode;
         LabelNode clonedLabelNode = instantiation.getClonedLabel(labelNode);
         if (clonedLabelNode != previousLabelNode) {
@@ -358,12 +426,14 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
           // instantiation. The problem is that the subroutine may "fall through" to the ret of a
           // parent subroutine; therefore, to find the appropriate ret label we find the oldest
           // instantiation that claims to own this instruction.
+          int level = 0;
           LabelNode retLabel = null;
           for (Instantiation retLabelOwner = instantiation;
               retLabelOwner != null;
               retLabelOwner = retLabelOwner.parent) {
             if (retLabelOwner.subroutineInsns.get(i)) {
               retLabel = retLabelOwner.returnLabel;
+              level++;
             }
           }
           if (retLabel == null) {
@@ -373,6 +443,8 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
                 "Instruction #" + i + " is a RET not owned by any subroutine");
           }
           newInstructions.add(new JumpInsnNode(GOTO, retLabel));
+          numInlinedInstructions++;
+          checkNewOperations(level + 2);
         } else if (insnNode.getOpcode() == JSR) {
           LabelNode jsrLabelNode = ((JumpInsnNode) insnNode).label;
           BitSet subroutineInsns = subroutinesInsns.get(jsrLabelNode);
@@ -385,15 +457,23 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
           newInstructions.add(new InsnNode(ACONST_NULL));
           newInstructions.add(new JumpInsnNode(GOTO, clonedJsrLabelNode));
           newInstructions.add(newInstantiation.returnLabel);
+          numInlinedInstructions += 2;
+          checkNewOperations(10);
           // Insert this new instantiation into the queue to be emitted later.
           worklist.add(newInstantiation);
         } else {
           newInstructions.add(insnNode.clone(instantiation));
+          numInlinedInstructions++;
         }
       }
     }
+    if (numInlinedInstructions > 65_535) {
+      // Use numInlinedInstructions as an approximation for the method's bytecode size.
+      throw new MethodTooLargeException("<UnknownClass>", name, desc, numInlinedInstructions);
+    }
 
     // Emit the try/catch blocks that are relevant for this instantiation.
+    checkNewOperations(tryCatchBlocks.size() * 3);
     for (TryCatchBlockNode tryCatchBlockNode : tryCatchBlocks) {
       final LabelNode start = instantiation.getClonedLabel(tryCatchBlockNode.start);
       final LabelNode end = instantiation.getClonedLabel(tryCatchBlockNode.end);
@@ -403,15 +483,18 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
         if (start == null || end == null || handler == null) {
           throw new AssertionError("Internal error!");
         }
+        checkNewAllocation(TRY_CATCH_BLOCK_NODE_SIZE);
         newTryCatchBlocks.add(new TryCatchBlockNode(start, end, handler, tryCatchBlockNode.type));
       }
     }
 
     // Emit the local variable nodes that are relevant for this instantiation.
+    checkNewOperations(localVariables.size() * 5);
     for (LocalVariableNode localVariableNode : localVariables) {
       final LabelNode start = instantiation.getClonedLabel(localVariableNode.start);
       final LabelNode end = instantiation.getClonedLabel(localVariableNode.end);
       if (start != end) {
+        checkNewAllocation(LOCAL_VARIABLE_NODE_SIZE);
         newLocalVariables.add(
             new LocalVariableNode(
                 localVariableNode.name,
@@ -424,8 +507,42 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
     }
   }
 
+  /**
+   * Checks if some bytes can be allocated.
+   *
+   * @param numBytes the number of bytes to allocate. Can be negative if an overflow occurs when
+   *     computing it (e.g., if computed as a product "number of elements" * "size per element").
+   * @throws LimitExceededException if the memory limit is exceeded.
+   */
+  void checkNewAllocation(final int numBytes) {
+    if (numBytes < 0 || numBytes > remainingBytes) {
+      throw new LimitExceededException("Too many allocated bytes");
+    }
+    remainingBytes -= numBytes;
+  }
+
+  /**
+   * Checks if some operations can be done without exceeding the limit.
+   *
+   * @param numOperations the number of operations to perform. Can be negative if an overflow occurs
+   *     when computing it.
+   * @throws LimitExceededException if the memory limit is exceeded. LimitExceededException
+   */
+  void checkNewOperations(final int numOperations) {
+    if (numOperations < 0 || numOperations > remainingOperations) {
+      throw new LimitExceededException("Too many operations");
+    }
+    remainingOperations -= numOperations;
+  }
+
   /** An instantiation of a subroutine. */
   private final class Instantiation extends AbstractMap<LabelNode, LabelNode> {
+
+    /**
+     * The size of an Instantiation in bytes. One object header + (4 fields). Number of inherited
+     * fields unknown.
+     */
+    private static final int SHALLOW_SIZE = 8 + (4 * 4);
 
     /**
      * The instantiation from which this one was created (or {@literal null} for the instantiation
@@ -453,18 +570,21 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
     final LabelNode returnLabel;
 
     Instantiation(final Instantiation parent, final BitSet subroutineInsns) {
+      int level = 0;
       for (Instantiation instantiation = parent;
           instantiation != null;
           instantiation = instantiation.parent) {
         if (instantiation.subroutineInsns == subroutineInsns) {
           throw new IllegalArgumentException("Recursive invocation of " + subroutineInsns);
         }
+        level++;
       }
 
       this.parent = parent;
       this.subroutineInsns = subroutineInsns;
-      this.returnLabel = parent == null ? null : new LabelNode();
       this.clonedLabels = new HashMap<>();
+      this.returnLabel = parent == null ? null : new LabelNode();
+      int newBytes = parent == null ? SHALLOW_SIZE : (SHALLOW_SIZE + LABEL_NODE_SIZE);
 
       // Create a clone of each label in the original code of the subroutine. Note that we collapse
       // labels which point at the same instruction into one.
@@ -476,6 +596,10 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
           // If we already have a label pointing at this spot, don't recreate it.
           if (clonedLabelNode == null) {
             clonedLabelNode = new LabelNode();
+            // Size of a LabelNode and of a Label (not instantiated right now, but will be
+            // eventually). Two object headers + 7 fields and padding for LabelNode + 12 "equivalent
+            // int" fields for Label.
+            newBytes += LABEL_NODE_SIZE;
           }
           clonedLabels.put(labelNode, clonedLabelNode);
         } else if (findOwner(insnIndex) == this) {
@@ -484,6 +608,8 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
           clonedLabelNode = null;
         }
       }
+      checkNewAllocation(newBytes);
+      checkNewOperations(level + 5 + instructions.size() * 4);
     }
 
     /**
@@ -512,13 +638,16 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
         return this;
       }
       Instantiation owner = this;
+      int level = 0;
       for (Instantiation instantiation = parent;
           instantiation != null;
           instantiation = instantiation.parent) {
         if (instantiation.subroutineInsns.get(insnIndex)) {
           owner = instantiation;
         }
+        level++;
       }
+      checkNewOperations(level * 3);
       return owner;
     }
 
