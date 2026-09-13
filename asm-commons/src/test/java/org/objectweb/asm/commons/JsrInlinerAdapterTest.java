@@ -1532,8 +1532,13 @@ class JsrInlinerAdapterTest extends AsmTest {
         final String[] exceptions) {
       MethodVisitor methodVisitor =
           super.visitMethod(access, name, descriptor, signature, exceptions);
-      return new JSRInlinerAdapter(
-          api, methodVisitor, access, name, descriptor, signature, exceptions) {};
+      JSRInlinerAdapter result =
+          new JSRInlinerAdapter(
+              api, methodVisitor, access, name, descriptor, signature, exceptions) {};
+      result.setComputeLimits(
+          JSRInlinerAdapter.DEFAULT_MAX_MEMORY_LIMIT / 10,
+          JSRInlinerAdapter.DEFAULT_MAX_OPERATIONS_LIMIT / 10);
+      return result;
     }
   }
 }
