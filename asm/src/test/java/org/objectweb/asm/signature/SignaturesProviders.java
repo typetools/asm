@@ -85,7 +85,7 @@ public final class SignaturesProviders {
         0);
   }
 
-  private static StringBuilder buildDeepSignature(final StringBuilder signature, final int depth) {
+  static StringBuilder buildDeepSignature(final StringBuilder signature, final int depth) {
     signature.append("LGeneric");
     if (depth == 0) {
       signature.append(';');
