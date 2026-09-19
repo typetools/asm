@@ -25,7 +25,9 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-package org.objectweb.asm;
+package org.objectweb.asm.tree.analysis;
+
+import org.objectweb.asm.LimitExceededException;
 
 /**
  * Memory and time limits for potentially costly algorithms.
@@ -34,8 +36,14 @@ package org.objectweb.asm;
  */
 final class ComputeLimits {
 
+  /** Error message when the memory limit is exceeded. */
+  private static final String TOO_MANY_ALLOCATED_BYTES = "Too many allocated bytes";
+
+  /** The size in bytes of the header of an object (class pointer, etc). */
+  static final int OBJECT_HEADER_BYTES = 8;
+
   /** The size in bytes of the header of an array (class pointer, array length, etc). */
-  private static final int ARRAY_HEADER_BYTES = 16;
+  static final int ARRAY_HEADER_BYTES = 16;
 
   /** The remaining number of bytes which can be allocated by the algorithm using these limits. */
   private int remainingBytes;
@@ -66,19 +74,48 @@ final class ComputeLimits {
   }
 
   /**
-   * Creates a new int array if this does not exceed the memory limits.
+   * Creates a new boolean array if this does not exceed the memory limits.
    *
    * @param length the array length (number of elements).
    * @return the newly created array.
    * @throws LimitExceededException if the memory limit is exceeded.
    */
-  int[] checkNewIntArray(final int length) {
-    int numBytes = ARRAY_HEADER_BYTES + length * 4;
+  boolean[] checkNewBooleanArray(final int length) {
+    int numBytes = ARRAY_HEADER_BYTES + length;
     if (numBytes < 0 || numBytes > remainingBytes) {
-      throw new LimitExceededException("Too many allocated bytes");
+      throw new LimitExceededException(TOO_MANY_ALLOCATED_BYTES);
     }
     remainingBytes -= numBytes;
-    return new int[length];
+    return new boolean[length];
+  }
+
+  /**
+   * Creates a new object array if this does not exceed the memory limits.
+   *
+   * @param length the array length (number of elements).
+   * @return the newly created array.
+   * @throws LimitExceededException if the memory limit is exceeded.
+   */
+  Object[] checkNewObjectArray(final int length) {
+    int numBytes = ARRAY_HEADER_BYTES + length * 4;
+    if (numBytes < 0 || numBytes > remainingBytes) {
+      throw new LimitExceededException(TOO_MANY_ALLOCATED_BYTES);
+    }
+    remainingBytes -= numBytes;
+    return new Object[length];
+  }
+
+  /**
+   * Checks if some bytes can be allocated without exceeding the limit.
+   *
+   * @param numBytes the number of bytes to allocate.
+   * @throws LimitExceededException if the memory limit is exceeded.
+   */
+  void checkNewBytes(final int numBytes) {
+    if (numBytes < 0 || numBytes > remainingBytes) {
+      throw new LimitExceededException(TOO_MANY_ALLOCATED_BYTES);
+    }
+    remainingBytes -= numBytes;
   }
 
   /**
@@ -87,7 +124,7 @@ final class ComputeLimits {
    * @param numOperations the number of operations to perform.
    * @throws LimitExceededException if the operations limit is exceeded.
    */
-  void checkNewOperations(final int numOperations) {
+  void checkNewOperations(final long numOperations) {
     if (numOperations > remainingOperations) {
       throw new LimitExceededException("Too many operations");
     }

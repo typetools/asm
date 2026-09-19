@@ -67,6 +67,7 @@ public class BasicVerifier extends BasicInterpreter {
   @Override
   public BasicValue copyOperation(final AbstractInsnNode insn, final BasicValue value)
       throws AnalyzerException {
+    numOperations += 2;
     Value expected;
     switch (insn.getOpcode()) {
       case ILOAD:
@@ -107,6 +108,7 @@ public class BasicVerifier extends BasicInterpreter {
   @Override
   public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value)
       throws AnalyzerException {
+    numOperations += 2;
     BasicValue expected;
     switch (insn.getOpcode()) {
       case INEG:
@@ -187,6 +189,7 @@ public class BasicVerifier extends BasicInterpreter {
   public BasicValue binaryOperation(
       final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2)
       throws AnalyzerException {
+    numOperations += 5;
     BasicValue expected1;
     BasicValue expected2;
     switch (insn.getOpcode()) {
@@ -316,6 +319,7 @@ public class BasicVerifier extends BasicInterpreter {
       final BasicValue value2,
       final BasicValue value3)
       throws AnalyzerException {
+    numOperations += 5;
     BasicValue expected1;
     BasicValue expected3;
     switch (insn.getOpcode()) {
@@ -375,6 +379,7 @@ public class BasicVerifier extends BasicInterpreter {
       throws AnalyzerException {
     int opcode = insn.getOpcode();
     if (opcode == MULTIANEWARRAY) {
+      numOperations += values.size();
       for (BasicValue value : values) {
         if (!BasicValue.INT_VALUE.equals(value)) {
           throw new AnalyzerException(insn, null, BasicValue.INT_VALUE, value);
@@ -394,6 +399,7 @@ public class BasicVerifier extends BasicInterpreter {
               ? ((InvokeDynamicInsnNode) insn).desc
               : ((MethodInsnNode) insn).desc;
       Type[] args = Type.getArgumentTypes(methodDescriptor);
+      numOperations += 3 + values.size() * 3;
       while (i < values.size()) {
         BasicValue expected = newValue(args[j++]);
         BasicValue actual = values.get(i++);
@@ -409,6 +415,7 @@ public class BasicVerifier extends BasicInterpreter {
   public void returnOperation(
       final AbstractInsnNode insn, final BasicValue value, final BasicValue expected)
       throws AnalyzerException {
+    numOperations += 1;
     if (!isSubTypeOf(value, expected)) {
       throw new AnalyzerException(insn, "Incompatible return type", expected, value);
     }

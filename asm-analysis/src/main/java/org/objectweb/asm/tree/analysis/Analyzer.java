@@ -27,10 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree.analysis;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.objectweb.asm.LimitExceededException;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -52,6 +52,18 @@ import org.objectweb.asm.tree.VarInsnNode;
  * @author Eric Bruneton
  */
 public class Analyzer<V extends Value> implements Opcodes {
+
+  /**
+   * The default max memory limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final int DEFAULT_MAX_MEMORY_LIMIT = 400 * 1024 * 1024;
+
+  /**
+   * The default max operations limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final long DEFAULT_MAX_OPERATIONS_LIMIT = 50_000_000_000L;
 
   /** The interpreter to use to symbolically interpret the bytecode instructions. */
   private final Interpreter<V> interpreter;
@@ -80,6 +92,15 @@ public class Analyzer<V extends Value> implements Opcodes {
   /** The number of instructions that remain to process in the currently analyzed method. */
   private int numInstructionsToProcess;
 
+  /** The maximum number of bytes which can be allocated per analyzed method. */
+  private int maxBytes = DEFAULT_MAX_MEMORY_LIMIT;
+
+  /** The maximum number of "operations" which can be performed per analyzed method. */
+  private long maxOperations = DEFAULT_MAX_OPERATIONS_LIMIT;
+
+  /** The memory and time limits to analyze a method. */
+  private ComputeLimits limits;
+
   /**
    * Constructs a new {@link Analyzer}.
    *
@@ -87,6 +108,29 @@ public class Analyzer<V extends Value> implements Opcodes {
    */
   public Analyzer(final Interpreter<V> interpreter) {
     this.interpreter = interpreter;
+  }
+
+  /**
+   * Sets the maximum number of bytes which can be allocated, and the maximum number of "operations"
+   * which can be performed, to analyze each method. Operations are not formally defined but their
+   * total number is deterministic and approximatively proportional to the computation time.
+   *
+   * <p>The default limits should be sufficient for any "normal" class. You only need to set new
+   * limits if {@link #analyze} throws a {@link LimitExceededException} on some of your classes.
+   *
+   * @param maxBytes the maximum number of bytes which can be allocated. Not all object
+   *     instantiations are tracked (and garbage collection is ignored), but the most important ones
+   *     are. The default value, 400MB, is more than 20 times larger than the memory used for any
+   *     method in the java.* modules of the JDK (for the {@link BasicInterpreter}, {@link
+   *     BasicVerifier}, and {@link SimpleVerifier}; for {@link SourceInterpreter}, it is only 4
+   *     times larger).
+   * @param maxOperations the maximum number of "operations" that can be performed. The default
+   *     value, 50 billions, is more than ten times larger than the number of operations used for
+   *     any method in the java.* modules of the JDK.
+   */
+  public void setComputeLimits(final int maxBytes, final long maxOperations) {
+    this.maxBytes = maxBytes;
+    this.maxOperations = maxOperations;
   }
 
   /**
@@ -116,19 +160,23 @@ public class Analyzer<V extends Value> implements Opcodes {
     inInstructionsToProcess = new boolean[insnListSize];
     instructionsToProcess = new int[insnListSize];
     numInstructionsToProcess = 0;
+    limits = new ComputeLimits(maxBytes, maxOperations);
 
     // For each exception handler, and each instruction within its range, record in 'handlers' the
     // fact that execution can flow from this instruction to the exception handler.
-    for (TryCatchBlockNode tryCatchBlock : method.tryCatchBlocks) {
-      int startIndex = insnList.indexOf(tryCatchBlock.start);
-      int endIndex = insnList.indexOf(tryCatchBlock.end);
-      for (int i = startIndex; i < endIndex; ++i) {
-        List<TryCatchBlockNode> insnHandlers = handlers[i];
-        if (insnHandlers == null) {
-          insnHandlers = new ArrayList<>();
-          handlers[i] = insnHandlers;
+    if (method.tryCatchBlocks != null) {
+      for (TryCatchBlockNode tryCatchBlock : method.tryCatchBlocks) {
+        int startIndex = insnList.indexOf(tryCatchBlock.start);
+        int endIndex = insnList.indexOf(tryCatchBlock.end);
+        limits.checkNewOperations((endIndex - startIndex) * 5);
+        for (int i = startIndex; i < endIndex; ++i) {
+          List<TryCatchBlockNode> insnHandlers = handlers[i];
+          if (insnHandlers == null) {
+            insnHandlers = new CheckedArrayList<>(limits);
+            handlers[i] = insnHandlers;
+          }
+          insnHandlers.add(tryCatchBlock);
         }
-        insnHandlers.add(tryCatchBlock);
       }
     }
 
@@ -141,6 +189,8 @@ public class Analyzer<V extends Value> implements Opcodes {
       currentFrame = computeInitialFrame(owner, method);
       merge(0, currentFrame, null);
       init(owner, method);
+    } catch (LimitExceededException e) {
+      throw e;
     } catch (RuntimeException e) {
       // DontCheck(IllegalCatch): can't be fixed, for backward compatibility.
       throw new AnalyzerException(insnList.get(0), "Error at instruction 0: " + e.getMessage(), e);
@@ -153,10 +203,12 @@ public class Analyzer<V extends Value> implements Opcodes {
       Frame<V> oldFrame = frames[insnIndex];
       Subroutine subroutine = subroutines[insnIndex];
       inInstructionsToProcess[insnIndex] = false;
+      interpreter.checkLimits(limits);
 
       // Simulate the execution of this instruction.
       AbstractInsnNode insnNode = null;
       try {
+        limits.checkNewOperations(insnIndex * 10);
         insnNode = method.instructions.get(insnIndex);
         int insnOpcode = insnNode.getOpcode();
         int insnType = insnNode.getType();
@@ -170,7 +222,7 @@ public class Analyzer<V extends Value> implements Opcodes {
           newControlFlowEdge(insnIndex, insnIndex + 1);
         } else {
           currentFrame.init(oldFrame).execute(insnNode, interpreter);
-          subroutine = subroutine == null ? null : new Subroutine(subroutine);
+          subroutine = subroutine == null ? null : new Subroutine(subroutine, limits);
 
           if (insnNode instanceof JumpInsnNode) {
             JumpInsnNode jumpInsn = (JumpInsnNode) insnNode;
@@ -185,7 +237,7 @@ public class Analyzer<V extends Value> implements Opcodes {
               merge(
                   jumpInsnIndex,
                   currentFrame,
-                  new Subroutine(jumpInsn.label, method.maxLocals, jumpInsn));
+                  new Subroutine(jumpInsn.label, method.maxLocals, jumpInsn, limits));
             } else {
               merge(jumpInsnIndex, currentFrame, subroutine);
             }
@@ -253,6 +305,7 @@ public class Analyzer<V extends Value> implements Opcodes {
 
         List<TryCatchBlockNode> insnHandlers = handlers[insnIndex];
         if (insnHandlers != null) {
+          limits.checkNewOperations(insnHandlers.size() * 15);
           for (TryCatchBlockNode tryCatchBlock : insnHandlers) {
             Type catchType;
             if (tryCatchBlock.type == null) {
@@ -263,14 +316,14 @@ public class Analyzer<V extends Value> implements Opcodes {
             if (newControlFlowExceptionEdge(insnIndex, tryCatchBlock)) {
               // Merge the frame *before* this instruction, with its stack cleared and an exception
               // pushed, with the handler's frame.
-              Frame<V> handler = newFrame(oldFrame);
+              Frame<V> handler = newFrame(oldFrame).setLimits(limits);
               handler.clearStack();
               V exceptionValue = interpreter.newExceptionValue(tryCatchBlock, handler, catchType);
               handler.push(exceptionValue);
               merge(insnList.indexOf(tryCatchBlock.handler), handler, subroutine);
               // Merge the frame *after* this instruction, with its stack cleared and an exception
               // pushed, with the handler's frame.
-              handler = newFrame(currentFrame);
+              handler = newFrame(currentFrame).setLimits(limits);
               handler.clearStack();
               handler.push(exceptionValue);
               merge(insnList.indexOf(tryCatchBlock.handler), handler, subroutine);
@@ -280,6 +333,8 @@ public class Analyzer<V extends Value> implements Opcodes {
       } catch (AnalyzerException e) {
         throw new AnalyzerException(
             e.node, "Error at instruction " + insnIndex + ": " + e.getMessage(), e);
+      } catch (LimitExceededException e) {
+        throw e;
       } catch (RuntimeException e) {
         // DontCheck(IllegalCatch): can't be fixed, for backward compatibility.
         throw new AnalyzerException(
@@ -372,17 +427,18 @@ public class Analyzer<V extends Value> implements Opcodes {
   private void findSubroutines(final int maxLocals) throws AnalyzerException {
     // For each instruction, compute the subroutine to which it belongs.
     // Follow the main 'subroutine', and collect the jsr instructions to nested subroutines.
-    Subroutine main = new Subroutine(null, maxLocals, null);
-    List<AbstractInsnNode> jsrInsns = new ArrayList<>();
+    Subroutine main = new Subroutine(null, maxLocals, null, limits);
+    CheckedArrayList<AbstractInsnNode> jsrInsns = new CheckedArrayList<>(limits);
     findSubroutine(0, main, jsrInsns);
     // Follow the nested subroutines, and collect their own nested subroutines, until all
     // subroutines are found.
     Map<LabelNode, Subroutine> jsrSubroutines = new HashMap<>();
     while (!jsrInsns.isEmpty()) {
+      limits.checkNewOperations(5);
       JumpInsnNode jsrInsn = (JumpInsnNode) jsrInsns.remove(0);
       Subroutine subroutine = jsrSubroutines.get(jsrInsn.label);
       if (subroutine == null) {
-        subroutine = new Subroutine(jsrInsn.label, maxLocals, jsrInsn);
+        subroutine = new Subroutine(jsrInsn.label, maxLocals, jsrInsn, limits);
         jsrSubroutines.put(jsrInsn.label, subroutine);
         findSubroutine(insnList.indexOf(jsrInsn.label), subroutine, jsrInsns);
       } else {
@@ -412,7 +468,7 @@ public class Analyzer<V extends Value> implements Opcodes {
   private void findSubroutine(
       final int insnIndex, final Subroutine subroutine, final List<AbstractInsnNode> jsrInsns)
       throws AnalyzerException {
-    ArrayList<Integer> instructionIndicesToProcess = new ArrayList<>();
+    CheckedArrayList<Integer> instructionIndicesToProcess = new CheckedArrayList<>(limits);
     instructionIndicesToProcess.add(insnIndex);
     while (!instructionIndicesToProcess.isEmpty()) {
       int currentInsnIndex =
@@ -423,7 +479,8 @@ public class Analyzer<V extends Value> implements Opcodes {
       if (subroutines[currentInsnIndex] != null) {
         continue;
       }
-      subroutines[currentInsnIndex] = new Subroutine(subroutine);
+      limits.checkNewOperations(10);
+      subroutines[currentInsnIndex] = new Subroutine(subroutine, limits);
       AbstractInsnNode currentInsn = insnList.get(currentInsnIndex);
 
       // Push the normal successors of currentInsn onto instructionIndicesToProcess.
@@ -437,14 +494,14 @@ public class Analyzer<V extends Value> implements Opcodes {
         }
       } else if (currentInsn instanceof TableSwitchInsnNode) {
         TableSwitchInsnNode tableSwitchInsn = (TableSwitchInsnNode) currentInsn;
-        findSubroutine(insnList.indexOf(tableSwitchInsn.dflt), subroutine, jsrInsns);
+        instructionIndicesToProcess.add(insnList.indexOf(tableSwitchInsn.dflt));
         for (int i = tableSwitchInsn.labels.size() - 1; i >= 0; --i) {
           LabelNode labelNode = tableSwitchInsn.labels.get(i);
           instructionIndicesToProcess.add(insnList.indexOf(labelNode));
         }
       } else if (currentInsn instanceof LookupSwitchInsnNode) {
         LookupSwitchInsnNode lookupSwitchInsn = (LookupSwitchInsnNode) currentInsn;
-        findSubroutine(insnList.indexOf(lookupSwitchInsn.dflt), subroutine, jsrInsns);
+        instructionIndicesToProcess.add(insnList.indexOf(lookupSwitchInsn.dflt));
         for (int i = lookupSwitchInsn.labels.size() - 1; i >= 0; --i) {
           LabelNode labelNode = lookupSwitchInsn.labels.get(i);
           instructionIndicesToProcess.add(insnList.indexOf(labelNode));
@@ -454,6 +511,7 @@ public class Analyzer<V extends Value> implements Opcodes {
       // Push the exception handler successors of currentInsn onto instructionIndicesToProcess.
       List<TryCatchBlockNode> insnHandlers = handlers[currentInsnIndex];
       if (insnHandlers != null) {
+        limits.checkNewOperations(insnHandlers.size());
         for (TryCatchBlockNode tryCatchBlock : insnHandlers) {
           instructionIndicesToProcess.add(insnList.indexOf(tryCatchBlock.handler));
         }
@@ -489,7 +547,7 @@ public class Analyzer<V extends Value> implements Opcodes {
    * @return the initial execution stack frame of the 'method'.
    */
   private Frame<V> computeInitialFrame(final String owner, final MethodNode method) {
-    Frame<V> frame = newFrame(method.maxLocals, method.maxStack);
+    Frame<V> frame = newFrame(method.maxLocals, method.maxStack).setLimits(limits);
     int currentLocal = 0;
     boolean isInstanceMethod = (method.access & ACC_STATIC) == 0;
     if (isInstanceMethod) {
@@ -633,10 +691,11 @@ public class Analyzer<V extends Value> implements Opcodes {
    */
   private void merge(final int insnIndex, final Frame<V> frame, final Subroutine subroutine)
       throws AnalyzerException {
+    limits.checkNewOperations(10);
     boolean changed;
     Frame<V> oldFrame = frames[insnIndex];
     if (oldFrame == null) {
-      frames[insnIndex] = newFrame(frame);
+      frames[insnIndex] = newFrame(frame).setLimits(limits);
       changed = true;
     } else {
       changed = oldFrame.merge(frame, interpreter);
@@ -644,12 +703,12 @@ public class Analyzer<V extends Value> implements Opcodes {
     Subroutine oldSubroutine = subroutines[insnIndex];
     if (oldSubroutine == null) {
       if (subroutine != null) {
-        subroutines[insnIndex] = new Subroutine(subroutine);
+        subroutines[insnIndex] = new Subroutine(subroutine, limits);
         changed = true;
       }
     } else {
       if (subroutine != null) {
-        changed |= oldSubroutine.merge(subroutine);
+        changed |= oldSubroutine.merge(subroutine, limits);
       }
     }
     if (changed && !inInstructionsToProcess[insnIndex]) {
@@ -682,19 +741,20 @@ public class Analyzer<V extends Value> implements Opcodes {
       final Subroutine subroutineBeforeJsr,
       final boolean[] localsUsed)
       throws AnalyzerException {
+    limits.checkNewOperations(10);
     frameAfterRet.merge(frameBeforeJsr, localsUsed);
 
     boolean changed;
     Frame<V> oldFrame = frames[insnIndex];
     if (oldFrame == null) {
-      frames[insnIndex] = newFrame(frameAfterRet);
+      frames[insnIndex] = newFrame(frameAfterRet).setLimits(limits);
       changed = true;
     } else {
       changed = oldFrame.merge(frameAfterRet, interpreter);
     }
     Subroutine oldSubroutine = subroutines[insnIndex];
     if (oldSubroutine != null && subroutineBeforeJsr != null) {
-      changed |= oldSubroutine.merge(subroutineBeforeJsr);
+      changed |= oldSubroutine.merge(subroutineBeforeJsr, limits);
     }
     if (changed && !inInstructionsToProcess[insnIndex]) {
       inInstructionsToProcess[insnIndex] = true;

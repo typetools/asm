@@ -73,11 +73,31 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
     if (type == Type.VOID_TYPE) {
       return null;
     }
-    return new SourceValue(type == null ? 1 : type.getSize());
+    return newSourceValue(type == null ? 1 : type.getSize());
+  }
+
+  private SourceValue newSourceValue(final int size) {
+    allocatedBytes += SourceValue.SIZE_BYTES;
+    return new SourceValue(size);
+  }
+
+  private SourceValue newSourceValue(final int size, final AbstractInsnNode insn) {
+    allocatedBytes += SourceValue.SIZE_BYTES;
+    return new SourceValue(size, insn);
+  }
+
+  private SourceValue newSourceValue(final int size, final Set<AbstractInsnNode> insns) {
+    allocatedBytes += SourceValue.SIZE_BYTES;
+    if (!(insns instanceof SmallSet)) {
+      // Add a size estimate of a HashSet of insns.size() elements.
+      allocatedBytes += insns.size() * 4;
+    }
+    return new SourceValue(size, insns);
   }
 
   @Override
   public SourceValue newOperation(final AbstractInsnNode insn) {
+    numOperations += 5;
     int size;
     switch (insn.getOpcode()) {
       case LCONST_0:
@@ -111,16 +131,18 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         size = 1;
         break;
     }
-    return new SourceValue(size, insn);
+    return newSourceValue(size, insn);
   }
 
   @Override
   public SourceValue copyOperation(final AbstractInsnNode insn, final SourceValue value) {
-    return new SourceValue(value.getSize(), insn);
+    numOperations += 1;
+    return newSourceValue(value.getSize(), insn);
   }
 
   @Override
   public SourceValue unaryOperation(final AbstractInsnNode insn, final SourceValue value) {
+    numOperations += 2;
     int size;
     switch (insn.getOpcode()) {
       case LNEG:
@@ -140,12 +162,13 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         size = 1;
         break;
     }
-    return new SourceValue(size, insn);
+    return newSourceValue(size, insn);
   }
 
   @Override
   public SourceValue binaryOperation(
       final AbstractInsnNode insn, final SourceValue value1, final SourceValue value2) {
+    numOperations += 2;
     int size;
     switch (insn.getOpcode()) {
       case LALOAD:
@@ -172,7 +195,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         size = 1;
         break;
     }
-    return new SourceValue(size, insn);
+    return newSourceValue(size, insn);
   }
 
   @Override
@@ -181,12 +204,13 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
       final SourceValue value1,
       final SourceValue value2,
       final SourceValue value3) {
-    return new SourceValue(1, insn);
+    return newSourceValue(1, insn);
   }
 
   @Override
   public SourceValue naryOperation(
       final AbstractInsnNode insn, final List<? extends SourceValue> values) {
+    numOperations += 3;
     int size;
     int opcode = insn.getOpcode();
     if (opcode == MULTIANEWARRAY) {
@@ -196,7 +220,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
     } else {
       size = Type.getReturnType(((MethodInsnNode) insn).desc).getSize();
     }
-    return new SourceValue(size, insn);
+    return newSourceValue(size, insn);
   }
 
   @Override
@@ -207,6 +231,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
 
   @Override
   public SourceValue merge(final SourceValue value1, final SourceValue value2) {
+    numOperations += value1.insns.size() + value2.insns.size();
     if (value1.insns instanceof SmallSet && value2.insns instanceof SmallSet) {
       Set<AbstractInsnNode> setUnion =
           ((SmallSet<AbstractInsnNode>) value1.insns)
@@ -214,14 +239,14 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
       if (setUnion == value1.insns && value1.size == value2.size) {
         return value1;
       } else {
-        return new SourceValue(Math.min(value1.size, value2.size), setUnion);
+        return newSourceValue(Math.min(value1.size, value2.size), setUnion);
       }
     }
     if (value1.size != value2.size || !containsAll(value1.insns, value2.insns)) {
       HashSet<AbstractInsnNode> setUnion = new HashSet<>();
       setUnion.addAll(value1.insns);
       setUnion.addAll(value2.insns);
-      return new SourceValue(Math.min(value1.size, value2.size), setUnion);
+      return newSourceValue(Math.min(value1.size, value2.size), setUnion);
     }
     return value1;
   }

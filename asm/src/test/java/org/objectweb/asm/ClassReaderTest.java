@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
@@ -154,7 +153,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
       assertTrue(classReader.getSuperName().startsWith("java"));
     }
     assertNotNull(classReader.getInterfaces());
-    AtomicInteger classVersion = new AtomicInteger(0);
+    int[] classVersion = new int[] {0};
     classReader.accept(
         new ClassVisitor(apiParameter.value()) {
           @Override
@@ -165,11 +164,11 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               final String signature,
               final String superName,
               final String[] interfaces) {
-            classVersion.set(version);
+            classVersion[0] = version;
           }
         },
         0);
-    assertTrue((classVersion.get() & 0xFFFF) >= (Opcodes.V1_1 & 0xFFFF));
+    assertTrue((classVersion[0] & 0xFFFF) >= (Opcodes.V1_1 & 0xFFFF));
   }
 
   /**
@@ -582,7 +581,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
   @Test
   void testAccept_parameterAnnotationIndices() {
     ClassReader classReader = new ClassReader(PrecompiledClass.JDK5_LOCAL_CLASS.getBytes());
-    AtomicInteger parameterIndex = new AtomicInteger(-1);
+    int[] parameterIndex = new int[] {-1};
     ClassVisitor readParameterIndexVisitor =
         new ClassVisitor(/* latest */ Opcodes.ASM10_EXPERIMENTAL) {
           @Override
@@ -597,7 +596,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               public AnnotationVisitor visitParameterAnnotation(
                   final int parameter, final String descriptor, final boolean visible) {
                 if (descriptor.equals("Ljava/lang/Deprecated;")) {
-                  parameterIndex.set(parameter);
+                  parameterIndex[0] = parameter;
                 }
                 return null;
               }
@@ -607,7 +606,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
     classReader.accept(readParameterIndexVisitor, 0);
 
-    assertEquals(0, parameterIndex.get());
+    assertEquals(0, parameterIndex[0]);
   }
 
   @Test
@@ -617,7 +616,7 @@ class ClassReaderTest extends AsmTest implements Opcodes {
     classFile[4] = (byte) 0xFF;
     classFile[5] = (byte) 0xFF;
     ClassReader classReader = new ClassReader(classFile);
-    AtomicInteger classVersion = new AtomicInteger(0);
+    int[] classVersion = new int[] {0};
     ClassVisitor readVersionVisitor =
         new ClassVisitor(/* latest */ Opcodes.ASM10_EXPERIMENTAL) {
           @Override
@@ -628,13 +627,13 @@ class ClassReaderTest extends AsmTest implements Opcodes {
               final String signature,
               final String superName,
               final String[] interfaces) {
-            classVersion.set(version);
+            classVersion[0] = version;
           }
         };
 
     classReader.accept(readVersionVisitor, 0);
 
-    assertEquals(Opcodes.V_PREVIEW, classVersion.get() & Opcodes.V_PREVIEW);
+    assertEquals(Opcodes.V_PREVIEW, classVersion[0] & Opcodes.V_PREVIEW);
   }
 
   @Test
