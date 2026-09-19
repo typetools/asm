@@ -36,7 +36,6 @@ import static org.objectweb.asm.commons.MethodNodeBuilder.toText;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -831,12 +830,12 @@ class AdviceAdapterTest extends AsmTest {
    */
   @Test
   void testAllMethods_defaultComputeLimits() {
-    AtomicInteger numClasses = new AtomicInteger();
-    AtomicInteger numErrors = new AtomicInteger();
+    int[] numClasses = new int[] {0};
+    int[] numErrors = new int[] {0};
     listAllJavaModulesClasses()
         .forEach(
             classFile -> {
-              numClasses.getAndIncrement();
+              numClasses[0]++;
               try {
                 ConstructorAdviceAdapter adapter =
                     new ConstructorAdviceAdapter(
@@ -844,11 +843,11 @@ class AdviceAdapterTest extends AsmTest {
                         AdviceAdapter.DEFAULT_MAX_MEMORY_LIMIT / 100);
                 new ClassReader(classFile).accept(adapter, ClassReader.SKIP_FRAMES);
               } catch (LimitExceededException e) {
-                numErrors.getAndIncrement();
+                numErrors[0]++;
               }
             });
-    assertTrue(numClasses.get() > 10000);
-    assertEquals(0, numErrors.get());
+    assertTrue(numClasses[0] > 10000);
+    assertEquals(0, numErrors[0]++);
   }
 
   @Test

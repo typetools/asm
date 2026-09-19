@@ -49,7 +49,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -896,12 +895,12 @@ class ClassWriterTest extends AsmTest {
   @ParameterizedTest
   @ValueSource(ints = {ClassWriter.COMPUTE_MAXS, ClassWriter.COMPUTE_FRAMES})
   void testReadAndWrite_defaultComputeLimits(final int computeFlags) {
-    AtomicInteger numClasses = new AtomicInteger();
-    AtomicInteger numErrors = new AtomicInteger();
+    int[] numClasses = new int[] {0};
+    int[] numErrors = new int[] {0};
     listAllJavaModulesClasses()
         .forEach(
             classFile -> {
-              numClasses.getAndIncrement();
+              numClasses[0]++;
               try {
                 ClassReader reader = new ClassReader(classFile);
                 ClassWriter writer = new ClassWriter(computeFlags);
@@ -932,11 +931,11 @@ class ClassWriterTest extends AsmTest {
                 }
                 writer.toByteArray();
               } catch (LimitExceededException e) {
-                numErrors.getAndIncrement();
+                numErrors[0]++;
               }
             });
-    assertTrue(numClasses.get() > 10000);
-    assertEquals(0, numErrors.get());
+    assertTrue(numClasses[0] > 10000);
+    assertEquals(0, numErrors[0]);
   }
 
   /** Tests that COMPUTE_MAXS throws a LimitExceededException when it exceeds the time limit. */

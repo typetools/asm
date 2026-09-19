@@ -28,6 +28,7 @@
 package org.objectweb.asm.tree.analysis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -83,6 +84,9 @@ public class Frame<V extends Value> {
    */
   private int maxStack;
 
+  /** The memory and time limits to analyze a method. Maybe {@literal null}. */
+  private ComputeLimits limits;
+
   /**
    * Constructs a new frame with the given size.
    *
@@ -110,6 +114,19 @@ public class Frame<V extends Value> {
   }
 
   /**
+   * Sets the memory and time limits to analyze a method.
+   *
+   * @param limits the memory and time limits to analyze a method.
+   * @return this object.
+   */
+  final Frame<V> setLimits(final ComputeLimits limits) {
+    // Checks the allocation of {@link #values} array in the constructor.
+    limits.checkNewBytes(ComputeLimits.ARRAY_HEADER_BYTES + values.length * 4);
+    this.limits = limits;
+    return this;
+  }
+
+  /**
    * Copies the state of the given frame into this frame.
    *
    * @param frame a frame.
@@ -118,6 +135,9 @@ public class Frame<V extends Value> {
   public Frame<V> init(final Frame<? extends V> frame) {
     returnValue = frame.returnValue;
     if (values.length < frame.values.length) {
+      if (limits != null) {
+        limits.checkNewBytes(ComputeLimits.ARRAY_HEADER_BYTES + frame.values.length * 4);
+      }
       values = frame.values.clone();
     } else {
       System.arraycopy(frame.values, 0, values, 0, frame.values.length);
@@ -271,6 +291,9 @@ public class Frame<V extends Value> {
     if (numLocals + numStack >= values.length) {
       if (numLocals + numStack >= maxStack) {
         throw new IndexOutOfBoundsException("Insufficient maximum stack size.");
+      }
+      if (limits != null) {
+        limits.checkNewBytes(ComputeLimits.ARRAY_HEADER_BYTES + 2 * values.length * 4);
       }
       V[] oldValues = values;
       values = (V[]) new Value[2 * values.length];
@@ -631,12 +654,19 @@ public class Frame<V extends Value> {
         interpreter.unaryOperation(insn, pop());
         break;
       case Opcodes.MULTIANEWARRAY:
-        List<V> valueList = new ArrayList<>();
-        for (int i = ((MultiANewArrayInsnNode) insn).dims; i > 0; --i) {
-          valueList.add(0, pop());
+        {
+          int dims = ((MultiANewArrayInsnNode) insn).dims;
+          if (limits != null) {
+            limits.checkNewBytes(ComputeLimits.ARRAY_HEADER_BYTES + dims * 4);
+          }
+          List<V> valueList = new ArrayList<>(dims);
+          for (int i = dims; i > 0; --i) {
+            valueList.add(pop());
+          }
+          Collections.reverse(valueList);
+          push(interpreter.naryOperation(insn, valueList));
+          break;
         }
-        push(interpreter.naryOperation(insn, valueList));
-        break;
       case Opcodes.IFNULL:
       case Opcodes.IFNONNULL:
         interpreter.unaryOperation(insn, pop());
@@ -671,13 +701,18 @@ public class Frame<V extends Value> {
   private void executeInvokeInsn(
       final AbstractInsnNode insn, final String methodDescriptor, final Interpreter<V> interpreter)
       throws AnalyzerException {
-    ArrayList<V> valueList = new ArrayList<>();
-    for (int i = Type.getArgumentCount(methodDescriptor); i > 0; --i) {
-      valueList.add(0, pop());
+    int argumentCount = Type.getArgumentCount(methodDescriptor);
+    if (limits != null) {
+      limits.checkNewBytes(ComputeLimits.ARRAY_HEADER_BYTES + (argumentCount + 1) * 4);
+    }
+    List<V> valueList = new ArrayList<>(argumentCount + 1);
+    for (int i = argumentCount; i > 0; --i) {
+      valueList.add(pop());
     }
     if (insn.getOpcode() != Opcodes.INVOKESTATIC && insn.getOpcode() != Opcodes.INVOKEDYNAMIC) {
-      valueList.add(0, pop());
+      valueList.add(pop());
     }
+    Collections.reverse(valueList);
     if (Type.getReturnType(methodDescriptor) == Type.VOID_TYPE) {
       interpreter.naryOperation(insn, valueList);
     } else {

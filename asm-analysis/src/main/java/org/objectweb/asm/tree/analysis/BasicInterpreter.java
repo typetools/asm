@@ -79,6 +79,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
 
   @Override
   public BasicValue newValue(final Type type) {
+    numOperations += 1;
     if (type == null) {
       return BasicValue.UNINITIALIZED_VALUE;
     }
@@ -107,6 +108,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
 
   @Override
   public BasicValue newOperation(final AbstractInsnNode insn) throws AnalyzerException {
+    numOperations += 1;
     switch (insn.getOpcode()) {
       case ACONST_NULL:
         return newValue(NULL_TYPE);
@@ -132,6 +134,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
       case SIPUSH:
         return BasicValue.INT_VALUE;
       case LDC:
+        numOperations += 5;
         Object value = ((LdcInsnNode) insn).cst;
         if (value instanceof Integer) {
           return BasicValue.INT_VALUE;
@@ -179,6 +182,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
   @Override
   public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value)
       throws AnalyzerException {
+    numOperations += 1;
     switch (insn.getOpcode()) {
       case INEG:
       case IINC:
@@ -222,6 +226,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
       case GETFIELD:
         return newValue(Type.getType(((FieldInsnNode) insn).desc));
       case NEWARRAY:
+        numOperations += 5;
         switch (((IntInsnNode) insn).operand) {
           case T_BOOLEAN:
             return newValue(Type.getType("[Z"));
@@ -267,6 +272,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
   public BasicValue binaryOperation(
       final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2)
       throws AnalyzerException {
+    numOperations += 1;
     switch (insn.getOpcode()) {
       case IALOAD:
       case BALOAD:
@@ -348,6 +354,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
   public BasicValue naryOperation(
       final AbstractInsnNode insn, final List<? extends BasicValue> values)
       throws AnalyzerException {
+    numOperations += 2;
     int opcode = insn.getOpcode();
     if (opcode == MULTIANEWARRAY) {
       return newValue(Type.getType(((MultiANewArrayInsnNode) insn).desc));
@@ -367,6 +374,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
 
   @Override
   public BasicValue merge(final BasicValue value1, final BasicValue value2) {
+    numOperations += 1;
     if (!value1.equals(value2)) {
       return BasicValue.UNINITIALIZED_VALUE;
     }

@@ -37,6 +37,9 @@ import org.objectweb.asm.Type;
  */
 public class BasicValue implements Value {
 
+  /** Size of a BasicValue object in bytes (object header + 1 field + padding). */
+  static final int SIZE_BYTES = ComputeLimits.OBJECT_HEADER_BYTES + 4 + 4;
+
   /** An uninitialized value. */
   public static final BasicValue UNINITIALIZED_VALUE = new BasicValue(null);
 

@@ -27,8 +27,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree.analysis;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
@@ -49,7 +47,7 @@ final class Subroutine {
   final boolean[] localsUsed;
 
   /** The JSR instructions that jump to this subroutine. */
-  final List<JumpInsnNode> callers;
+  final CheckedArrayList<JumpInsnNode> callers;
 
   /**
    * Constructs a new {@link Subroutine}.
@@ -57,11 +55,16 @@ final class Subroutine {
    * @param start the start of this subroutine.
    * @param maxLocals the local variables that are read or written by this subroutine.
    * @param caller a JSR instruction that jump to this subroutine.
+   * @param limits the memory and time limits to analyze a method.
    */
-  Subroutine(final LabelNode start, final int maxLocals, final JumpInsnNode caller) {
+  Subroutine(
+      final LabelNode start,
+      final int maxLocals,
+      final JumpInsnNode caller,
+      final ComputeLimits limits) {
     this.start = start;
-    this.localsUsed = new boolean[maxLocals];
-    this.callers = new ArrayList<>();
+    this.localsUsed = limits.checkNewBooleanArray(maxLocals);
+    this.callers = new CheckedArrayList<>(limits);
     callers.add(caller);
   }
 
@@ -69,11 +72,13 @@ final class Subroutine {
    * Constructs a copy of the given {@link Subroutine}.
    *
    * @param subroutine the subroutine to copy.
+   * @param limits the memory and time limits to analyze a method.
    */
-  Subroutine(final Subroutine subroutine) {
+  Subroutine(final Subroutine subroutine, final ComputeLimits limits) {
     this.start = subroutine.start;
-    this.localsUsed = subroutine.localsUsed.clone();
-    this.callers = new ArrayList<>(subroutine.callers);
+    this.localsUsed = limits.checkNewBooleanArray(subroutine.localsUsed.length);
+    this.callers = new CheckedArrayList<>(subroutine.callers);
+    System.arraycopy(subroutine.localsUsed, 0, localsUsed, 0, localsUsed.length);
   }
 
   /**
@@ -82,10 +87,12 @@ final class Subroutine {
    * subroutine are added as callers of this one (if both have the same start).
    *
    * @param subroutine another subroutine. This subroutine is left unchanged by this method.
+   * @param limits the memory and time limits to analyze a method.
    * @return whether this subroutine has been modified by this method.
    */
-  public boolean merge(final Subroutine subroutine) {
+  public boolean merge(final Subroutine subroutine, final ComputeLimits limits) {
     boolean changed = false;
+    int numOperations = localsUsed.length * 3;
     for (int i = 0; i < localsUsed.length; ++i) {
       if (subroutine.localsUsed[i] && !localsUsed[i]) {
         localsUsed[i] = true;
@@ -93,6 +100,7 @@ final class Subroutine {
       }
     }
     if (subroutine.start == start) {
+      numOperations += subroutine.callers.size() * callers.size();
       for (JumpInsnNode caller : subroutine.callers) {
         if (!callers.contains(caller)) {
           callers.add(caller);
@@ -100,6 +108,7 @@ final class Subroutine {
         }
       }
     }
+    limits.checkNewOperations(numOperations);
     return changed;
   }
 }
