@@ -41,6 +41,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.LimitExceededException;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -67,6 +68,18 @@ import org.objectweb.asm.tree.analysis.BasicVerifier;
  * @author Eric Bruneton
  */
 public class CheckMethodAdapter extends MethodVisitor {
+
+  /**
+   * The default max memory limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final int DEFAULT_MAX_MEMORY_LIMIT = 400 * 1024 * 1024;
+
+  /**
+   * The default max operations limit for {@link #setComputeLimits}. Update the comment in {@link
+   * #setComputeLimits} is you change this value.
+   */
+  static final long DEFAULT_MAX_OPERATIONS_LIMIT = 50_000_000_000L;
 
   /** The 'generic' instruction visit methods (i.e. those that take an opcode argument). */
   private enum Method {
@@ -343,6 +356,12 @@ public class CheckMethodAdapter extends MethodVisitor {
    */
   private List<Label> handlers;
 
+  /** The maximum number of bytes which can be allocated per analyzed method. */
+  int maxBytes = DEFAULT_MAX_MEMORY_LIMIT;
+
+  /** The maximum number of "operations" which can be performed per analyzed method. */
+  long maxOperations = DEFAULT_MAX_OPERATIONS_LIMIT;
+
   /**
    * Constructs a new {@link CheckMethodAdapter} object. This method adapter will not perform any
    * data flow check (see {@link #CheckMethodAdapter(int,String,String,MethodVisitor,Map)}).
@@ -442,8 +461,10 @@ public class CheckMethodAdapter extends MethodVisitor {
       final String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
-    this(
-        api,
+    // We can't build the MethodNode inside the constructor call because this anonymous class uses
+    // the maxBytes and maxOperations fields of the not yet constructed instance.
+    this(api, /* methodVisitor= */ null, labelInsnIndices);
+    this.mv =
         new MethodNode(api, access, name, descriptor, null, null) {
           @Override
           public void visitEnd() {
@@ -466,6 +487,7 @@ public class CheckMethodAdapter extends MethodVisitor {
                 checkFrames
                     ? new CheckFrameAnalyzer<>(new BasicVerifier())
                     : new Analyzer<>(new BasicVerifier());
+            analyzer.setComputeLimits(maxBytes, maxOperations);
             try {
               if (checkMaxStackAndLocals) {
                 analyzer.analyze("dummy", this);
@@ -489,9 +511,30 @@ public class CheckMethodAdapter extends MethodVisitor {
             printWriter.close();
             throw new IllegalArgumentException(e.getMessage() + ' ' + stringWriter.toString(), e);
           }
-        },
-        labelInsnIndices);
+        };
     this.access = access;
+  }
+
+  /**
+   * Sets the maximum number of bytes which can be allocated, and the maximum number of "operations"
+   * which can be performed, for the data flow checks (which are only performed if the {@link
+   * #CheckMethodAdapter(int, String, String, MethodVisitor, Map)} or {@link
+   * #CheckMethodAdapter(int, int, String, String, MethodVisitor, Map)} constructors are used).
+   * Operations are not formally defined but their total number is deterministic and approximatively
+   * proportional to the computation time.
+   *
+   * <p>The default limits should be sufficient for any "normal" class. You only need to set new
+   * limits if a {@link LimitExceededException} is thrown for some of your classes.
+   *
+   * @param maxBytes the maximum number of bytes which can be allocated. Not all object
+   *     instantiations are tracked (and garbage collection is ignored), but the most important ones
+   *     are. The default value is 400MB.
+   * @param maxOperations the maximum number of "operations" that can be performed. The default
+   *     value is 50 billions.
+   */
+  public void setComputeLimits(final int maxBytes, final long maxOperations) {
+    this.maxBytes = maxBytes;
+    this.maxOperations = maxOperations;
   }
 
   @Override

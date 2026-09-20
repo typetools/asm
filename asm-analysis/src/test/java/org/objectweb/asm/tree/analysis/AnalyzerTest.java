@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.LimitExceededException;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.test.AsmTest;
@@ -1081,6 +1082,40 @@ class AnalyzerTest extends AsmTest {
     assertDoesNotThrow(() -> MethodNodeBuilder.buildClassWithMethod(methodNode).newInstance());
   }
 
+  @Test
+  void testAnalyze_tooManyAllocatedBytes() throws AnalyzerException {
+    MethodNodeBuilder methodNodeBuilder = new MethodNodeBuilder(1, 1);
+    for (int i = 0; i < 64; i++) {
+      Label label = new Label();
+      methodNodeBuilder.go(label).label(label);
+    }
+    MethodNode methodNode = methodNodeBuilder.vreturn().build();
+    Analyzer<MockValue> analyzer = newAnalyzer();
+    analyzer.setComputeLimits(1000, Analyzer.DEFAULT_MAX_OPERATIONS_LIMIT);
+
+    Executable analyze = () -> analyzer.analyze(CLASS_NAME, methodNode);
+
+    LimitExceededException e = assertThrows(LimitExceededException.class, analyze);
+    assertEquals(e.getMessage(), "Too many allocated bytes");
+  }
+
+  @Test
+  void testAnalyze_tooManyOperations() throws AnalyzerException {
+    MethodNodeBuilder methodNodeBuilder = new MethodNodeBuilder(1, 1);
+    for (int i = 0; i < 64; i++) {
+      Label label = new Label();
+      methodNodeBuilder.go(label).label(label);
+    }
+    MethodNode methodNode = methodNodeBuilder.vreturn().build();
+    Analyzer<MockValue> analyzer = newAnalyzer();
+    analyzer.setComputeLimits(Analyzer.DEFAULT_MAX_MEMORY_LIMIT, 100);
+
+    Executable analyze = () -> analyzer.analyze(CLASS_NAME, methodNode);
+
+    LimitExceededException e = assertThrows(LimitExceededException.class, analyze);
+    assertEquals(e.getMessage(), "Too many operations");
+  }
+
   /**
    * Tests an example coming from distilled down version of
    * com/sun/corba/ee/impl/protocol/CorbaClientDelegateImpl from GlassFish 2. See issue #317823.
@@ -1200,6 +1235,7 @@ class AnalyzerTest extends AsmTest {
 
     @Override
     public MockValue newValue(final Type type) {
+      numOperations++;
       if (type == null) {
         return MockValue.TOP;
       }
@@ -1219,6 +1255,7 @@ class AnalyzerTest extends AsmTest {
 
     @Override
     public MockValue newOperation(final AbstractInsnNode insn) {
+      numOperations++;
       switch (insn.getOpcode()) {
         case Opcodes.ACONST_NULL:
           return MockValue.REFERENCE;
@@ -1240,6 +1277,7 @@ class AnalyzerTest extends AsmTest {
 
     @Override
     public MockValue unaryOperation(final AbstractInsnNode insn, final MockValue value) {
+      numOperations++;
       switch (insn.getOpcode()) {
         case Opcodes.IFNE:
         case Opcodes.IFNONNULL:
@@ -1283,6 +1321,7 @@ class AnalyzerTest extends AsmTest {
 
     @Override
     public MockValue merge(final MockValue value1, final MockValue value2) {
+      numOperations++;
       if (!value1.equals(value2)) {
         return MockValue.TOP;
       }
