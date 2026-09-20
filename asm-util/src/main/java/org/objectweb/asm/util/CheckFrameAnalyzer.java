@@ -109,6 +109,11 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
    */
   private int currentLocals;
 
+  /**
+   * The number of operations performed in this class since the last call to {@link #checkLimits}.
+   */
+  private long numOperations;
+
   CheckFrameAnalyzer(final Interpreter<V> interpreter) {
     super(interpreter);
     this.interpreter = interpreter;
@@ -123,10 +128,12 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
     }
 
     Frame<V>[] frames = getFrames();
-    Frame<V> currentFrame = newFrame(frames[0]);
+    Frame<V> currentFrame = newFrameWithComputeLimits(frames[0]);
     expandFrames(owner, method, currentFrame);
     for (int insnIndex = 0; insnIndex < insnList.size(); ++insnIndex) {
       Frame<V> oldFrame = frames[insnIndex];
+      checkLimits(/* numBytes= */ 0, numOperations);
+      numOperations = 10;
 
       // Simulate the execution of this instruction.
       AbstractInsnNode insnNode = null;
@@ -187,6 +194,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
 
         List<TryCatchBlockNode> insnHandlers = getHandlers(insnIndex);
         if (insnHandlers != null) {
+          numOperations += insnHandlers.size() * 5;
           for (TryCatchBlockNode tryCatchBlock : insnHandlers) {
             Type catchType;
             if (tryCatchBlock.type == null) {
@@ -194,7 +202,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
             } else {
               catchType = Type.getObjectType(tryCatchBlock.type);
             }
-            Frame<V> handler = newFrame(oldFrame);
+            Frame<V> handler = newFrameWithComputeLimits(oldFrame);
             handler.clearStack();
             handler.push(interpreter.newExceptionValue(tryCatchBlock, handler, catchType));
             checkFrame(insnList.indexOf(tryCatchBlock.handler), handler, /* requireFrame= */ true);
@@ -232,6 +240,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
     int lastJvmOrFrameInsnIndex = -1;
     Frame<V> currentFrame = initialFrame;
     int currentInsnIndex = 0;
+    numOperations += method.instructions.size();
     for (AbstractInsnNode insnNode : method.instructions) {
       if (insnNode instanceof FrameNode) {
         try {
@@ -240,6 +249,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
           throw new AnalyzerException(
               e.node, "Error at instruction " + currentInsnIndex + ": " + e.getMessage(), e);
         }
+        numOperations += currentInsnIndex - lastJvmOrFrameInsnIndex;
         for (int index = lastJvmOrFrameInsnIndex + 1; index <= currentInsnIndex; ++index) {
           getFrames()[index] = currentFrame;
         }
@@ -263,7 +273,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
   private Frame<V> expandFrame(
       final String owner, final Frame<V> previousFrame, final FrameNode frameNode)
       throws AnalyzerException {
-    Frame<V> frame = newFrame(previousFrame);
+    Frame<V> frame = newFrameWithComputeLimits(previousFrame);
     List<Object> locals = frameNode.local == null ? Collections.emptyList() : frameNode.local;
     int currentLocal = currentLocals;
     switch (frameNode.type) {
@@ -311,6 +321,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
     for (Object type : stack) {
       frame.push(newFrameValue(owner, frameNode, type));
     }
+    numOperations += frame.getLocals() + stack.size();
     return frame;
   }
 
@@ -326,6 +337,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
    */
   private V newFrameValue(final String owner, final FrameNode frameNode, final Object type)
       throws AnalyzerException {
+    numOperations += 5;
     if (type == Opcodes.TOP) {
       return interpreter.newValue(null);
     } else if (type == Opcodes.INTEGER) {
@@ -375,7 +387,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
       if (requireFrame) {
         throw new AnalyzerException(null, "Expected stack map frame at instruction " + insnIndex);
       }
-      getFrames()[insnIndex] = newFrame(frame);
+      getFrames()[insnIndex] = newFrameWithComputeLimits(frame);
     } else {
       String error = checkMerge(frame, oldFrame);
       if (error != null) {
@@ -431,6 +443,7 @@ class CheckFrameAnalyzer<V extends Value> extends Analyzer<V> {
             + dstFrame.getStack(i);
       }
     }
+    numOperations += numLocals + numStack;
     return null;
   }
 
