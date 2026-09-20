@@ -1756,7 +1756,10 @@ final class MethodWriter extends MethodVisitor {
       while (outgoingEdge != null) {
         Label successorBlock = outgoingEdge.successor;
         if (successorBlock.nextListElement == null) {
-          successorBlock.inputStackSize = (short) (inputStackTop + outgoingEdge.stackSizeDelta);
+          successorBlock.inputStackSize =
+              (short)
+                  Math.max(
+                      successorBlock.inputStackSize, inputStackTop + outgoingEdge.stackSizeDelta);
           successorBlock.nextListElement = listOfBlocksToProcess;
           listOfBlocksToProcess = successorBlock;
         }
@@ -1772,7 +1775,7 @@ final class MethodWriter extends MethodVisitor {
         if (basicBlockOffset >= startOffset && basicBlockOffset < endOffset) {
           Label successorBlock = handler.handlerPc;
           if (successorBlock.nextListElement == null) {
-            successorBlock.inputStackSize = 1;
+            successorBlock.inputStackSize = (short) Math.max(successorBlock.inputStackSize, 1);
             successorBlock.nextListElement = listOfBlocksToProcess;
             listOfBlocksToProcess = successorBlock;
           }
