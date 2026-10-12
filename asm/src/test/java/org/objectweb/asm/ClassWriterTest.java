@@ -369,6 +369,36 @@ class ClassWriterTest extends AsmTest {
   }
 
   @Test
+  void testToByteArray_methodCodeSizeTooLarge() {
+    ClassWriter classWriter = newEmptyClassWriter();
+    String methodName = "m";
+    String descriptor = "()V";
+    MethodVisitor methodVisitor =
+        classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, descriptor, null, null);
+    methodVisitor.visitCode();
+    methodVisitor.visitInsn(Opcodes.NOP);
+    for (int i = 0; i <= 16384; i++) {
+      methodVisitor.visitInsn(Opcodes.NOP);
+      Label label = new Label();
+      methodVisitor.visitJumpInsn(Opcodes.GOTO, label);
+      methodVisitor.visitLabel(label);
+    }
+    methodVisitor.visitInsn(Opcodes.RETURN);
+    methodVisitor.visitMaxs(0, 1);
+    methodVisitor.visitEnd();
+    classWriter.visitEnd();
+
+    Executable toByteArray = classWriter::toByteArray;
+
+    MethodTooLargeException exception = assertThrows(MethodTooLargeException.class, toByteArray);
+    assertEquals(methodName, exception.getMethodName());
+    assertEquals("C", exception.getClassName());
+    assertEquals(descriptor, exception.getDescriptor());
+    assertEquals(65542, exception.getCodeSize());
+    assertEquals("Method too large: C.m ()V", exception.getMessage());
+  }
+
+  @Test
   void testToByteArray_largeSourceDebugExtension() {
     ClassWriter classWriter = newEmptyClassWriter();
     classWriter.visitSource("Test.java", new String(new char[100000]));

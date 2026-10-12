@@ -1553,6 +1553,9 @@ final class MethodWriter extends MethodVisitor {
 
   @Override
   public void visitMaxs(final int maxStack, final int maxLocals) {
+    if (code.length > 65535) {
+      return;
+    }
     if (compute == COMPUTE_ALL_FRAMES) {
       computeAllFrames();
     } else if (compute == COMPUTE_MAX_STACK_AND_LOCAL) {

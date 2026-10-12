@@ -418,6 +418,9 @@ public class Label {
       final byte[] code, final ByteVector stackMapTableEntries, final int bytecodeOffset) {
     this.flags |= FLAG_RESOLVED;
     this.bytecodeOffset = bytecodeOffset;
+    if (bytecodeOffset > 65535) {
+      return false;
+    }
 
     boolean hasAsmInstructions = false;
     int offset = lastForwardReference & 0xFFFF;
