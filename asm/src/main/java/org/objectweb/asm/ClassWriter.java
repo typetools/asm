@@ -308,8 +308,8 @@ public class ClassWriter extends ClassVisitor {
    * approximatively proportional to the computation time.
    *
    * <p>The default limits should be sufficient for any "normal" class. You only need to set new
-   * limits if {@link MethodVisitor#visitMaxs} throws a {@link LimitExceededException} on some of
-   * your classes.
+   * limits if a {@link MethodVisitor} visit method throws a {@link LimitExceededException} on some
+   * of your classes.
    *
    * @param maxBytes the maximum number of bytes which can be allocated. Not all object
    *     instantiations are tracked (and garbage collection is ignored), but the most important ones
