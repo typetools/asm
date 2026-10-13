@@ -1587,7 +1587,8 @@ final class MethodWriter extends MethodVisitor {
     // added to the list of blocks to process). Also compute the maximum stack size of the method,
     // as a by-product.
     Label listOfBlocksToProcess = firstBasicBlock;
-    listOfBlocksToProcess.nextListElement = Label.EMPTY_LIST;
+    Label lastBlockToProcess = firstBasicBlock;
+    lastBlockToProcess.nextListElement = Label.EMPTY_LIST;
     int maxStackSize = 0;
     while (listOfBlocksToProcess != Label.EMPTY_LIST) {
       // Remove a basic block from the list of blocks to process.
@@ -1611,8 +1612,13 @@ final class MethodWriter extends MethodVisitor {
         if (successorBlockChanged && successorBlock.nextListElement == null) {
           // If successorBlock has changed it must be processed. Thus, if it is not already in the
           // list of blocks to process, add it to this list.
-          successorBlock.nextListElement = listOfBlocksToProcess;
-          listOfBlocksToProcess = successorBlock;
+          successorBlock.nextListElement = Label.EMPTY_LIST;
+          if (listOfBlocksToProcess == Label.EMPTY_LIST) {
+            listOfBlocksToProcess = successorBlock;
+          } else {
+            lastBlockToProcess.nextListElement = successorBlock;
+          }
+          lastBlockToProcess = successorBlock;
         }
         outgoingEdge = outgoingEdge.nextEdge;
         numOperations += Frame.NUM_OPERATIONS_PER_MERGE + 5;
@@ -1634,8 +1640,13 @@ final class MethodWriter extends MethodVisitor {
               basicBlock.frame.merge(symbolTable, successorBlock.frame, catchType);
           if (successorBlockChanged && successorBlock.nextListElement == null) {
             // If successorBlock has changed it must be processed, add it to the list.
-            successorBlock.nextListElement = listOfBlocksToProcess;
-            listOfBlocksToProcess = successorBlock;
+            successorBlock.nextListElement = Label.EMPTY_LIST;
+            if (listOfBlocksToProcess == Label.EMPTY_LIST) {
+              listOfBlocksToProcess = successorBlock;
+            } else {
+              lastBlockToProcess.nextListElement = successorBlock;
+            }
+            lastBlockToProcess = successorBlock;
           }
           numOperations += Frame.NUM_OPERATIONS_PER_MERGE + 5;
         }

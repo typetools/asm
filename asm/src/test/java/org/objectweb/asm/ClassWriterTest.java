@@ -469,6 +469,31 @@ class ClassWriterTest extends AsmTest {
   }
 
   @Test
+  void testToByteArray_computeFrames_sequentialConditionals() {
+    ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+    classWriter.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC, "A", null, "java/lang/Object", null);
+    MethodVisitor methodVisitor =
+        classWriter.visitMethod(Opcodes.ACC_STATIC, "m", "(I)V", null, null);
+    methodVisitor.visitCode();
+    for (int i = 1; i <= 300; ++i) {
+      Label label = new Label();
+      methodVisitor.visitVarInsn(Opcodes.ILOAD, 0);
+      methodVisitor.visitJumpInsn(Opcodes.IFNE, label);
+      methodVisitor.visitInsn(Opcodes.ICONST_0);
+      methodVisitor.visitVarInsn(Opcodes.ISTORE, i);
+      methodVisitor.visitLabel(label);
+    }
+    methodVisitor.visitInsn(Opcodes.RETURN);
+    methodVisitor.visitMaxs(0, 0);
+    methodVisitor.visitEnd();
+    classWriter.visitEnd();
+
+    Executable toByteArray = classWriter::toByteArray;
+
+    assertDoesNotThrow(toByteArray);
+  }
+
+  @Test
   void testToByteArray_manyFramesWithForwardLabelReferences() {
     ClassWriter classWriter = new ClassWriter(0);
     classWriter.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC, "A", null, "java/lang/Object", null);
