@@ -25,23 +25,13 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-package jdk14;
+package jdk17;
 
-import annotations.IRCA;
-import annotations.VRCA;
-import annotations.VTUA;
-import annotations.ITUA;
-import java.util.List;
-
-// compiled using jdk-14/bin/javac -source 14 --enable-preview jdk14/AllStructures.java
-public class AllStructures {
-  record RecordSubType(
-      @IRCA(v = 0) @VRCA(v = 1) @VTUA(v = 2) @ITUA(v = 3) int component1,
-      @IRCA(v = 4) @VRCA(v = 5) @VTUA(v = 6) @ITUA(v = 7) List<String> component2) {
+public sealed interface AllStructures {
+  final class ClassSubType implements AllStructures {
   	
   }
-
-  record EmptyRecord() {
-
+  record RecordSubType(int component1, String component2) implements AllStructures {
+  	
   }
 }

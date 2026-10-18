@@ -132,8 +132,8 @@ public abstract class AsmTest {
     JDK8(8, Api.ASM5),
     JDK9(9, Api.ASM6),
     JDK11(11, Api.ASM7),
-    JDK14(14, Api.ASM8),
-    JDK15(15, Api.ASM9);
+    JDK15(15, Api.ASM8),
+    JDK17(17, Api.ASM9);
 
     private final int majorVersion;
     private final Api minimumApi;
@@ -195,9 +195,9 @@ public abstract class AsmTest {
     JDK11_ALL_STRUCTURES("jdk11.AllStructures", JdkVersion.JDK11),
     JDK11_ALL_STRUCTURES_NESTED("jdk11.AllStructures$Nested", JdkVersion.JDK11),
     JDK11_LARGE_STRUCTURES("jdk11.LargeStructures", JdkVersion.JDK11),
-    JDK14_ALL_STRUCTURES_RECORD("jdk14.AllStructures$RecordSubType", JdkVersion.JDK14),
-    JDK14_ALL_STRUCTURES_EMPTY_RECORD("jdk14.AllStructures$EmptyRecord", JdkVersion.JDK14),
-    JDK15_ALL_STRUCTURES("jdk15.AllStructures", JdkVersion.JDK15);
+    JDK15_ALL_STRUCTURES_RECORD("jdk15.AllStructures$RecordSubType", JdkVersion.JDK15),
+    JDK15_ALL_STRUCTURES_EMPTY_RECORD("jdk15.AllStructures$EmptyRecord", JdkVersion.JDK15),
+    JDK17_ALL_STRUCTURES("jdk17.AllStructures", JdkVersion.JDK17);
 
     private final String name;
     private final JdkVersion jdkVersion;
