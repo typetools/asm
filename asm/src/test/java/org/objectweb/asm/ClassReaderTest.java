@@ -595,10 +595,10 @@ class ClassReaderTest extends AsmTest implements Opcodes {
 
     Executable accept = () -> classReader.accept(classVisitor, 0);
 
-    boolean hasPermittedSubclasses = classParameter == PrecompiledClass.JDK15_ALL_STRUCTURES;
+    boolean hasPermittedSubclasses = classParameter == PrecompiledClass.JDK17_ALL_STRUCTURES;
     boolean hasRecord =
-        classParameter == PrecompiledClass.JDK14_ALL_STRUCTURES_RECORD
-            || classParameter == PrecompiledClass.JDK14_ALL_STRUCTURES_EMPTY_RECORD;
+        classParameter == PrecompiledClass.JDK15_ALL_STRUCTURES_RECORD
+            || classParameter == PrecompiledClass.JDK15_ALL_STRUCTURES_EMPTY_RECORD;
     boolean hasNestHostOrMembers =
         classParameter == PrecompiledClass.JDK11_ALL_STRUCTURES
             || classParameter == PrecompiledClass.JDK11_ALL_STRUCTURES_NESTED;

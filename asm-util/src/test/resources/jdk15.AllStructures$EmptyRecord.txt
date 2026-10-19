@@ -1,12 +1,12 @@
-// class version 58.0 (58)
+// class version 59.0 (59)
 // RECORD
 // access flags 0x10030
-final class jdk14/AllStructures$EmptyRecord extends java/lang/Record {
+final class jdk15/AllStructures$EmptyRecord extends java/lang/Record {
 
   // compiled from: AllStructures.java
-  NESTHOST jdk14/AllStructures
+  NESTHOST jdk15/AllStructures
   // access flags 0x18
-  final static INNERCLASS jdk14/AllStructures$EmptyRecord jdk14/AllStructures EmptyRecord
+  final static INNERCLASS jdk15/AllStructures$EmptyRecord jdk15/AllStructures EmptyRecord
   // access flags 0x19
   public final static INNERCLASS java/lang/invoke/MethodHandles$Lookup java/lang/invoke/MethodHandles Lookup
 
@@ -25,11 +25,11 @@ final class jdk14/AllStructures$EmptyRecord extends java/lang/Record {
    L0
     LINENUMBER 44 L0
     ALOAD 0
-    INVOKEDYNAMIC toString(Ljdk14/AllStructures$EmptyRecord;)Ljava/lang/String; [
+    INVOKEDYNAMIC toString(Ljdk15/AllStructures$EmptyRecord;)Ljava/lang/String; [
       // handle kind 0x6 : INVOKESTATIC
       java/lang/runtime/ObjectMethods.bootstrap(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/TypeDescriptor;Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/invoke/MethodHandle;)Ljava/lang/Object;
       // arguments:
-      jdk14.AllStructures$EmptyRecord.class, 
+      jdk15.AllStructures$EmptyRecord.class, 
       ""
     ]
     ARETURN
@@ -41,11 +41,11 @@ final class jdk14/AllStructures$EmptyRecord extends java/lang/Record {
    L0
     LINENUMBER 44 L0
     ALOAD 0
-    INVOKEDYNAMIC hashCode(Ljdk14/AllStructures$EmptyRecord;)I [
+    INVOKEDYNAMIC hashCode(Ljdk15/AllStructures$EmptyRecord;)I [
       // handle kind 0x6 : INVOKESTATIC
       java/lang/runtime/ObjectMethods.bootstrap(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/TypeDescriptor;Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/invoke/MethodHandle;)Ljava/lang/Object;
       // arguments:
-      jdk14.AllStructures$EmptyRecord.class, 
+      jdk15.AllStructures$EmptyRecord.class, 
       ""
     ]
     IRETURN
@@ -58,11 +58,11 @@ final class jdk14/AllStructures$EmptyRecord extends java/lang/Record {
     LINENUMBER 44 L0
     ALOAD 0
     ALOAD 1
-    INVOKEDYNAMIC equals(Ljdk14/AllStructures$EmptyRecord;Ljava/lang/Object;)Z [
+    INVOKEDYNAMIC equals(Ljdk15/AllStructures$EmptyRecord;Ljava/lang/Object;)Z [
       // handle kind 0x6 : INVOKESTATIC
       java/lang/runtime/ObjectMethods.bootstrap(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/TypeDescriptor;Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/invoke/MethodHandle;)Ljava/lang/Object;
       // arguments:
-      jdk14.AllStructures$EmptyRecord.class, 
+      jdk15.AllStructures$EmptyRecord.class, 
       ""
     ]
     IRETURN

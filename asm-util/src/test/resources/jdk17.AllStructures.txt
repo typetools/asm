@@ -1,0 +1,14 @@
+// class version 61.0 (61)
+// access flags 0x601
+public abstract interface jdk17/AllStructures {
+
+  // compiled from: AllStructures.java
+  NESTMEMBER jdk17/AllStructures$RecordSubType
+  NESTMEMBER jdk17/AllStructures$ClassSubType
+  PERMITTEDSUBCLASS jdk17/AllStructures$ClassSubType
+  PERMITTEDSUBCLASS jdk17/AllStructures$RecordSubType
+  // access flags 0x19
+  public final static INNERCLASS jdk17/AllStructures$RecordSubType jdk17/AllStructures RecordSubType
+  // access flags 0x19
+  public final static INNERCLASS jdk17/AllStructures$ClassSubType jdk17/AllStructures ClassSubType
+}
